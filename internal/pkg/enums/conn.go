@@ -2,7 +2,15 @@ package enums
 
 import "github.com/samber/lo"
 
-const MiddleWareEventIDKey = "event_id_key"
+const (
+	MiddleWareEventIDKey = "event_id_key"
+	GRPC                 = "grpc"
+	METHOD               = "method"
+	TIME                 = "time"
+	METADATA             = "metadata"
+	REQUEST              = "request"
+	REPLY                = "reply"
+)
 
 type ContextType string
 

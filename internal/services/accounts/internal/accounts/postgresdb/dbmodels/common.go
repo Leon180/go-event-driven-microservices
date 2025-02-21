@@ -1,4 +1,4 @@
-package dbmodels
+package postgresdbmodels
 
 import (
 	"time"

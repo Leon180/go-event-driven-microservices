@@ -1,4 +1,4 @@
-package dbmodels
+package postgresdbmodels
 
 import "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
 

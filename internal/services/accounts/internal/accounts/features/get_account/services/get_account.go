@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
+	customizerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	customErrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/errors"
 	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
@@ -32,7 +32,7 @@ func (handle *getAccountImpl) GetAccount(ctx context.Context, req *featuredtos.G
 		return nil, err
 	}
 	if account == nil {
-		return nil, customErrors.AccountNotFoundError
+		return nil, customizerrors.AccountNotFoundError
 	}
 	return account, nil
 }

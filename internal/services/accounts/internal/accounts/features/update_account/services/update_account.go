@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	customErrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/errors"
 	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/validates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
@@ -41,7 +41,7 @@ func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *feature
 		return err
 	}
 	if account == nil {
-		return customErrors.AccountNotFoundError
+		return customizeerrors.AccountNotFoundError
 	}
 	updateAccount := dtos.UpdateAccount{
 		ID:            account.ID,

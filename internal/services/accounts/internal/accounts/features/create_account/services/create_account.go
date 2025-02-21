@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	customErrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/errors"
 	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/validates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
@@ -18,7 +18,7 @@ type CreateAccount interface {
 func NewCreateAccount(
 	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber,
 	createAccountRepository repositories.CreateAccount,
-	uuidGenerator utilities.UUIDGenerator,
+	uuidGenerator uuid.UUIDGenerator,
 ) CreateAccount {
 	return &createAccountImpl{
 		getAccountWithHistoryByMobileNumberRepository: getAccountWithHistoryByMobileNumberRepository,
@@ -30,7 +30,7 @@ func NewCreateAccount(
 type createAccountImpl struct {
 	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber
 	createAccountRepository                       repositories.CreateAccount
-	uuidGenerator                                 utilities.UUIDGenerator
+	uuidGenerator                                 uuid.UUIDGenerator
 }
 
 func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *featuredtos.CreateAccountRequest) error {
@@ -45,7 +45,7 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *feature
 		return err
 	}
 	if account != nil {
-		return customErrors.AccountAlreadyExistsError
+		return customizeerrors.AccountAlreadyExistsError
 	}
 	accountDTO := dtos.Account{
 		ID:            handle.uuidGenerator.GenerateUUID(),

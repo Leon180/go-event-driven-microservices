@@ -1,63 +1,48 @@
 package postgresdb
 
 import (
-	"context"
-	"database/sql"
+	"log"
 	"time"
 
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities"
-	accountconfigs "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/configs"
-
-	"go.uber.org/zap"
+	gormlogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/grom_logger"
+	gormconfigs "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/configs"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormiologger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
-func InitGormDB(config accountconfigs.Config, zapLogger *zap.Logger) *gorm.DB {
+func NewGormDB(cfg *gormconfigs.GormDB, logger gormlogger.GormCustomLogger) *gorm.DB {
 
-	var (
-		connectionString string
-		err              error
-		gormConfig       = &gorm.Config{
-			SkipDefaultTransaction: true,
-			NamingStrategy: schema.NamingStrategy{
-				TablePrefix:   "",
-				SingularTable: true,
-			},
-			DisableForeignKeyConstraintWhenMigrating: config.DBDisableForeignKeyConstraintWhenMigrating,
-		}
-		db    *gorm.DB
-		sqlDB *sql.DB
-	)
+	gormConfig := &gorm.Config{
+		SkipDefaultTransaction: true,
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "",
+			SingularTable: true,
+		},
+		DisableForeignKeyConstraintWhenMigrating: cfg.GetDBDisableForeignKeyConstraintWhenMigrating(),
+	}
 
-	if config.Environment == "development" {
-		connectionString = config.DSNTest
+	if logger == nil {
+		gormConfig.Logger = gormiologger.Default.LogMode(gormiologger.Info)
 	} else {
-		connectionString = config.DSNDeployment
+		gormConfig.Logger = logger
+		gormConfig.Logger.LogMode(gormiologger.Info)
 	}
 
-	if zapLogger == nil {
-		gormConfig.Logger = logger.Default.LogMode(logger.Info)
-	} else {
-		gormConfig.Logger = utilities.NewGormZapLogger(zapLogger)
-		gormConfig.Logger.LogMode(logger.Info)
-	}
-
-	db, err = gorm.Open(postgres.Open(connectionString), gormConfig)
+	db, err := gorm.Open(postgres.Open(cfg.GetDSN()), gormConfig)
 	if err != nil {
-		utilities.LogFatal(context.Background(), "error occur while connect to postgresql db: %s", err)
+		log.Fatalf("error occur while connect to postgresql db: %s", err)
 	}
 
-	sqlDB, err = db.DB()
+	sqlDB, err := db.DB()
 	if err != nil {
-		utilities.LogFatal(context.Background(), "error occur while connect to postgresql db: %s", err)
+		log.Fatalf("error occur while connect to postgresql db: %s", err)
 	}
 
-	sqlDB.SetMaxIdleConns(config.DBMaxIdle)
-	sqlDB.SetMaxOpenConns(config.DBMaxOpen)
-	sqlDB.SetConnMaxLifetime(time.Duration(config.DBMaxLifetimeMinute) * time.Minute)
+	sqlDB.SetMaxIdleConns(cfg.GetDBMaxIdle())
+	sqlDB.SetMaxOpenConns(cfg.GetDBMaxOpen())
+	sqlDB.SetConnMaxLifetime(time.Duration(cfg.GetDBMaxLifetimeMinute()) * time.Minute)
 
 	return db
 }

@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	customErrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/errors"
 	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
@@ -37,7 +37,7 @@ func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *feature
 		return err
 	}
 	if account == nil {
-		return customErrors.AccountNotFoundError
+		return customizeerrors.AccountNotFoundError
 	}
 	if !account.IsActive() {
 		return nil

@@ -3,8 +3,8 @@ package enums
 type ContextKey string
 
 const (
-	SessionKey ContextKey = "session"
-	TraceIDKey ContextKey = "event_id_key"
+	ContextKeySession ContextKey = "session"
+	ContextKeyTraceID ContextKey = "event_id_key"
 )
 
 func (key ContextKey) ToString() string {

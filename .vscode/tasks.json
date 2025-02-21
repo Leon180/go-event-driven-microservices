@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "berforeInitServer",
+            "type": "shell",
+            "command": "go mod tidy;go get;go generate ./...;git rev-parse --short HEAD > .git-revision-num;if [ ! -f '.env' ]; then touch .env ;fi"
+        }
+    ]
+}
