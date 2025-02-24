@@ -1,0 +1,214 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Simple service for accounts resources",
+        "title": "Accounts Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:7001",
+    "basePath": "/v1/accounts",
+    "paths": {
+        "/account": {
+            "post": {
+                "description": "Create a new account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/{id}": {
+            "delete": {
+                "description": "Delete an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/{mobile_number}": {
+            "get": {
+                "description": "Get an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mobile Number",
+                        "name": "mobile_number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mobile Number",
+                        "name": "mobile_number",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "branch",
+                "mobile_number"
+            ],
+            "properties": {
+                "account_type": {
+                    "description": "@enum \"saving\", \"current\", \"salary\"",
+                    "type": "string"
+                },
+                "branch": {
+                    "description": "@enum \"台北市中山區\", \"台北市松山區\", \"台北市信義區\", \"台北市文山區\", \"台北市北投區\", \"台北市南港區\", \"台北市萬華區\"",
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "description": "@example 0958308280",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest": {
+            "type": "object",
+            "properties": {
+                "account_number": {
+                    "type": "string"
+                },
+                "account_type": {
+                    "type": "string"
+                },
+                "active_switch": {
+                    "type": "boolean"
+                },
+                "branch_address": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

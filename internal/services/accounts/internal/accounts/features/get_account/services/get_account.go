@@ -5,12 +5,12 @@ import (
 
 	customizerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
 
 type GetAccount interface {
-	GetAccount(ctx context.Context, req *featuredtos.GetAccountRequest) (*dtos.AccountWithHistory, error)
+	GetAccount(ctx context.Context, req *featuresdtos.GetAccountRequest) (*dtos.AccountWithHistory, error)
 }
 
 func NewGetAccount(
@@ -23,7 +23,7 @@ type getAccountImpl struct {
 	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber
 }
 
-func (handle *getAccountImpl) GetAccount(ctx context.Context, req *featuredtos.GetAccountRequest) (*dtos.AccountWithHistory, error) {
+func (handle *getAccountImpl) GetAccount(ctx context.Context, req *featuresdtos.GetAccountRequest) (*dtos.AccountWithHistory, error) {
 	if req == nil {
 		return nil, nil
 	}

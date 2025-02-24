@@ -46,51 +46,46 @@ var InvokeModule = fx.Module(
 	fx.Invoke(registerHooks),
 )
 
-type registerHooksParams struct {
+type RegisterHooksParams struct {
 	fx.In
 
-	lc          fx.Lifecycle
-	server      ginserver.GinServer
-	middlewares []ginmiddlewares.GinMiddleware `group:"middlewares"`
-	endpoints   []ginendpoints.Endpoint        `group:"endpoints"`
+	Lc          fx.Lifecycle
+	Server      ginserver.GinServer
+	Middlewares []ginmiddlewares.GinMiddleware `group:"middlewares"`
+	Endpoints   []ginendpoints.Endpoint        `group:"endpoints"`
 }
 
 func registerHooks(
-	params registerHooksParams,
+	params RegisterHooksParams,
 ) {
-	params.lc.Append(fx.Hook{
+	params.Lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
+				// register swagger
+				params.Server.RegistSwagger("swagger")
+
 				// add middlewares
-				params.server.AddMiddlewares(params.middlewares...)
+				params.Server.AddMiddlewares(params.Middlewares...)
 
 				// register endpoints
-				params.server.RegistEndPoints(params.server.GetConfig().GetServiceName(), params.endpoints...)
+				params.Server.RegistEndPoints(params.Server.GetConfig().GetBasePath(), params.Endpoints...)
 
 				// run server
-				if err := params.server.Run(); !errors.Is(
-					err,
-					http.ErrServerClosed,
-				) {
-					// do a fatal for going to OnStop process
-					log.Fatalf(
-						"[%s] (GinServer.RunHttpServer) error in running server: {%v}",
-						params.server.GetConfig().GetServiceName(),
-						err,
-					)
+				if err := params.Server.Run(); !errors.Is(err, http.ErrServerClosed) {
+					log.Fatalf("[%s] (GinServer.RunHttpServer) error in running server: {%v}", params.Server.GetConfig().GetServiceName(), err)
 				}
 			}()
-			log.Printf("[%s] GinServer is listening on:{%s}", params.server.GetConfig().GetServiceName(), params.server.GetConfig().GetConnWebPort())
+			log.Printf("[%s] GinServer is listening on:{%s}", params.Server.GetConfig().GetServiceName(), params.Server.GetConfig().GetConnWebPort())
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			if err := params.server.GracefulShutdown(shutdownCtx); err != nil {
-				log.Printf("[%s] (GinServer.GracefulShutdown) error in shutting down server: {%v}", params.server.GetConfig().GetServiceName(), err)
+			if err := params.Server.GracefulShutdown(shutdownCtx); err != nil {
+				log.Printf("[%s] (GinServer.GracefulShutdown) error in shutting down server: {%v}", params.Server.GetConfig().GetServiceName(), err)
 			}
-			log.Printf("[%s] GinServer shutdown gracefully", params.server.GetConfig().GetServiceName())
-			log.Printf("[%s] Server shutdown", params.server.GetConfig().GetServiceName())
+			log.Printf("[%s] GinServer shutdown gracefully", params.Server.GetConfig().GetServiceName())
+			log.Printf("[%s] Server shutdown", params.Server.GetConfig().GetServiceName())
 			return nil
 		},
 	})

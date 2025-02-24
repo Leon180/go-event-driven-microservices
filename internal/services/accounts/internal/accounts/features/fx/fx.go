@@ -24,6 +24,7 @@ import (
 // - customizeginendpoints.Endpoint(updateAccountGinEndpoints.NewUpdateAccount)
 // - customizeginendpoints.Endpoint(deleteAccountGinEndpoints.NewDeleteAccount)
 // dependencies:
+// - accountnumberutilities.AccountNumberGenerator
 // - uuid.UUIDGenerator
 // - repositories.CreateAccount
 // - repositories.GetAccountWithHistoryByMobileNumber

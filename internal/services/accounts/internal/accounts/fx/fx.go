@@ -9,7 +9,8 @@ import (
 	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/configs/fx"
 	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/fx"
 	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/fx"
-
+	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/fx"
+	accountnumberutilitiesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number.go/fx"
 	"go.uber.org/fx"
 )
 
@@ -26,6 +27,9 @@ var ProvideModule = fx.Module(
 	// environments
 	environmentsfx.ProvideModule,
 
+	// account number generator
+	accountnumberutilitiesfx.ProvideModule,
+
 	// uuid generators
 	uuidfx.ProvideModule,
 
@@ -38,6 +42,9 @@ var ProvideModule = fx.Module(
 
 	// app configs
 	appconfigsfx.ProvideModule,
+
+	// repositories
+	repositoriesfx.ProvideModule,
 
 	// features
 	featuresfx.ProvideModule,

@@ -6,11 +6,18 @@ import (
 )
 
 func GetInstance[T any]() T {
-	return getInstanceFromType(GetType[T]()).(T)
+	typ := GetType[T]()
+	return getInstanceFromType(typ).(T)
 }
 
 func GetType[T any]() reflect.Type {
-	return reflect.TypeOf((*T)(nil)).Elem()
+	res := reflect.TypeOf((*T)(nil)).Elem()
+	return res
+}
+
+func IsPointer[T any]() bool {
+	t := reflect.TypeOf((*T)(nil)).Elem()
+	return t.Kind() == reflect.Ptr
 }
 
 func GetTypeName[T any]() string {
@@ -23,7 +30,8 @@ func GetTypeName[T any]() string {
 
 func getInstanceFromType(typ reflect.Type) interface{} {
 	if typ.Kind() == reflect.Ptr {
-		return reflect.New(typ.Elem()).Interface()
+		res := reflect.New(typ.Elem()).Interface()
+		return res
 	}
 	return reflect.Zero(typ).Interface()
 }

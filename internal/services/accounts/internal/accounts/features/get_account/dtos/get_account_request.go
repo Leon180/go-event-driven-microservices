@@ -1,5 +1,5 @@
-package dtos
+package featuresdtos
 
 type GetAccountRequest struct {
-	MobileNumber string `form:"mobile_number" binding:"required"`
+	MobileNumber string `uri:"mobile_number" binding:"required"`
 }

@@ -1,0 +1,143 @@
+basePath: /v1/accounts
+definitions:
+  github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest
+  : properties:
+      account_type:
+        description: '@enum "saving", "current", "salary"'
+        type: string
+      branch:
+        description: '@enum "台北市中山區", "台北市松山區", "台北市信義區", "台北市文山區", "台北市北投區", "台北市南港區",
+          "台北市萬華區"'
+        type: string
+      mobile_number:
+        description: '@example 0958308280'
+        type: string
+    required:
+    - account_type
+    - branch
+    - mobile_number
+    type: object
+  ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest
+  : properties:
+      account_number:
+        type: string
+      account_type:
+        type: string
+      active_switch:
+        type: boolean
+      branch_address:
+        type: string
+    type: object
+host: localhost:7001
+info:
+  contact: {}
+  description: Simple service for accounts resources
+  title: Accounts Service API
+  version: "1.0"
+paths:
+  /account:
+    post:
+      consumes:
+      - application/json
+      description: Create a new account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account created successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Create a new account
+      tags:
+      - accounts
+  /account/{id}:
+    delete:
+      description: Delete an account
+      parameters:
+      - description: Account ID to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account deleted successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Delete an account
+      tags:
+      - accounts
+  /account/{mobile_number}:
+    get:
+      description: Get an account
+      parameters:
+      - description: Mobile Number
+        in: path
+        name: mobile_number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account retrieved successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Get an account
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Update an account
+      parameters:
+      - description: Mobile Number
+        in: path
+        name: mobile_number
+        required: true
+        type: string
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account updated successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Update an account
+      tags:
+      - accounts
+swagger: "2.0"

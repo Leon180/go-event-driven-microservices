@@ -3,7 +3,7 @@ package gincontrollers
 import (
 	customizeginresponse "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/response"
 	customizeginendpoints "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/endpoints"
-	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/services"
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +21,19 @@ func NewDeleteAccount(
 }
 
 func (endpoint *deleteAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
-	routerGroup.DELETE("", endpoint.Handle)
+	routerGroup.DELETE("/account/:id", endpoint.Handle)
 }
 
+// @Summary Delete an account
+// @Description Delete an account
+// @Tags accounts
+// @Produce json
+// @Param id path string true "Account ID to delete"
+// @Success 200 {object} customizeginresponse.JSONResponse "account deleted successfully"
+// @Router /account/{id} [delete]
 func (endpoint *deleteAccountImpl) Handle(c *gin.Context) {
-	var deleteAccountRequest featuredtos.DeleteAccountRequest
-	if err := c.ShouldBindJSON(&deleteAccountRequest); err != nil {
+	var deleteAccountRequest featuresdtos.DeleteAccountRequest
+	if err := c.ShouldBindUri(&deleteAccountRequest); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}

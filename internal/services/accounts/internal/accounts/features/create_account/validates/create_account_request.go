@@ -2,21 +2,21 @@ package validates
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/dtos"
 )
 
-func ValidateCreateAccountRequest(req *dtos.CreateAccountRequest) error {
-	if req.AccountNumber == 0 {
-		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "account number is required")
+func ValidateCreateAccountRequest(req *featuresdtos.CreateAccountRequest) error {
+	if !enumsaccounts.AccountType(strings.ToLower(req.AccountType)).IsValid() {
+		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "account type is invalid")
 	}
-	if len(req.AccountType) == 0 {
-		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "account type is required")
-	}
-	if len(req.BranchAddress) == 0 {
-		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "branch address is required")
+	if !enumsbanks.BanksBranch(strings.ToLower(req.Branch)).IsValid() {
+		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "branch is invalid")
 	}
 	if len(req.MobileNumber) == 0 {
 		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "mobile number is required")

@@ -14,6 +14,10 @@ type GetAccountWithHistoryByMobileNumber interface {
 	GetAccountWithHistoryByMobileNumber(ctx context.Context, mobileNumber string) (*dtos.AccountWithHistory, error)
 }
 
+type GetAccountWithHistory interface {
+	GetAccountWithHistory(ctx context.Context, id string) (*dtos.AccountWithHistory, error)
+}
+
 type UpdateAccountByID interface {
 	UpdateAccountByID(ctx context.Context, update dtos.UpdateAccount) error
 }

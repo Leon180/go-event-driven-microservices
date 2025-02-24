@@ -1,9 +1,8 @@
 {
   "app": {
-    "connWebPort": "localhost:7001",
-    "serviceName": "account"
-  },
-  "cors": {
+    "connWebPort": "7001",
+    "serviceName": "accounts",
+    "version": "v1",
     "maxAge": 12,
     "allowAllOrigins": true,
     "allowCredentials": true,
@@ -11,15 +10,15 @@
     "allowHeaders": "X-PINGOTHER, Accept, Authorization, Content-Type, X-CSRF-Token, Upgrade, Origin, Connection, Accept-Encoding, Accept-Language, Host, Access-Control-Request-Method, Access-Control-Request-Headers",
     "exposeHeaders": "Content-Length, Link"
   },
-  "gormDB": {
-    "dsn": "host=localhost user=postgres password=postgres dbname=accounts port=5432 sslmode=disable TimeZone=Asia/Taipei",
+  "gormdb": {
+    "dsn": "postgresql://postgres:postgres@localhost:5432/accounts?sslmode=disable",
     "dbDisableForeignKeyConstraintWhenMigrating": false,
     "dbMaxIdle": 10,
     "dbMaxOpen": 100,
     "dbMaxLifetimeMinute": 10
   },
   "logger": {
-    "logLevel": "debug",
+    "logLevel": -1,
     "callerEnabled": true,
     "enableTracing": true
   }

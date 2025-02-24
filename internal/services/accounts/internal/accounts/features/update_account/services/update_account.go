@@ -2,16 +2,19 @@ package services
 
 import (
 	"context"
+	"strings"
 
+	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/validates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
 
 type UpdateAccount interface {
-	UpdateAccount(ctx context.Context, req *featuredtos.UpdateAccountRequest) error
+	UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error
 }
 
 type updateAccountImpl struct {
@@ -29,7 +32,7 @@ func NewUpdateAccount(
 	}
 }
 
-func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *featuredtos.UpdateAccountRequest) error {
+func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error {
 	if req == nil {
 		return nil
 	}
@@ -47,9 +50,21 @@ func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *feature
 		ID:            account.ID,
 		MobileNumber:  req.MobileNumber,
 		AccountNumber: req.AccountNumber,
-		AccountType:   req.AccountType,
-		BranchAddress: req.BranchAddress,
-		ActiveSwitch:  req.ActiveSwitch,
+		AccountType: func() *enumsaccounts.AccountType {
+			if req.AccountType != nil {
+				accountType := enumsaccounts.AccountType(strings.ToLower(*req.AccountType))
+				return &accountType
+			}
+			return nil
+		}(),
+		BranchAddress: func() *enumsbanks.BanksBranch {
+			if req.BranchAddress != nil {
+				branchAddress := enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress))
+				return &branchAddress
+			}
+			return nil
+		}(),
+		ActiveSwitch: req.ActiveSwitch,
 	}
 	return handle.updateAccountByIDRepository.UpdateAccountByID(ctx, updateAccount)
 }

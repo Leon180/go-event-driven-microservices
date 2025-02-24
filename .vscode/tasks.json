@@ -4,7 +4,7 @@
         {
             "label": "berforeInitServer",
             "type": "shell",
-            "command": "go mod tidy;go get;go generate ./...;git rev-parse --short HEAD > .git-revision-num;if [ ! -f '.env' ]; then touch .env ;fi"
+            "command": "go mod tidy; go get ;swag init -g internal/services/accounts/cmd/app/main.go -pdl 3 -o internal/services/accounts/docs; go generate ./...;git rev-parse --short HEAD > .git-revision-num;if [ ! -f '.env' ]; then touch .env ;fi"
         }
     ]
 }

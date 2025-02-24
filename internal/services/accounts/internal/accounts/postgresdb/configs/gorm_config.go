@@ -7,42 +7,44 @@ import (
 )
 
 type GormDB struct {
-	dsn                                        string            `mapstructure:"dsn"`
-	dbDisableForeignKeyConstraintWhenMigrating bool              `mapstructure:"dbDisableForeignKeyConstraintWhenMigrating"`
-	dbMaxIdle                                  int               `mapstructure:"dbMaxIdle"`
-	dbMaxOpen                                  int               `mapstructure:"dbMaxOpen"`
-	dbMaxLifetimeMinute                        int               `mapstructure:"dbMaxLifetimeMinute"`
-	env                                        enums.Environment `mapstructure:"-"`
+	DSN                                        string            `mapstructure:"dsn"`
+	DBDisableForeignKeyConstraintWhenMigrating bool              `mapstructure:"dbDisableForeignKeyConstraintWhenMigrating"`
+	DBMaxIdle                                  int               `mapstructure:"dbMaxIdle"`
+	DBMaxOpen                                  int               `mapstructure:"dbMaxOpen"`
+	DBMaxLifetimeMinute                        int               `mapstructure:"dbMaxLifetimeMinute"`
+	Env                                        enums.Environment `mapstructure:"-"`
 }
 
 func (o *GormDB) GetDSN() string {
-	return o.dsn
+	return o.DSN
 }
 
 func (o *GormDB) GetDBDisableForeignKeyConstraintWhenMigrating() bool {
-	return o.dbDisableForeignKeyConstraintWhenMigrating
+	return o.DBDisableForeignKeyConstraintWhenMigrating
 }
 
 func (o *GormDB) GetDBMaxIdle() int {
-	return o.dbMaxIdle
+	return o.DBMaxIdle
 }
 
 func (o *GormDB) GetDBMaxOpen() int {
-	return o.dbMaxOpen
+	return o.DBMaxOpen
 }
 
 func (o *GormDB) GetDBMaxLifetimeMinute() int {
-	return o.dbMaxLifetimeMinute
+	return o.DBMaxLifetimeMinute
 }
 
 func (o *GormDB) GetEnvironment() enums.Environment {
-	return o.env
+	return o.Env
 }
 
 func NewGormDBConfig(env enums.Environment) (*GormDB, error) {
-	gormDB, err := configs.BindConfigByKey[GormDB](reflect.GetTypeName[GormDB](), env)
+	typeName := reflect.GetTypeName[GormDB]()
+	gormDB, err := configs.BindConfigByKey[GormDB](typeName, env)
 	if err != nil {
 		return nil, err
 	}
+	gormDB.Env = env
 	return &gormDB, nil
 }

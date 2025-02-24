@@ -5,34 +5,34 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	featuredtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
 
 type DeleteAccount interface {
-	DeleteAccount(ctx context.Context, req *featuredtos.DeleteAccountRequest) error
+	DeleteAccount(ctx context.Context, req *featuresdtos.DeleteAccountRequest) error
 }
 
 func NewDeleteAccount(
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber,
+	getAccountWithHistoryRepository repositories.GetAccountWithHistory,
 	updateAccountByIDRepository repositories.UpdateAccountByID,
 ) DeleteAccount {
 	return &deleteAccountImpl{
-		getAccountWithHistoryByMobileNumberRepository: getAccountWithHistoryByMobileNumberRepository,
-		updateAccountByIDRepository:                   updateAccountByIDRepository,
+		getAccountWithHistoryRepository: getAccountWithHistoryRepository,
+		updateAccountByIDRepository:     updateAccountByIDRepository,
 	}
 }
 
 type deleteAccountImpl struct {
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber
-	updateAccountByIDRepository                   repositories.UpdateAccountByID
+	getAccountWithHistoryRepository repositories.GetAccountWithHistory
+	updateAccountByIDRepository     repositories.UpdateAccountByID
 }
 
-func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *featuredtos.DeleteAccountRequest) error {
+func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *featuresdtos.DeleteAccountRequest) error {
 	if req == nil {
 		return nil
 	}
-	account, err := handle.getAccountWithHistoryByMobileNumberRepository.GetAccountWithHistoryByMobileNumber(ctx, req.ID)
+	account, err := handle.getAccountWithHistoryRepository.GetAccountWithHistory(ctx, req.ID)
 	if err != nil {
 		return err
 	}

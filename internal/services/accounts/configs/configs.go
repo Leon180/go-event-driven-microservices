@@ -1,81 +1,86 @@
 package configs
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/configs"
+	customizeginconfigs "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/configs"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/reflect"
 	"github.com/gin-contrib/cors"
+	"github.com/samber/lo"
 )
 
 type App struct {
-	connWebPort string `mapstructure:"connWebPort"`
-	serviceName string `mapstructure:"serviceName"`
+	ConnWebPort string `mapstructure:"connWebPort"`
+	ServiceName string `mapstructure:"serviceName"`
+	Version     string `mapstructure:"version"`
 	// TokenSymmetricKey                          string        `mapstructure:"tokenSymmetricKey"`
 	// AccessTokenDuration                        time.Duration `mapstructure:"accessTokenDuration"`
 	// RefreshTokenDuration                       time.Duration `mapstructure:"refreshTokenDuration"`
 	// RefreshDuration                            time.Duration `mapstructure:"refreshDuration"`
-	maxAge           int               `mapstructure:"maxAge"`
-	allowAllOrigins  bool              `mapstructure:"allowAllOrigins"`
-	allowCredentials bool              `mapstructure:"allowCredentials"`
-	allowMethods     string            `mapstructure:"allowMethods"`
-	allowHeaders     string            `mapstructure:"allowHeaders"`
-	exposeHeaders    string            `mapstructure:"exposeHeaders"`
-	env              enums.Environment `mapstructure:"-"`
+	MaxAge           int               `mapstructure:"maxAge"`
+	AllowAllOrigins  bool              `mapstructure:"allowAllOrigins"`
+	AllowCredentials bool              `mapstructure:"allowCredentials"`
+	AllowMethods     string            `mapstructure:"allowMethods"`
+	AllowHeaders     string            `mapstructure:"allowHeaders"`
+	ExposeHeaders    string            `mapstructure:"exposeHeaders"`
+	Env              enums.Environment `mapstructure:"-"`
 }
 
 func (o *App) GetConnWebPort() string {
-	return o.connWebPort
+	return o.ConnWebPort
+}
+
+func (o *App) GetVersion() string {
+	return o.Version
 }
 
 func (o *App) GetServiceName() string {
-	return o.serviceName
+	return o.ServiceName
 }
 
-func (o *App) GetMaxAge() int {
-	return o.maxAge
-}
-
-func (o *App) GetAllowAllOrigins() bool {
-	return o.allowAllOrigins
-}
-
-func (o *App) GetAllowCredentials() bool {
-	return o.allowCredentials
-}
-
-func (o *App) GetAllowMethods() string {
-	return o.allowMethods
-}
-
-func (o *App) GetAllowHeaders() string {
-	return o.allowHeaders
-}
-
-func (o *App) GetExposeHeaders() string {
-	return o.exposeHeaders
+func (o *App) GetBasePath() string {
+	if o.Version == "" {
+		return o.ServiceName
+	}
+	return fmt.Sprintf("%s/%s", o.Version, o.ServiceName)
 }
 
 func (o *App) GetEnvironment() enums.Environment {
-	return o.env
+	return o.Env
 }
 
 func (o *App) GenerateCORSConfig() cors.Config {
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowAllOrigins = o.allowAllOrigins
-	corsConfig.AllowCredentials = o.allowCredentials
-	corsConfig.AllowMethods = strings.Split(o.allowMethods, ",")
-	corsConfig.AllowHeaders = strings.Split(o.allowHeaders, ",")
-	corsConfig.ExposeHeaders = strings.Split(o.exposeHeaders, ",")
+	corsConfig.AllowAllOrigins = o.AllowAllOrigins
+	corsConfig.AllowCredentials = o.AllowCredentials
+	allowMethods := strings.Split(o.AllowMethods, ",")
+	allowMethods = lo.Map(allowMethods, func(item string, _ int) string {
+		return strings.TrimSpace(item)
+	})
+	allowHeaders := strings.Split(o.AllowHeaders, ",")
+	allowHeaders = lo.Map(allowHeaders, func(item string, _ int) string {
+		return strings.TrimSpace(item)
+	})
+	exposeHeaders := strings.Split(o.ExposeHeaders, ",")
+	exposeHeaders = lo.Map(exposeHeaders, func(item string, _ int) string {
+		return strings.TrimSpace(item)
+	})
+	corsConfig.AllowMethods = allowMethods
+	corsConfig.AllowHeaders = allowHeaders
+	corsConfig.ExposeHeaders = exposeHeaders
+
 	return corsConfig
 }
 
-func NewAppConfig(env enums.Environment) (*App, error) {
-	app, err := configs.BindConfigByKey[App](reflect.GetTypeName[App](), env)
+func NewAppConfig(env enums.Environment) (customizeginconfigs.GinConfig, error) {
+	typeName := reflect.GetTypeName[App]()
+	app, err := configs.BindConfigByKey[App](typeName, env)
 	if err != nil {
 		return nil, err
 	}
-	app.env = env
+	app.Env = env
 	return &app, nil
 }

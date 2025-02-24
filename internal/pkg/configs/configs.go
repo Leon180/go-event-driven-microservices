@@ -12,7 +12,6 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/environments"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/reflect"
 	goenv "github.com/caarlos0/env/v8"
-	defaults "github.com/mcuadros/go-defaults"
 	"github.com/spf13/viper"
 )
 
@@ -24,11 +23,10 @@ func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) 
 	if !env.IsValid() {
 		env = enums.EnvironmentDevelopment
 	}
+
 	cfg := reflect.GetInstance[T]()
 
-	// this should set before reading config values from json file
-	// https://github.com/mcuadros/go-defaults
-	defaults.SetDefaults(cfg)
+	viper.SetDefault(enums.ConfigPath, "")
 
 	configPath := viper.GetString(enums.ConfigPath)
 	if configPath == "" {
@@ -51,28 +49,50 @@ func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) 
 	// https://github.com/spf13/viper/issues/390#issuecomment-718756752
 	viper.SetConfigName(fmt.Sprintf("config.%s", env))
 	viper.AddConfigPath(configPath)
-	viper.SetConfigType(enums.Json)
+	viper.SetConfigType(string(enums.Json))
 
 	if err := viper.ReadInConfig(); err != nil {
 		return *new(T), err
 	}
 
-	if configKey == "" {
-		if err := viper.Unmarshal(cfg); err != nil {
-			log.Printf("error unmarshal config: %v", err)
-			return *new(T), err
+	isPointer := reflect.IsPointer[T]()
+
+	if isPointer {
+		if configKey == "" {
+			if err := viper.Unmarshal(cfg); err != nil {
+				log.Printf("error unmarshal config: %v", err)
+				return *new(T), err
+			}
+		} else {
+			if err := viper.UnmarshalKey(configKey, cfg); err != nil {
+				log.Printf("error unmarshal config key: %v", err)
+				return *new(T), err
+			}
 		}
 	} else {
-		if err := viper.UnmarshalKey(configKey, cfg); err != nil {
-			log.Printf("error unmarshal config key: %v", err)
-			return *new(T), err
+		if configKey == "" {
+			if err := viper.Unmarshal(&cfg); err != nil {
+				log.Printf("error unmarshal config: %v", err)
+				return *new(T), err
+			}
+		} else {
+			if err := viper.UnmarshalKey(configKey, &cfg); err != nil {
+				log.Printf("error unmarshal config key: %v", err)
+				return *new(T), err
+			}
 		}
 	}
 
 	viper.AutomaticEnv()
 
-	if err := goenv.Parse(cfg); err != nil {
-		return *new(T), err
+	if isPointer {
+		if err := goenv.Parse(cfg); err != nil {
+			return *new(T), err
+		}
+	} else {
+		if err := goenv.Parse(&cfg); err != nil {
+			return *new(T), err
+		}
 	}
 
 	return cfg, nil

@@ -8,25 +8,26 @@ import (
 )
 
 type Logger struct {
-	logLevel      zapcore.Level `mapstructure:"logLevel"`
-	callerEnabled bool          `mapstructure:"callerEnabled"`
-	enableTracing bool          `mapstructure:"enableTracing" default:"true"`
+	LogLevel      zapcore.Level `mapstructure:"logLevel"`
+	CallerEnabled bool          `mapstructure:"callerEnabled"`
+	EnableTracing bool          `mapstructure:"enableTracing"`
 }
 
 func (o *Logger) GetLogLevel() zapcore.Level {
-	return o.logLevel
+	return o.LogLevel
 }
 
 func (o *Logger) GetCallerEnabled() bool {
-	return o.callerEnabled
+	return o.CallerEnabled
 }
 
 func (o *Logger) GetEnableTracing() bool {
-	return o.enableTracing
+	return o.EnableTracing
 }
 
 func NewLoggerConfig(env enums.Environment) (*Logger, error) {
-	logger, err := configs.BindConfigByKey[Logger](reflect.GetTypeName[Logger](), env)
+	typeName := reflect.GetTypeName[Logger]()
+	logger, err := configs.BindConfigByKey[Logger](typeName, env)
 	if err != nil {
 		return nil, err
 	}

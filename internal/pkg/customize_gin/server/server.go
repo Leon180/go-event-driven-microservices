@@ -2,6 +2,7 @@ package customizeginserver
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -14,9 +15,12 @@ import (
 	"github.com/gin-contrib/location"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type GinServer interface {
+	RegistSwagger(swaggerPath string)
 	RegistEndPoints(routerGroupName string, endpoints ...customizeginendpoints.Endpoint)
 	AddMiddlewares(middlewares ...customizeginmiddlewares.GinMiddleware)
 
@@ -55,6 +59,17 @@ type GinServerImpl struct {
 func (s *GinServerImpl) AddMiddlewares(middlewares ...customizeginmiddlewares.GinMiddleware) {
 	for _, middleware := range middlewares {
 		s.engine.Use(middleware.Handle())
+	}
+}
+
+func (s *GinServerImpl) RegistSwagger(swaggerPath string) {
+	// Disable compression for Swagger endpoints
+	noCompression := s.engine.Group(swaggerPath)
+	{
+		noCompression.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.URL(fmt.Sprintf("%s/doc.json", swaggerPath)), // The URL pointing to API definition
+			ginSwagger.DefaultModelsExpandDepth(-1),
+		))
 	}
 }
 

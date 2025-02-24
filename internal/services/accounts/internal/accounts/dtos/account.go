@@ -1,11 +1,16 @@
 package dtos
 
+import (
+	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+)
+
 type Account struct {
 	ID            string
 	MobileNumber  string
-	AccountNumber int64
-	AccountType   string
-	BranchAddress string
+	AccountNumber string
+	AccountType   enumsaccounts.AccountType
+	Branch        enumsbanks.BanksBranch
 	ActiveSwitch  bool
 }
 
@@ -29,9 +34,9 @@ type AccountsWithHistory []AccountWithHistory
 type UpdateAccount struct {
 	ID            string
 	MobileNumber  string
-	AccountNumber *int64
-	AccountType   *string
-	BranchAddress *string
+	AccountNumber *string
+	AccountType   *enumsaccounts.AccountType
+	BranchAddress *enumsbanks.BanksBranch
 	ActiveSwitch  *bool
 }
 
@@ -41,10 +46,12 @@ func (u *UpdateAccount) ToUpdateMap() map[string]interface{} {
 		updateMap["account_number"] = *u.AccountNumber
 	}
 	if u.AccountType != nil {
-		updateMap["account_type"] = *u.AccountType
+		accountTypeCode := u.AccountType.ToAccountTypeCode()
+		updateMap["account_type"] = accountTypeCode
 	}
 	if u.BranchAddress != nil {
-		updateMap["branch_address"] = *u.BranchAddress
+		branchCode := u.BranchAddress.ToBanksBranchCode()
+		updateMap["branch_address"] = branchCode
 	}
 	if u.ActiveSwitch != nil {
 		updateMap["active_switch"] = *u.ActiveSwitch

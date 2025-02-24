@@ -33,8 +33,8 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, account dtos
 		ID:            account.ID,
 		MobileNumber:  account.MobileNumber,
 		AccountNumber: account.AccountNumber,
-		AccountType:   account.AccountType,
-		BranchAddress: account.BranchAddress,
+		AccountType:   account.AccountType.ToAccountTypeCode(),
+		Branch:        account.Branch.ToBanksBranchCode(),
 		ActiveSwitch:  account.ActiveSwitch,
 		CommonHistoryModelWithUpdate: postgresdbmodels.CommonHistoryModelWithUpdate{
 			CommonHistoryModel: postgresdbmodels.CommonHistoryModel{
@@ -69,6 +69,34 @@ func (handle *getAccountWithHistoryByMobileNumberImpl) GetAccountWithHistoryByMo
 	var dbmodel postgresdbmodels.Account
 	if err := handle.db.WithContext(ctx).Where("mobile_number = ?", mobileNumber).Limit(1).Find(&dbmodel).Error; err != nil {
 		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error getting account with history by mobile number")
+		return nil, err
+	}
+	if dbmodel.ID == "" {
+		return nil, nil
+	}
+	entity := dbmodel.ToDTOsWithHistory()
+	return &entity, nil
+}
+
+type getAccountWithHistoryImpl struct {
+	db            *gorm.DB
+	contextLogger contextloggers.ContextLogger
+}
+
+func NewGetAccountWithHistory(
+	db *gorm.DB,
+	contextLogger contextloggers.ContextLogger,
+) repositories.GetAccountWithHistory {
+	return &getAccountWithHistoryImpl{
+		db:            db,
+		contextLogger: contextLogger,
+	}
+}
+
+func (handle *getAccountWithHistoryImpl) GetAccountWithHistory(ctx context.Context, id string) (*dtos.AccountWithHistory, error) {
+	var dbmodel postgresdbmodels.Account
+	if err := handle.db.WithContext(ctx).Where("id = ?", id).Limit(1).Find(&dbmodel).Error; err != nil {
+		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error getting account with history")
 		return nil, err
 	}
 	if dbmodel.ID == "" {

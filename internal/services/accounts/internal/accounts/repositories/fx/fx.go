@@ -9,6 +9,7 @@ import (
 // It provides the repositories:
 // - repositories.CreateAccount
 // - repositories.GetAccountWithHistoryByMobileNumber
+// - repositories.GetAccountWithHistory
 // - repositories.UpdateAccountByID
 // - repositories.DeleteAccountByID
 // dependencies:
@@ -19,6 +20,7 @@ var ProvideModule = fx.Module(
 	fx.Provide(
 		repositoriespostgres.NewCreateAccount,
 		repositoriespostgres.NewGetAccountWithHistoryByMobileNumber,
+		repositoriespostgres.NewGetAccountWithHistory,
 		repositoriespostgres.NewUpdateAccountByID,
 		repositoriespostgres.NewDeleteAccountByID,
 	),

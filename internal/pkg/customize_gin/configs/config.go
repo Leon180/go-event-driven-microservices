@@ -9,5 +9,7 @@ type GinConfig interface {
 	GetConnWebPort() string
 	GenerateCORSConfig() cors.Config
 	GetServiceName() string
+	GetVersion() string
+	GetBasePath() string
 	GetEnvironment() enums.Environment
 }

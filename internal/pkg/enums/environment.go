@@ -46,4 +46,5 @@ const (
 	ProjectNameEnv = "PROJECT_NAME"
 	ConfigPath     = "CONFIG_PATH"
 	Json           = "json"
+	Yaml           = "yaml"
 )

@@ -21,10 +21,12 @@ var ProvideModule = fx.Module(
 		zaplogger.NewZapLogger,
 		fx.Annotate(
 			zaplogger.NewZapLogger,
-			fx.As(new(loggers.Logger))),
+			fx.As(new(loggers.Logger)),
+		),
 		gormlogger.NewGormCustomLogger,
 		fx.Annotate(
 			gormlogger.NewGormCustomLogger,
-			fx.As(new(gormiologger.Interface))),
+			fx.As(new(gormiologger.Interface)),
+		),
 	),
 )

@@ -43,14 +43,14 @@ type fxAppImpl struct {
 
 func (a *fxAppImpl) Run() {
 	if a.fxapp == nil {
-		a.fxapp = createFxApp(a.options, a.logger, a.env)
+		a.fxapp = createFxApp(a.options, a.logger)
 	}
 	a.fxapp.Run()
 }
 
 func (a *fxAppImpl) Start(ctx context.Context) error {
 	if a.fxapp == nil {
-		a.fxapp = createFxApp(a.options, a.logger, a.env)
+		a.fxapp = createFxApp(a.options, a.logger)
 	}
 	return a.fxapp.Start(ctx)
 }
@@ -88,13 +88,10 @@ func (a *fxAppImpl) GetEnvironment() enums.Environment {
 func createFxApp(
 	options []fx.Option,
 	logger loggers.Logger,
-	env enums.Environment,
 ) *fx.App {
 	return fx.New(
-		fx.Supply(env),
-		fx.Supply(logger),
-		fx.StartTimeout(30*time.Second),
 		fxlogger.FxLogger,
+		fx.StartTimeout(30*time.Second),
 		fx.ErrorHook(newFxErrorHandler(logger)),
 		fx.Module("fxapp",
 			options...,
