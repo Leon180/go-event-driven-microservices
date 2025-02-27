@@ -17,6 +17,9 @@ var (
 	// fxapp
 	FxAppNotInitializedError = newErrorFromErrorCode(FxAppNotInitialized)
 
+	// common
+	IDInvalidError = newErrorFromErrorCode(IDInvalid)
+
 	// Account
 	AccountAlreadyExistsError = newErrorFromErrorCode(AccountAlreadyExists)
 	AccountNotFoundError      = newErrorFromErrorCode(AccountNotFound)
@@ -48,6 +51,9 @@ const (
 	// fxapp
 	FxAppNotInitialized ErrorCode = 20001
 
+	// common
+	IDInvalid ErrorCode = 21001
+
 	// Account
 	AccountAlreadyExists ErrorCode = 30001
 	AccountNotFound      ErrorCode = 30002
@@ -69,6 +75,9 @@ var errorCodeMessageMap = map[ErrorCode]string{
 
 	// fxapp
 	FxAppNotInitialized: "fxapp is not initialized",
+
+	// common
+	IDInvalid: "id is invalid",
 
 	// Account
 	AccountAlreadyExists: "account already exists",
