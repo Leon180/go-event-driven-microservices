@@ -50,6 +50,13 @@ definitions:
     required:
     - mobile_number
     type: object
+  ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest
+  : properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
   ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest
   : properties:
       account_number:
@@ -110,6 +117,26 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
       summary: Delete an account
+      tags:
+      - accounts
+  /account/restore:
+    post:
+      description: Restore an account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account restored successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Restore an account
       tags:
       - accounts
   /account/update:

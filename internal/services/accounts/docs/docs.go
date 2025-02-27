@@ -80,6 +80,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/account/restore": {
+            "post": {
+                "description": "Restore an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Restore an account",
+                "parameters": [
+                    {
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account restored successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/account/update": {
             "put": {
                 "description": "Update an account",
@@ -216,6 +247,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "mobile_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
                     "type": "string"
                 }
             }

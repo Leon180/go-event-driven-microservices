@@ -11,6 +11,8 @@ import (
 	deleteAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/services"
 	getAccountsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/gin_endpoints"
 	getAccountsServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/services"
+	restoreAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/restore_account/gin_endpoints"
+	restoreAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/restore_account/services"
 	updateAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/gin_endpoints"
 	updateAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/services"
 	"github.com/samber/lo"
@@ -43,6 +45,7 @@ var ProvideModule = fx.Module(
 		getAccountsServices.NewGetAccountsByMobileNumber,
 		updateAccountServices.NewUpdateAccount,
 		deleteAccountServices.NewDeleteAccount,
+		restoreAccountServices.NewRestoreAccount,
 	),
 
 	// endpoints
@@ -52,6 +55,7 @@ var ProvideModule = fx.Module(
 			getAccountsGinEndpoints.NewGetAccountsByMobileNumber,
 			updateAccountGinEndpoints.NewUpdateAccount,
 			deleteAccountGinEndpoints.NewDeleteAccount,
+			restoreAccountGinEndpoints.NewRestoreAccount,
 		)...,
 	),
 )
