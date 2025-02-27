@@ -14,25 +14,25 @@ type DeleteAccount interface {
 }
 
 func NewDeleteAccount(
-	getAccountWithHistoryRepository repositories.GetAccountWithHistory,
+	readAccountWithHistoryRepository repositories.ReadAccountWithHistory,
 	updateAccountByIDRepository repositories.UpdateAccountByID,
 ) DeleteAccount {
 	return &deleteAccountImpl{
-		getAccountWithHistoryRepository: getAccountWithHistoryRepository,
-		updateAccountByIDRepository:     updateAccountByIDRepository,
+		readAccountWithHistoryRepository: readAccountWithHistoryRepository,
+		updateAccountByIDRepository:      updateAccountByIDRepository,
 	}
 }
 
 type deleteAccountImpl struct {
-	getAccountWithHistoryRepository repositories.GetAccountWithHistory
-	updateAccountByIDRepository     repositories.UpdateAccountByID
+	readAccountWithHistoryRepository repositories.ReadAccountWithHistory
+	updateAccountByIDRepository      repositories.UpdateAccountByID
 }
 
 func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *featuresdtos.DeleteAccountRequest) error {
 	if req == nil {
 		return nil
 	}
-	account, err := handle.getAccountWithHistoryRepository.GetAccountWithHistory(ctx, req.ID)
+	account, err := handle.readAccountWithHistoryRepository.ReadAccountWithHistory(ctx, req.ID)
 	if err != nil {
 		return err
 	}

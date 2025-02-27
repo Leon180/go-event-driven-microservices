@@ -1,4 +1,4 @@
-package gincontrollers
+package ginendpoints
 
 import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
@@ -22,7 +22,7 @@ func NewUpdateAccount(
 }
 
 func (endpoint *updateAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
-	routerGroup.PUT("/account/:mobile_number", endpoint.Handle)
+	routerGroup.PUT("/account/:id", endpoint.Handle)
 }
 
 // @Summary Update an account
@@ -30,22 +30,24 @@ func (endpoint *updateAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
 // @Tags accounts
 // @Accept json
 // @Produce json
-// @Param mobile_number path string true "Mobile Number"
+// @Param id path string true "ID"
 // @Param account body featuresdtos.UpdateAccountRequest true "Account"
 // @Success 200 {object} customizeginresponse.JSONResponse "account updated successfully"
-// @Router /account/{mobile_number} [put]
+// @Router /account/{id} [put]
 func (endpoint *updateAccountImpl) Handle(c *gin.Context) {
 	var updateAccountRequest featuresdtos.UpdateAccountRequest
 	if err := c.ShouldBindJSON(&updateAccountRequest); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}
-	updateAccountRequest.MobileNumber = c.Param("mobile_number")
-	if updateAccountRequest.MobileNumber == "" {
+
+	id := c.Param("id")
+	if id == "" {
 		customizeginresponse.ResponseError(c, nil, "", customizeerrors.HTTPBadRequestError)
 		return
 	}
-	if err := endpoint.updateAccountService.UpdateAccount(c.Request.Context(), &updateAccountRequest); err != nil {
+
+	if err := endpoint.updateAccountService.UpdateAccount(c.Request.Context(), id, &updateAccountRequest); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}

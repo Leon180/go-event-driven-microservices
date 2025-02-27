@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
@@ -14,32 +13,32 @@ import (
 )
 
 type UpdateAccount interface {
-	UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error
+	UpdateAccount(ctx context.Context, id string, req *featuresdtos.UpdateAccountRequest) error
 }
 
 type updateAccountImpl struct {
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber
-	updateAccountByIDRepository                   repositories.UpdateAccountByID
+	readAccountWithHistory      repositories.ReadAccountWithHistory
+	updateAccountByIDRepository repositories.UpdateAccountByID
 }
 
 func NewUpdateAccount(
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber,
+	readAccountWithHistory repositories.ReadAccountWithHistory,
 	updateAccountByIDRepository repositories.UpdateAccountByID,
 ) UpdateAccount {
 	return &updateAccountImpl{
-		getAccountWithHistoryByMobileNumberRepository: getAccountWithHistoryByMobileNumberRepository,
-		updateAccountByIDRepository:                   updateAccountByIDRepository,
+		readAccountWithHistory:      readAccountWithHistory,
+		updateAccountByIDRepository: updateAccountByIDRepository,
 	}
 }
 
-func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error {
+func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, id string, req *featuresdtos.UpdateAccountRequest) error {
 	if req == nil {
 		return nil
 	}
 	if err := validates.ValidateUpdateAccountRequest(*req); err != nil {
 		return err
 	}
-	account, err := handle.getAccountWithHistoryByMobileNumberRepository.GetAccountWithHistoryByMobileNumber(ctx, req.MobileNumber)
+	account, err := handle.readAccountWithHistory.ReadAccountWithHistory(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -50,21 +49,17 @@ func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *feature
 		ID:            account.ID,
 		MobileNumber:  req.MobileNumber,
 		AccountNumber: req.AccountNumber,
-		AccountType: func() *enumsaccounts.AccountType {
-			if req.AccountType != nil {
-				accountType := enumsaccounts.AccountType(strings.ToLower(*req.AccountType))
-				return &accountType
-			}
-			return nil
-		}(),
-		BranchAddress: func() *enumsbanks.BanksBranch {
+		BranchCode: func() *enumsbanks.BanksBranchCode {
 			if req.BranchAddress != nil {
-				branchAddress := enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress))
-				return &branchAddress
+				branchCode := enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress)).ToBanksBranchCode()
+				return &branchCode
 			}
 			return nil
 		}(),
-		ActiveSwitch: req.ActiveSwitch,
+	}
+	updateAccount.RemoveUnchangedFields(account.Account)
+	if updateAccount.NoUpdates() {
+		return customizeerrors.AccountNoUpdatesError
 	}
 	return handle.updateAccountByIDRepository.UpdateAccountByID(ctx, updateAccount)
 }

@@ -12,6 +12,16 @@ import (
 	"github.com/samber/lo"
 )
 
+func NewAppConfig(env enums.Environment) (customizeginconfigs.GinConfig, error) {
+	typeName := reflect.GetTypeName[App]()
+	app, err := configs.BindConfigByKey[App](typeName, env)
+	if err != nil {
+		return nil, err
+	}
+	app.Env = env
+	return &app, nil
+}
+
 type App struct {
 	ConnWebPort string `mapstructure:"connWebPort"`
 	ServiceName string `mapstructure:"serviceName"`
@@ -73,14 +83,4 @@ func (o *App) GenerateCORSConfig() cors.Config {
 	corsConfig.ExposeHeaders = exposeHeaders
 
 	return corsConfig
-}
-
-func NewAppConfig(env enums.Environment) (customizeginconfigs.GinConfig, error) {
-	typeName := reflect.GetTypeName[App]()
-	app, err := configs.BindConfigByKey[App](typeName, env)
-	if err != nil {
-		return nil, err
-	}
-	app.Env = env
-	return &app, nil
 }

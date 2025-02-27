@@ -20,24 +20,24 @@ type CreateAccount interface {
 }
 
 func NewCreateAccount(
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber,
+	readAccountsWithHistoryByMobileNumberRepository repositories.ReadAccountsWithHistoryByMobileNumber,
 	createAccountRepository repositories.CreateAccount,
 	uuidGenerator uuid.UUIDGenerator,
 	accountNumberGenerator accountnumberutilities.AccountNumberGenerator,
 ) CreateAccount {
 	return &createAccountImpl{
-		getAccountWithHistoryByMobileNumberRepository: getAccountWithHistoryByMobileNumberRepository,
-		createAccountRepository:                       createAccountRepository,
-		uuidGenerator:                                 uuidGenerator,
-		accountNumberGenerator:                        accountNumberGenerator,
+		readAccountsWithHistoryByMobileNumberRepository: readAccountsWithHistoryByMobileNumberRepository,
+		createAccountRepository:                         createAccountRepository,
+		uuidGenerator:                                   uuidGenerator,
+		accountNumberGenerator:                          accountNumberGenerator,
 	}
 }
 
 type createAccountImpl struct {
-	getAccountWithHistoryByMobileNumberRepository repositories.GetAccountWithHistoryByMobileNumber
-	createAccountRepository                       repositories.CreateAccount
-	uuidGenerator                                 uuid.UUIDGenerator
-	accountNumberGenerator                        accountnumberutilities.AccountNumberGenerator
+	readAccountsWithHistoryByMobileNumberRepository repositories.ReadAccountsWithHistoryByMobileNumber
+	createAccountRepository                         repositories.CreateAccount
+	uuidGenerator                                   uuid.UUIDGenerator
+	accountNumberGenerator                          accountnumberutilities.AccountNumberGenerator
 }
 
 func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *featuresdtos.CreateAccountRequest) error {
@@ -47,20 +47,20 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *feature
 	if err := validates.ValidateCreateAccountRequest(req); err != nil {
 		return err
 	}
-	account, err := handle.getAccountWithHistoryByMobileNumberRepository.GetAccountWithHistoryByMobileNumber(ctx, req.MobileNumber)
+	accountDTO := dtos.Account{
+		ID:              handle.uuidGenerator.GenerateUUID(),
+		MobileNumber:    req.MobileNumber,
+		AccountNumber:   handle.accountNumberGenerator.GenerateAccountNumber(),
+		AccountTypeCode: enumsaccounts.AccountType(strings.ToLower(req.AccountType)).ToAccountTypeCode(),
+		BranchCode:      enumsbanks.BanksBranch(strings.ToLower(req.Branch)).ToBanksBranchCode(),
+		ActiveSwitch:    true,
+	}
+	accounts, err := handle.readAccountsWithHistoryByMobileNumberRepository.ReadAccountsWithHistoryByMobileNumber(ctx, req.MobileNumber)
 	if err != nil {
 		return err
 	}
-	if account != nil {
+	if dtos.AccountsWithHistory(accounts).IncludeAccountTypeCode(req.MobileNumber, accountDTO.AccountTypeCode) {
 		return customizeerrors.AccountAlreadyExistsError
-	}
-	accountDTO := dtos.Account{
-		ID:            handle.uuidGenerator.GenerateUUID(),
-		MobileNumber:  req.MobileNumber,
-		AccountNumber: handle.accountNumberGenerator.GenerateAccountNumber(),
-		AccountType:   enumsaccounts.AccountType(strings.ToLower(req.AccountType)),
-		Branch:        enumsbanks.BanksBranch(strings.ToLower(req.Branch)),
-		ActiveSwitch:  true,
 	}
 	return handle.createAccountRepository.CreateAccount(ctx, accountDTO)
 }

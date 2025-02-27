@@ -7,14 +7,14 @@ import (
 )
 
 type CommonHistoryModelWithUpdate struct {
-	CommonHistoryModel
-	UpdatedAt time.Time
-	UpdatedBy string
+	CommonHistoryModel `json:"common_history"`
+	UpdatedAt          time.Time `json:"updated_at"`
+	UpdatedBy          string    `json:"updated_by"`
 }
 
 type CommonHistoryModel struct {
-	CreatedAt time.Time
-	CreatedBy string
-	DeletedAt gorm.DeletedAt
-	DeletedBy string
+	CreatedAt time.Time      `json:"created_at"`
+	CreatedBy string         `json:"created_by"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
+	DeletedBy string         `json:"deleted_by"`
 }

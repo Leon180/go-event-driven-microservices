@@ -7,23 +7,23 @@ import (
 )
 
 type Account struct {
-	ID            string                        `gorm:"primaryKey;type:uuid" comment:"ID"`
-	MobileNumber  string                        `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
-	AccountNumber string                        `gorm:"not null;type:varchar(20)" comment:"Account Number"`
-	AccountType   enumsaccounts.AccountTypeCode `gorm:"not null;type:int" comment:"Account Type"`
-	Branch        enumsbanks.BanksBranchCode    `gorm:"not null;type:int" comment:"Branch"`
-	ActiveSwitch  bool                          `gorm:"not null;type:boolean" comment:"Active Switch"`
+	ID              string                        `gorm:"primaryKey;type:uuid" comment:"ID"`
+	MobileNumber    string                        `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
+	AccountNumber   string                        `gorm:"not null;type:varchar(20)" comment:"Account Number"`
+	AccountTypeCode enumsaccounts.AccountTypeCode `gorm:"not null;type:int" comment:"Account Type Code"`
+	BranchCode      enumsbanks.BanksBranchCode    `gorm:"not null;type:int" comment:"Branch Code"`
+	ActiveSwitch    bool                          `gorm:"not null;type:boolean" comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 
 func (a *Account) ToDTOs() dtos.Account {
 	return dtos.Account{
-		ID:            a.ID,
-		MobileNumber:  a.MobileNumber,
-		AccountNumber: a.AccountNumber,
-		AccountType:   a.AccountType.ToAccountType(),
-		Branch:        a.Branch.ToBanksBranch(),
-		ActiveSwitch:  a.ActiveSwitch,
+		ID:              a.ID,
+		MobileNumber:    a.MobileNumber,
+		AccountNumber:   a.AccountNumber,
+		AccountTypeCode: a.AccountTypeCode,
+		BranchCode:      a.BranchCode,
+		ActiveSwitch:    a.ActiveSwitch,
 	}
 }
 

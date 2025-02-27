@@ -15,10 +15,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+// BindConfig will bind config file with specific env to struct T
+// the config file name should be config.[env].json
 func BindConfig[T any](env enums.Environment) (T, error) {
 	return BindConfigByKey[T]("", env)
 }
 
+// BindConfigByKey will bind specific config with key: configKey in config file with specific env to struct T
+// the config file name should be config.[env].json
+// the configKey is the key of the config in the config file
 func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) {
 	if !env.IsValid() {
 		env = enums.EnvironmentDevelopment

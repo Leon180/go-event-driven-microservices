@@ -15,6 +15,7 @@ var (
 	// Account
 	AccountAlreadyExistsError = newErrorFromErrorCode(AccountAlreadyExists)
 	AccountNotFoundError      = newErrorFromErrorCode(AccountNotFound)
+	AccountNoUpdatesError     = newErrorFromErrorCode(AccountNoUpdates)
 )
 
 type ErrorCode int
@@ -27,6 +28,7 @@ const (
 	// Account
 	AccountAlreadyExists ErrorCode = 1001
 	AccountNotFound      ErrorCode = 1002
+	AccountNoUpdates     ErrorCode = 1003
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -37,6 +39,7 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	// Account
 	AccountAlreadyExists: "account already exists",
 	AccountNotFound:      "account not found",
+	AccountNoUpdates:     "account no updates",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -47,6 +50,7 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	// Account
 	AccountAlreadyExists: http.StatusConflict,
 	AccountNotFound:      http.StatusNotFound,
+	AccountNoUpdates:     http.StatusOK,
 }
 
 func (e ErrorCode) GetCode() int {

@@ -3,10 +3,12 @@ package enumsaccounts
 type AccountType string
 
 const (
-	AccountTypeInvalid AccountType = "invalid"
-	AccountTypeSavings AccountType = "saving"
-	AccountTypeCurrent AccountType = "current"
-	AccountTypeSalary  AccountType = "salary"
+	AccountTypeInvalid  AccountType = "invalid"
+	AccountTypeChecking AccountType = "checking"
+	AccountTypeSavings  AccountType = "savings"
+	AccountTypeCurrency AccountType = "currency"
+	AccountTypeSalary   AccountType = "salary"
+	AccountTypeBusiness AccountType = "business"
 )
 
 func (a AccountType) IsValid() bool {
@@ -15,9 +17,11 @@ func (a AccountType) IsValid() bool {
 }
 
 var AccountTypActiveMap = map[AccountType]bool{
-	AccountTypeSavings: true,
-	AccountTypeCurrent: true,
-	AccountTypeSalary:  true,
+	AccountTypeSavings:  true,
+	AccountTypeChecking: true,
+	AccountTypeCurrency: true,
+	AccountTypeSalary:   true,
+	AccountTypeBusiness: true,
 }
 
 func (a AccountType) ToAccountTypeCode() AccountTypeCode {
@@ -29,9 +33,11 @@ func (a AccountType) ToAccountTypeCode() AccountTypeCode {
 }
 
 var AccountTypeToCodeMap = map[AccountType]AccountTypeCode{
-	AccountTypeSavings: AccountTypeCodeSavings,
-	AccountTypeCurrent: AccountTypeCodeCurrent,
-	AccountTypeSalary:  AccountTypeCodeSalary,
+	AccountTypeSavings:  AccountTypeCodeSavings,
+	AccountTypeChecking: AccountTypeCodeChecking,
+	AccountTypeCurrency: AccountTypeCodeCurrency,
+	AccountTypeSalary:   AccountTypeCodeSalary,
+	AccountTypeBusiness: AccountTypeCodeBusiness,
 }
 
 type AccountTypeCode int
@@ -39,8 +45,10 @@ type AccountTypeCode int
 const (
 	AccountTypeCodeInvalid AccountTypeCode = iota - 1
 	AccountTypeCodeSavings
-	AccountTypeCodeCurrent
+	AccountTypeCodeChecking
+	AccountTypeCodeCurrency
 	AccountTypeCodeSalary
+	AccountTypeCodeBusiness
 )
 
 func (a AccountTypeCode) ToAccountType() AccountType {
@@ -52,7 +60,9 @@ func (a AccountTypeCode) ToAccountType() AccountType {
 }
 
 var AccountTypeCodeToAccountTypeMap = map[AccountTypeCode]AccountType{
-	AccountTypeCodeSavings: AccountTypeSavings,
-	AccountTypeCodeCurrent: AccountTypeCurrent,
-	AccountTypeCodeSalary:  AccountTypeSalary,
+	AccountTypeCodeSavings:  AccountTypeSavings,
+	AccountTypeCodeChecking: AccountTypeChecking,
+	AccountTypeCodeCurrency: AccountTypeCurrency,
+	AccountTypeCodeSalary:   AccountTypeSalary,
+	AccountTypeCodeBusiness: AccountTypeBusiness,
 }

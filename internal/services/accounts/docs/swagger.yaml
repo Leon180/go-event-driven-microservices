@@ -40,11 +40,9 @@ definitions:
   : properties:
       account_number:
         type: string
-      account_type:
-        type: string
-      active_switch:
-        type: boolean
       branch_address:
+        type: string
+      mobile_number:
         type: string
     type: object
 host: localhost:7001
@@ -95,33 +93,14 @@ paths:
       summary: Delete an account
       tags:
       - accounts
-  /account/{mobile_number}:
-    get:
-      description: Get an account
-      parameters:
-      - description: Mobile Number
-        in: path
-        name: mobile_number
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: account retrieved successfully
-          schema:
-            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
-      summary: Get an account
-      tags:
-      - accounts
     put:
       consumes:
       - application/json
       description: Update an account
       parameters:
-      - description: Mobile Number
+      - description: ID
         in: path
-        name: mobile_number
+        name: id
         required: true
         type: string
       - description: Account
@@ -138,6 +117,25 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
       summary: Update an account
+      tags:
+      - accounts
+  /accounts/{mobile_number}:
+    get:
+      description: Get accounts by mobile number
+      parameters:
+      - description: Mobile Number
+        in: path
+        name: mobile_number
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: accounts retrieved successfully
+          schema:
+            $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse'
+      summary: Get accounts by mobile number
       tags:
       - accounts
 swagger: "2.0"

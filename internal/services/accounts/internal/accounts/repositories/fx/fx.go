@@ -8,6 +8,7 @@ import (
 // ProvideModule is the module for the repositories
 // It provides the repositories:
 // - repositories.CreateAccount
+// - repositories.CreateAccounts
 // - repositories.GetAccountWithHistoryByMobileNumber
 // - repositories.GetAccountWithHistory
 // - repositories.UpdateAccountByID
@@ -19,8 +20,10 @@ var ProvideModule = fx.Module(
 	"accountsRepositoriesProvideFx",
 	fx.Provide(
 		repositoriespostgres.NewCreateAccount,
-		repositoriespostgres.NewGetAccountWithHistoryByMobileNumber,
-		repositoriespostgres.NewGetAccountWithHistory,
+		repositoriespostgres.NewCreateAccounts,
+		repositoriespostgres.NewReadAccountsWithHistoryByMobileNumber,
+		repositoriespostgres.NewReadAccountWithHistoryByMobileNumberAndAccountType,
+		repositoriespostgres.NewReadAccountWithHistory,
 		repositoriespostgres.NewUpdateAccountByID,
 		repositoriespostgres.NewDeleteAccountByID,
 	),

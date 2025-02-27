@@ -50,6 +50,45 @@ const docTemplate = `{
             }
         },
         "/account/{id}": {
+            "put": {
+                "description": "Update an account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete an account",
                 "produces": [
@@ -78,16 +117,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/account/{mobile_number}": {
+        "/accounts/{mobile_number}": {
             "get": {
-                "description": "Get an account",
+                "description": "Get accounts by mobile number",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "accounts"
                 ],
-                "summary": "Get an account",
+                "summary": "Get accounts by mobile number",
                 "parameters": [
                     {
                         "type": "string",
@@ -99,46 +138,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "account retrieved successfully",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update an account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "accounts"
-                ],
-                "summary": "Update an account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Mobile Number",
-                        "name": "mobile_number",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Account",
-                        "name": "account",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "account updated successfully",
+                        "description": "accounts retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
                         }
@@ -205,13 +205,10 @@ const docTemplate = `{
                 "account_number": {
                     "type": "string"
                 },
-                "account_type": {
+                "branch_address": {
                     "type": "string"
                 },
-                "active_switch": {
-                    "type": "boolean"
-                },
-                "branch_address": {
+                "mobile_number": {
                     "type": "string"
                 }
             }

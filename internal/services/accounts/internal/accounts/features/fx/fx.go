@@ -1,15 +1,19 @@
 package featuresfx
 
 import (
+	"fmt"
+
 	customizeginendpoints "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/endpoints"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	createAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/gin_endpoints"
 	createAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/services"
 	deleteAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/gin_endpoints"
 	deleteAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/services"
-	getAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_account/gin_endpoints"
-	getAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_account/services"
+	getAccountsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/gin_endpoints"
+	getAccountsServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/services"
 	updateAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/gin_endpoints"
 	updateAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/services"
+	"github.com/samber/lo"
 	"go.uber.org/fx"
 )
 
@@ -36,24 +40,36 @@ var ProvideModule = fx.Module(
 	// services
 	fx.Provide(
 		createAccountServices.NewCreateAccount,
-		getAccountServices.NewGetAccount,
+		getAccountsServices.NewGetAccountsByMobileNumber,
 		updateAccountServices.NewUpdateAccount,
 		deleteAccountServices.NewDeleteAccount,
 	),
 
 	// endpoints
 	fx.Provide(
-		customizeginendpoints.FxTagEndpoint(
+		fxTagEndpoints(
 			createAccountGinEndpoints.NewCreateAccount,
-		),
-		customizeginendpoints.FxTagEndpoint(
-			getAccountGinEndpoints.NewGetAccount,
-		),
-		customizeginendpoints.FxTagEndpoint(
+			getAccountsGinEndpoints.NewGetAccountsByMobileNumber,
 			updateAccountGinEndpoints.NewUpdateAccount,
-		),
-		customizeginendpoints.FxTagEndpoint(
 			deleteAccountGinEndpoints.NewDeleteAccount,
-		),
+		)...,
 	),
 )
+
+// fxTagEndpoints will tag the endpoints with the group: endpoints for usage of the fx framework
+// the group is used to register the endpoint to the router in the gin server
+func fxTagEndpoints(handlers ...any) []any {
+	return lo.Map(handlers, func(handler any, _ int) any {
+		return fxTagEndpoint(handler)
+	})
+}
+
+// fxTagEndpoint will tag the endpoint with the group: endpoints for usage of the fx framework
+// the group is used to register the endpoint to the router in the gin server
+func fxTagEndpoint(handler any) any {
+	return fx.Annotate(
+		handler,
+		fx.As(new(customizeginendpoints.Endpoint)),
+		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupEndpoints.ToString())),
+	)
+}

@@ -1,4 +1,4 @@
-package gincontrollers
+package ginendpoints
 
 import (
 	customizeginresponse "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/response"
