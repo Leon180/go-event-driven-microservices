@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest"
+                            "$ref": "#/definitions/featuresdtos.CreateAccountRequest"
                         }
                     }
                 ],
@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Account created successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
                         }
                     }
                 }
@@ -66,7 +66,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest"
+                            "$ref": "#/definitions/featuresdtos.DeleteAccountRequest"
                         }
                     }
                 ],
@@ -74,7 +74,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account deleted successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
                         }
                     }
                 }
@@ -97,7 +97,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest"
+                            "$ref": "#/definitions/featuresdtos.RestoreAccountRequest"
                         }
                     }
                 ],
@@ -105,7 +105,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account restored successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
                         }
                     }
                 }
@@ -131,7 +131,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest"
+                            "$ref": "#/definitions/featuresdtos.UpdateAccountRequest"
                         }
                     }
                 ],
@@ -139,7 +139,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
                         }
                     }
                 }
@@ -162,7 +162,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest"
+                            "$ref": "#/definitions/featuresdtos.GetAccountsByMobileNumberRequest"
                         }
                     }
                 ],
@@ -170,7 +170,7 @@ const docTemplate = `{
                     "200": {
                         "description": "accounts retrieved successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
                         }
                     }
                 }
@@ -178,7 +178,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError": {
+        "customizeginresponse.APIError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -192,12 +192,12 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse": {
+        "customizeginresponse.JSONResponse": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
-                    "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.APIError"
+                    "$ref": "#/definitions/customizeginresponse.APIError"
                 },
                 "message": {
                     "type": "string"
@@ -207,7 +207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest": {
+        "featuresdtos.CreateAccountRequest": {
             "type": "object",
             "required": [
                 "account_type",
@@ -229,7 +229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest": {
+        "featuresdtos.DeleteAccountRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -240,7 +240,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest": {
+        "featuresdtos.GetAccountsByMobileNumberRequest": {
             "type": "object",
             "required": [
                 "mobile_number"
@@ -251,7 +251,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_restore_account_dtos.RestoreAccountRequest": {
+        "featuresdtos.RestoreAccountRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -262,7 +262,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest": {
+        "featuresdtos.UpdateAccountRequest": {
             "type": "object",
             "required": [
                 "id"
