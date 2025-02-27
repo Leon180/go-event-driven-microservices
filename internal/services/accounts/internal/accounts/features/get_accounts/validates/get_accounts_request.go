@@ -1,8 +1,6 @@
 package validates
 
 import (
-	"net/http"
-
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/dtos"
@@ -10,9 +8,9 @@ import (
 
 func ValidateGetAccountsByMobileNumberRequest(req featuresdtos.GetAccountsByMobileNumberRequest) error {
 	if req.MobileNumber == "" {
-		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "Mobile number is required")
+		return customizeerrors.AccountInvalidMobileNumberError
 	} else if !enums.MobileNumberFormat.ValidateFormat(req.MobileNumber) {
-		return customizeerrors.NewError(http.StatusBadRequest, int(customizeerrors.HTTPBadRequest), "Mobile number is invalid")
+		return customizeerrors.AccountInvalidMobileNumberError
 	}
 	return nil
 }
