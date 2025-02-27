@@ -4,7 +4,7 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
 )
@@ -14,25 +14,25 @@ type DeleteAccount interface {
 }
 
 func NewDeleteAccount(
-	readAccountWithHistoryRepository repositories.ReadAccountWithHistory,
+	readAccountRepository repositories.ReadAccount,
 	updateAccountByIDRepository repositories.UpdateAccountByID,
 ) DeleteAccount {
 	return &deleteAccountImpl{
-		readAccountWithHistoryRepository: readAccountWithHistoryRepository,
-		updateAccountByIDRepository:      updateAccountByIDRepository,
+		readAccountRepository:       readAccountRepository,
+		updateAccountByIDRepository: updateAccountByIDRepository,
 	}
 }
 
 type deleteAccountImpl struct {
-	readAccountWithHistoryRepository repositories.ReadAccountWithHistory
-	updateAccountByIDRepository      repositories.UpdateAccountByID
+	readAccountRepository       repositories.ReadAccount
+	updateAccountByIDRepository repositories.UpdateAccountByID
 }
 
 func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *featuresdtos.DeleteAccountRequest) error {
 	if req == nil {
 		return nil
 	}
-	account, err := handle.readAccountWithHistoryRepository.ReadAccountWithHistory(ctx, req.ID)
+	account, err := handle.readAccountRepository.ReadAccount(ctx, req.ID)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *feature
 		return nil
 	}
 	activeSwitch := false
-	updateAccount := dtos.UpdateAccount{
+	updateAccount := entities.UpdateAccount{
 		ID:           account.ID,
 		ActiveSwitch: &activeSwitch,
 	}

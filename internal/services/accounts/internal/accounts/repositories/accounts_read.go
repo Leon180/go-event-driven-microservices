@@ -4,17 +4,17 @@ import (
 	"context"
 
 	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 )
 
-type ReadAccountsWithHistoryByMobileNumber interface {
-	ReadAccountsWithHistoryByMobileNumber(ctx context.Context, mobileNumber string) ([]dtos.AccountWithHistory, error)
+type ReadAccountsByMobileNumber interface {
+	ReadAccountsByMobileNumber(ctx context.Context, mobileNumber string) (entities.Accounts, error)
 }
 
-type ReadAccountWithHistoryByMobileNumberAndAccountType interface {
-	ReadAccountWithHistoryByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) (*dtos.AccountWithHistory, error)
+type ReadAccountByMobileNumberAndAccountType interface {
+	ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) (*entities.Account, error)
 }
 
-type ReadAccountWithHistory interface {
-	ReadAccountWithHistory(ctx context.Context, id string) (*dtos.AccountWithHistory, error)
+type ReadAccount interface {
+	ReadAccount(ctx context.Context, id string) (*entities.Account, error)
 }

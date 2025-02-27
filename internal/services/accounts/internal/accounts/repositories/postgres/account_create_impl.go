@@ -2,14 +2,11 @@ package repositoriespostgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
-	postgresdbmodels "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/dbmodels"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
-	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
@@ -28,23 +25,8 @@ func NewCreateAccount(
 	}
 }
 
-func (handle *createAccountImpl) CreateAccount(ctx context.Context, account dtos.Account) error {
-	systemTime := time.Now()
-	dbmodel := postgresdbmodels.Account{
-		ID:              account.ID,
-		MobileNumber:    account.MobileNumber,
-		AccountNumber:   account.AccountNumber,
-		AccountTypeCode: account.AccountTypeCode,
-		BranchCode:      account.BranchCode,
-		ActiveSwitch:    account.ActiveSwitch,
-		CommonHistoryModelWithUpdate: postgresdbmodels.CommonHistoryModelWithUpdate{
-			CommonHistoryModel: postgresdbmodels.CommonHistoryModel{
-				CreatedAt: systemTime,
-			},
-			UpdatedAt: systemTime,
-		},
-	}
-	if err := handle.db.WithContext(ctx).Create(&dbmodel).Error; err != nil {
+func (handle *createAccountImpl) CreateAccount(ctx context.Context, account entities.Account) error {
+	if err := handle.db.WithContext(ctx).Create(&account).Error; err != nil {
 		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error creating account")
 		return err
 	}
@@ -66,25 +48,11 @@ func NewCreateAccounts(
 	}
 }
 
-func (handle *createAccountsImpl) CreateAccounts(ctx context.Context, accounts []dtos.Account) error {
-	systemTime := time.Now()
-	dbmodels := lo.Map(accounts, func(account dtos.Account, _ int) postgresdbmodels.Account {
-		return postgresdbmodels.Account{
-			ID:              account.ID,
-			MobileNumber:    account.MobileNumber,
-			AccountNumber:   account.AccountNumber,
-			AccountTypeCode: account.AccountTypeCode,
-			BranchCode:      account.BranchCode,
-			ActiveSwitch:    account.ActiveSwitch,
-			CommonHistoryModelWithUpdate: postgresdbmodels.CommonHistoryModelWithUpdate{
-				CommonHistoryModel: postgresdbmodels.CommonHistoryModel{
-					CreatedAt: systemTime,
-				},
-				UpdatedAt: systemTime,
-			},
-		}
-	})
-	if err := handle.db.WithContext(ctx).Create(&dbmodels).Error; err != nil {
+func (handle *createAccountsImpl) CreateAccounts(ctx context.Context, accounts entities.Accounts) error {
+	if len(accounts) == 0 {
+		return nil
+	}
+	if err := handle.db.WithContext(ctx).Create(&accounts).Error; err != nil {
 		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error creating accounts")
 		return err
 	}

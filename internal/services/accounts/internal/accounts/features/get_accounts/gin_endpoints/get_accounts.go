@@ -42,5 +42,5 @@ func (handle *getAccountsByMobileNumberImpl) Handle(c *gin.Context) {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}
-	customizeginresponse.ResponseSuccess(c, featuresdtos.AccountsWithHistory(accounts).ToGetAccountsResponse(), "account retrieved successfully")
+	customizeginresponse.ResponseSuccess(c, featuresdtos.AccountsEntities(accounts).ToGetAccountsResponse(), "account retrieved successfully")
 }

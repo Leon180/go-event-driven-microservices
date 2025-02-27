@@ -7,9 +7,9 @@ import (
 )
 
 type CommonHistoryModelWithUpdate struct {
-	CommonHistoryModel `json:"common_history"`
-	UpdatedAt          time.Time `json:"updated_at"`
-	UpdatedBy          string    `json:"updated_by"`
+	CommonHistoryModel
+	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedBy string    `json:"updated_by"`
 }
 
 type CommonHistoryModel struct {

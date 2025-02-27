@@ -4,6 +4,7 @@ import (
 	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	"github.com/samber/lo"
 )
 
@@ -17,9 +18,9 @@ type GetAccountsResponse struct {
 	History       dtos.CommonHistoryModelWithUpdate `json:"history"`
 }
 
-type AccountWithHistory dtos.AccountWithHistory
+type AccountEntity entities.Account
 
-func (a *AccountWithHistory) ToGetAccountsResponse() *GetAccountsResponse {
+func (a *AccountEntity) ToGetAccountsResponse() *GetAccountsResponse {
 	if a == nil {
 		return nil
 	}
@@ -30,18 +31,24 @@ func (a *AccountWithHistory) ToGetAccountsResponse() *GetAccountsResponse {
 		AccountType:   a.AccountTypeCode.ToAccountType(),
 		Branch:        a.BranchCode.ToBanksBranch(),
 		ActiveSwitch:  a.ActiveSwitch,
-		History:       a.History,
+		History: dtos.CommonHistoryModelWithUpdate{
+			CommonHistoryModel: dtos.CommonHistoryModel{
+				CreatedAt: a.CreatedAt,
+				DeletedAt: a.DeletedAt,
+			},
+			UpdatedAt: a.UpdatedAt,
+		},
 	}
 }
 
-type AccountsWithHistory []dtos.AccountWithHistory
+type AccountsEntities []entities.Account
 
-func (a AccountsWithHistory) ToGetAccountsResponse() []GetAccountsResponse {
+func (a AccountsEntities) ToGetAccountsResponse() []GetAccountsResponse {
 	if a == nil {
 		return nil
 	}
-	return lo.Map(a, func(a dtos.AccountWithHistory, _ int) GetAccountsResponse {
-		accountResponse := AccountWithHistory(a)
+	return lo.Map(a, func(a entities.Account, _ int) GetAccountsResponse {
+		accountResponse := AccountEntity(a)
 		return *accountResponse.ToGetAccountsResponse()
 	})
 }

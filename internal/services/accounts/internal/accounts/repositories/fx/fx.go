@@ -21,9 +21,9 @@ var ProvideModule = fx.Module(
 	fx.Provide(
 		repositoriespostgres.NewCreateAccount,
 		repositoriespostgres.NewCreateAccounts,
-		repositoriespostgres.NewReadAccountsWithHistoryByMobileNumber,
-		repositoriespostgres.NewReadAccountWithHistoryByMobileNumberAndAccountType,
-		repositoriespostgres.NewReadAccountWithHistory,
+		repositoriespostgres.NewReadAccountsByMobileNumber,
+		repositoriespostgres.NewReadAccountByMobileNumberAndAccountType,
+		repositoriespostgres.NewReadAccount,
 		repositoriespostgres.NewUpdateAccountByID,
 		repositoriespostgres.NewDeleteAccountByID,
 	),
