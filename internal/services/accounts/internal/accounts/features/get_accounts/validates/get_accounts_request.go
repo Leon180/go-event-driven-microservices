@@ -7,10 +7,8 @@ import (
 )
 
 func ValidateGetAccountsByMobileNumberRequest(req featuresdtos.GetAccountsByMobileNumberRequest) error {
-	if req.MobileNumber == "" {
-		return customizeerrors.AccountInvalidMobileNumberError
-	} else if !enums.MobileNumberFormat.ValidateFormat(req.MobileNumber) {
-		return customizeerrors.AccountInvalidMobileNumberError
+	if !enums.MobileNumberFormat.ValidateFormat(req.MobileNumber) {
+		return customizeerrors.InvalidMobileNumberError
 	}
 	return nil
 }

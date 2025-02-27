@@ -8,31 +8,38 @@ import (
 	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
-	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/restore_account/dtos"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	mocksrepositories "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
-func TestRestoreAccount(t *testing.T) {
+func TestUpdateAccount(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockReadAccountRepository := mocksrepositories.NewMockReadAccount(ctrl)
 	mockUpdateAccountByIDRepository := mocksrepositories.NewMockUpdateAccountByID(ctrl)
 
-	service := NewRestoreAccount(
+	service := NewUpdateAccount(
 		mockReadAccountRepository,
 		mockUpdateAccountByIDRepository,
 	)
 
 	ctx := context.Background()
 
+	invalidMobileNumber := "123456789000"
+	validMobileNumber := "1234567890"
+	updateMobileNumber := "1234567891"
+	invalidBranchAddress := enumsbanks.BanksBranchInvalid.ToString()
+	validBranchAddress := enumsbanks.BanksBranchTaipeiSongshan.ToString()
+	updateBranchAddress := enumsbanks.BanksBranchTaipeiZhongshan.ToString()
+
 	// Test cases
 	var tests = []struct {
 		name        string
 		setup       func()
-		req         *featuresdtos.RestoreAccountRequest
+		req         *featuresdtos.UpdateAccountRequest
 		expectError customizeerrors.CustomError
 	}{
 		{
@@ -44,46 +51,58 @@ func TestRestoreAccount(t *testing.T) {
 		{
 			name:        "invalid request - empty id",
 			setup:       func() {},
-			req:         &featuresdtos.RestoreAccountRequest{ID: ""},
+			req:         &featuresdtos.UpdateAccountRequest{ID: ""},
 			expectError: customizeerrors.InvalidIDError,
+		},
+		{
+			name:        "invalid request - invalid mobile number",
+			setup:       func() {},
+			req:         &featuresdtos.UpdateAccountRequest{ID: "1234567890", MobileNumber: &invalidMobileNumber},
+			expectError: customizeerrors.InvalidMobileNumberError,
+		},
+		{
+			name:        "invalid request - invalid branch address",
+			setup:       func() {},
+			req:         &featuresdtos.UpdateAccountRequest{ID: "1234567890", BranchAddress: &invalidBranchAddress},
+			expectError: customizeerrors.InvalidBranchError,
 		},
 		{
 			name: "account not found",
 			setup: func() {
 				mockReadAccountRepository.EXPECT().ReadAccount(ctx, "123456789000").Return(nil, nil).AnyTimes()
 			},
-			req:         &featuresdtos.RestoreAccountRequest{ID: "123456789000"},
+			req:         &featuresdtos.UpdateAccountRequest{ID: "123456789000"},
 			expectError: customizeerrors.AccountNotFoundError,
 		},
 		{
-			name: "account already restored",
+			name: "account no updates",
 			setup: func() {
 				mockReadAccountRepository.EXPECT().ReadAccount(ctx, "1111111111").Return(&entities.Account{
 					ID:              "1111111111",
-					MobileNumber:    "1111111111",
+					MobileNumber:    validMobileNumber,
 					AccountNumber:   "1111111111",
 					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
+					BranchCode:      enumsbanks.BanksBranch(validBranchAddress).ToBanksBranchCode(),
 					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 			},
-			req:         &featuresdtos.RestoreAccountRequest{ID: "1111111111"},
-			expectError: nil,
+			req:         &featuresdtos.UpdateAccountRequest{ID: "1111111111", MobileNumber: &validMobileNumber, BranchAddress: &validBranchAddress},
+			expectError: customizeerrors.AccountNoUpdatesError,
 		},
 		{
-			name: "account successfully restored",
+			name: "account successfully update",
 			setup: func() {
 				mockReadAccountRepository.EXPECT().ReadAccount(ctx, "1234567890").Return(&entities.Account{
 					ID:              "1234567890",
-					MobileNumber:    "1234567890",
+					MobileNumber:    validMobileNumber,
 					AccountNumber:   "1234567890",
 					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
-					ActiveSwitch:    false,
+					BranchCode:      enumsbanks.BanksBranch(validBranchAddress).ToBanksBranchCode(),
+					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 				mockUpdateAccountByIDRepository.EXPECT().UpdateAccountByID(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.RestoreAccountRequest{ID: "1234567890"},
+			req:         &featuresdtos.UpdateAccountRequest{ID: "1234567890", MobileNumber: &updateMobileNumber, BranchAddress: &updateBranchAddress},
 			expectError: nil,
 		},
 	}
@@ -91,7 +110,7 @@ func TestRestoreAccount(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			test.setup()
-			err := service.RestoreAccount(ctx, test.req)
+			err := service.UpdateAccount(ctx, test.req)
 			if test.expectError != nil {
 				assert.Error(t, err)
 				assert.Equal(t, test.expectError, err)

@@ -46,14 +46,14 @@ func TestGetAccountsByMobileNumber(t *testing.T) {
 			setup:        func() {},
 			req:          &featuresdtos.GetAccountsByMobileNumberRequest{MobileNumber: ""},
 			expectResult: nil,
-			expectError:  customizeerrors.AccountInvalidMobileNumberError,
+			expectError:  customizeerrors.InvalidMobileNumberError,
 		},
 		{
 			name:         "invalid request - invalid mobile number",
 			setup:        func() {},
 			req:          &featuresdtos.GetAccountsByMobileNumberRequest{MobileNumber: "123456789000"},
 			expectResult: nil,
-			expectError:  customizeerrors.AccountInvalidMobileNumberError,
+			expectError:  customizeerrors.InvalidMobileNumberError,
 		},
 		{
 			name: "account not found",

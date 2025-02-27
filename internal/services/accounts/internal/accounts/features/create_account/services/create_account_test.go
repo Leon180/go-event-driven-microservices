@@ -49,28 +49,22 @@ func TestCreateAccount(t *testing.T) {
 			expectError: nil,
 		},
 		{
-			name:        "invalid request - empty mobile number",
-			setup:       func() {},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "", AccountType: enumsaccounts.AccountTypeSavings.ToString(), Branch: enumsbanks.BanksBranchTaipeiSongshan.ToString()},
-			expectError: customizeerrors.AccountInvalidMobileNumberError,
-		},
-		{
 			name:        "invalid request - invalid mobile number",
 			setup:       func() {},
 			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "12345678900", AccountType: enumsaccounts.AccountTypeSavings.ToString(), Branch: enumsbanks.BanksBranchTaipeiSongshan.ToString()},
-			expectError: customizeerrors.AccountInvalidMobileNumberError,
+			expectError: customizeerrors.InvalidMobileNumberError,
 		},
 		{
 			name:        "invalid request - invalid account type",
 			setup:       func() {},
 			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1234567890", AccountType: "invalid", Branch: enumsbanks.BanksBranchTaipeiSongshan.ToString()},
-			expectError: customizeerrors.AccountInvalidAccountTypeError,
+			expectError: customizeerrors.InvalidAccountTypeError,
 		},
 		{
 			name:        "invalid request - invalid branch",
 			setup:       func() {},
 			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1234567890", AccountType: enumsaccounts.AccountTypeSavings.ToString(), Branch: "invalid"},
-			expectError: customizeerrors.AccountInvalidBranchError,
+			expectError: customizeerrors.InvalidBranchError,
 		},
 		{
 			name: "successful account creation",

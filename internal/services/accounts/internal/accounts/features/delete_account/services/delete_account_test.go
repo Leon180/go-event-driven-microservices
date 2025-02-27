@@ -45,7 +45,7 @@ func TestDeleteAccount(t *testing.T) {
 			name:        "invalid request - empty id",
 			setup:       func() {},
 			req:         &featuresdtos.DeleteAccountRequest{ID: ""},
-			expectError: customizeerrors.IDInvalidError,
+			expectError: customizeerrors.InvalidIDError,
 		},
 		{
 			name: "account not found",

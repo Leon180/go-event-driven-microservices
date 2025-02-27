@@ -33,7 +33,7 @@ func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *feature
 		return nil
 	}
 	if req.ID == "" {
-		return customizeerrors.IDInvalidError
+		return customizeerrors.InvalidIDError
 	}
 	account, err := handle.readAccountRepository.ReadAccount(ctx, req.ID)
 	if err != nil {
