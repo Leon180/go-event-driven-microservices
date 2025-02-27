@@ -22,7 +22,7 @@ func NewUpdateAccount(
 }
 
 func (endpoint *updateAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
-	routerGroup.PUT("/account/:id", endpoint.Handle)
+	routerGroup.PUT("/account/update", endpoint.Handle)
 }
 
 // @Summary Update an account
@@ -30,24 +30,22 @@ func (endpoint *updateAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
 // @Tags accounts
 // @Accept json
 // @Produce json
-// @Param id path string true "ID"
 // @Param account body featuresdtos.UpdateAccountRequest true "Account"
 // @Success 200 {object} customizeginresponse.JSONResponse "account updated successfully"
-// @Router /account/{id} [put]
+// @Router /account/update [put]
 func (endpoint *updateAccountImpl) Handle(c *gin.Context) {
-	var updateAccountRequest featuresdtos.UpdateAccountRequest
-	if err := c.ShouldBindJSON(&updateAccountRequest); err != nil {
+	var req featuresdtos.UpdateAccountRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}
 
-	id := c.Param("id")
-	if id == "" {
+	if req.ID == "" {
 		customizeginresponse.ResponseError(c, nil, "", customizeerrors.HTTPBadRequestError)
 		return
 	}
 
-	if err := endpoint.updateAccountService.UpdateAccount(c.Request.Context(), id, &updateAccountRequest); err != nil {
+	if err := endpoint.updateAccountService.UpdateAccount(c.Request.Context(), &req); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}

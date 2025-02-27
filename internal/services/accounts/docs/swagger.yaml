@@ -22,7 +22,7 @@ definitions:
   ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_create_account_dtos.CreateAccountRequest
   : properties:
       account_type:
-        description: '@enum "saving", "current", "salary"'
+        description: '@enum "checking", "savings", "currency", "salary", "business"'
         type: string
       branch:
         description: '@enum "台北市中山區", "台北市松山區", "台北市信義區", "台北市文山區", "台北市北投區", "台北市南港區",
@@ -36,14 +36,32 @@ definitions:
     - branch
     - mobile_number
     type: object
+  ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest
+  : properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest
+  : properties:
+      mobile_number:
+        type: string
+    required:
+    - mobile_number
+    type: object
   ? github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest
   : properties:
       account_number:
         type: string
       branch_address:
         type: string
+      id:
+        type: string
       mobile_number:
         type: string
+    required:
+    - id
     type: object
 host: localhost:7001
 info:
@@ -52,7 +70,7 @@ info:
   title: Accounts Service API
   version: "1.0"
 paths:
-  /account:
+  /account/create:
     post:
       consumes:
       - application/json
@@ -74,15 +92,16 @@ paths:
       summary: Create a new account
       tags:
       - accounts
-  /account/{id}:
-    delete:
+  /account/delete:
+    post:
       description: Delete an account
       parameters:
-      - description: Account ID to delete
-        in: path
-        name: id
+      - description: Account
+        in: body
+        name: account
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest'
       produces:
       - application/json
       responses:
@@ -93,16 +112,12 @@ paths:
       summary: Delete an account
       tags:
       - accounts
+  /account/update:
     put:
       consumes:
       - application/json
       description: Update an account
       parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Account
         in: body
         name: account
@@ -119,15 +134,16 @@ paths:
       summary: Update an account
       tags:
       - accounts
-  /accounts/{mobile_number}:
-    get:
+  /accounts/get:
+    post:
       description: Get accounts by mobile number
       parameters:
-      - description: Mobile Number
-        in: path
-        name: mobile_number
+      - description: Account
+        in: body
+        name: account
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest'
       produces:
       - application/json
       responses:

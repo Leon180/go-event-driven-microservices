@@ -21,7 +21,7 @@ func NewCreateAccount(
 }
 
 func (endpoint *createAccountImpl) MapEndpoint(router *gin.RouterGroup) {
-	router.POST("/account", endpoint.Handle)
+	router.POST("/account/create", endpoint.Handle)
 }
 
 // @Summary Create a new account
@@ -31,7 +31,7 @@ func (endpoint *createAccountImpl) MapEndpoint(router *gin.RouterGroup) {
 // @Produce json
 // @Param account body featuresdtos.CreateAccountRequest true "Account"
 // @Success 200 {object} customizeginresponse.JSONResponse "Account created successfully"
-// @Router /account [post]
+// @Router /account/create [post]
 func (endpoint *createAccountImpl) Handle(c *gin.Context) {
 	var createAccountRequest featuresdtos.CreateAccountRequest
 	if err := c.ShouldBindJSON(&createAccountRequest); err != nil {

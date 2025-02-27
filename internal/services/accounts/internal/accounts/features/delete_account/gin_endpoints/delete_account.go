@@ -21,19 +21,19 @@ func NewDeleteAccount(
 }
 
 func (endpoint *deleteAccountImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
-	routerGroup.DELETE("/account/:id", endpoint.Handle)
+	routerGroup.POST("/account/delete", endpoint.Handle)
 }
 
 // @Summary Delete an account
 // @Description Delete an account
 // @Tags accounts
 // @Produce json
-// @Param id path string true "Account ID to delete"
+// @Param account body featuresdtos.DeleteAccountRequest true "Account"
 // @Success 200 {object} customizeginresponse.JSONResponse "account deleted successfully"
-// @Router /account/{id} [delete]
+// @Router /account/delete [post]
 func (endpoint *deleteAccountImpl) Handle(c *gin.Context) {
 	var deleteAccountRequest featuresdtos.DeleteAccountRequest
-	if err := c.ShouldBindUri(&deleteAccountRequest); err != nil {
+	if err := c.ShouldBindJSON(&deleteAccountRequest); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}

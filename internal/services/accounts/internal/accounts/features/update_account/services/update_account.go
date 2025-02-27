@@ -13,7 +13,7 @@ import (
 )
 
 type UpdateAccount interface {
-	UpdateAccount(ctx context.Context, id string, req *featuresdtos.UpdateAccountRequest) error
+	UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error
 }
 
 type updateAccountImpl struct {
@@ -31,14 +31,14 @@ func NewUpdateAccount(
 	}
 }
 
-func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, id string, req *featuresdtos.UpdateAccountRequest) error {
+func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *featuresdtos.UpdateAccountRequest) error {
 	if req == nil {
 		return nil
 	}
 	if err := validates.ValidateUpdateAccountRequest(*req); err != nil {
 		return err
 	}
-	account, err := handle.readAccountWithHistory.ReadAccountWithHistory(ctx, id)
+	account, err := handle.readAccountWithHistory.ReadAccountWithHistory(ctx, req.ID)
 	if err != nil {
 		return err
 	}

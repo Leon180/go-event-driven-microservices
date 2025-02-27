@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/account": {
+        "/account/create": {
             "post": {
                 "description": "Create a new account",
                 "consumes": [
@@ -49,7 +49,38 @@ const docTemplate = `{
                 }
             }
         },
-        "/account/{id}": {
+        "/account/delete": {
+            "post": {
+                "description": "Delete an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "account deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/update": {
             "put": {
                 "description": "Update an account",
                 "consumes": [
@@ -63,13 +94,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update an account",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "Account",
                         "name": "account",
@@ -88,37 +112,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "Delete an account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "accounts"
-                ],
-                "summary": "Delete an account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Account ID to delete",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "account deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_pkg_customize_gin_response.JSONResponse"
-                        }
-                    }
-                }
             }
         },
-        "/accounts/{mobile_number}": {
-            "get": {
+        "/accounts/get": {
+            "post": {
                 "description": "Get accounts by mobile number",
                 "produces": [
                     "application/json"
@@ -129,11 +126,13 @@ const docTemplate = `{
                 "summary": "Get accounts by mobile number",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Mobile Number",
-                        "name": "mobile_number",
-                        "in": "path",
-                        "required": true
+                        "description": "Account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -186,7 +185,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "account_type": {
-                    "description": "@enum \"saving\", \"current\", \"salary\"",
+                    "description": "@enum \"checking\", \"savings\", \"currency\", \"salary\", \"business\"",
                     "type": "string"
                 },
                 "branch": {
@@ -199,13 +198,41 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_delete_account_dtos.DeleteAccountRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_get_accounts_dtos.GetAccountsByMobileNumberRequest": {
+            "type": "object",
+            "required": [
+                "mobile_number"
+            ],
+            "properties": {
+                "mobile_number": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Leon180_go-event-driven-microservices_internal_services_accounts_internal_accounts_features_update_account_dtos.UpdateAccountRequest": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "account_number": {
                     "type": "string"
                 },
                 "branch_address": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "mobile_number": {

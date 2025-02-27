@@ -21,19 +21,19 @@ func NewGetAccountsByMobileNumber(
 }
 
 func (endpoint *getAccountsByMobileNumberImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
-	routerGroup.GET("/accounts/:mobile_number", endpoint.Handle)
+	routerGroup.POST("/accounts/get", endpoint.Handle)
 }
 
 // @Summary Get accounts by mobile number
 // @Description Get accounts by mobile number
 // @Tags accounts
 // @Produce json
-// @Param mobile_number path string true "Mobile Number"
+// @Param account body featuresdtos.GetAccountsByMobileNumberRequest true "Account"
 // @Success 200 {object} customizeginresponse.JSONResponse "accounts retrieved successfully"
-// @Router /accounts/{mobile_number} [get]
+// @Router /accounts/get [post]
 func (handle *getAccountsByMobileNumberImpl) Handle(c *gin.Context) {
 	var req featuresdtos.GetAccountsByMobileNumberRequest
-	if err := c.ShouldBindUri(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}

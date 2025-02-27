@@ -1,5 +1,5 @@
 package featuresdtos
 
 type GetAccountsByMobileNumberRequest struct {
-	MobileNumber string `uri:"mobile_number" binding:"required"`
+	MobileNumber string `json:"mobile_number" binding:"required"`
 }
