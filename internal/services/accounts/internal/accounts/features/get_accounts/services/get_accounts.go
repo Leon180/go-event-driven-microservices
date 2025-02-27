@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	customizerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/validates"
@@ -36,7 +36,7 @@ func (handle *getAccountsByMobileNumberImpl) GetAccountsByMobileNumber(ctx conte
 		return nil, err
 	}
 	if len(accounts) == 0 {
-		return nil, customizerrors.AccountNotFoundError
+		return nil, customizeerrors.AccountNotFoundError
 	}
 	return accounts, nil
 }

@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 )
 
+//go:generate mockgen -source=logger.go -destination=./mocks/logger_mock.go -package=mocks
+
 // context logger is a logger that can be used to log messages with context information
 type ContextLogger interface {
 	WithContextInfo(ctx context.Context, keys ...enums.ContextKey) ContextLogger

@@ -16,6 +16,17 @@ var (
 
 	// fxapp
 	FxAppNotInitializedError = newErrorFromErrorCode(FxAppNotInitialized)
+
+	// common
+	InvalidIDError           = newErrorFromErrorCode(InvalidID)
+	InvalidMobileNumberError = newErrorFromErrorCode(InvalidMobileNumber)
+	InvalidAccountTypeError  = newErrorFromErrorCode(InvalidAccountType)
+	InvalidBranchError       = newErrorFromErrorCode(InvalidBranch)
+
+	// Account
+	AccountAlreadyExistsError = newErrorFromErrorCode(AccountAlreadyExists)
+	AccountNotFoundError      = newErrorFromErrorCode(AccountNotFound)
+	AccountNoUpdatesError     = newErrorFromErrorCode(AccountNoUpdates)
 )
 
 type CustomError interface {
@@ -38,6 +49,17 @@ const (
 
 	// fxapp
 	FxAppNotInitialized ErrorCode = 20001
+
+	// common
+	InvalidID           ErrorCode = 21001
+	InvalidMobileNumber ErrorCode = 21002
+	InvalidAccountType  ErrorCode = 21003
+	InvalidBranch       ErrorCode = 21004
+
+	// Account
+	AccountAlreadyExists ErrorCode = 30001
+	AccountNotFound      ErrorCode = 30002
+	AccountNoUpdates     ErrorCode = 30003
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -51,6 +73,17 @@ var errorCodeMessageMap = map[ErrorCode]string{
 
 	// fxapp
 	FxAppNotInitialized: "fxapp is not initialized",
+
+	// common
+	InvalidID:           "id is invalid",
+	InvalidMobileNumber: "mobile number is invalid",
+	InvalidAccountType:  "account type is invalid",
+	InvalidBranch:       "branch is invalid",
+
+	// Account
+	AccountAlreadyExists: "account already exists",
+	AccountNotFound:      "account not found",
+	AccountNoUpdates:     "account no updates",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -64,6 +97,17 @@ var errorCodeStatusMap = map[ErrorCode]int{
 
 	// fxapp
 	FxAppNotInitialized: http.StatusInternalServerError,
+
+	// common
+	InvalidID:           http.StatusBadRequest,
+	InvalidMobileNumber: http.StatusBadRequest,
+	InvalidAccountType:  http.StatusBadRequest,
+	InvalidBranch:       http.StatusBadRequest,
+
+	// Account
+	AccountAlreadyExists: http.StatusConflict,
+	AccountNotFound:      http.StatusNotFound,
+	AccountNoUpdates:     http.StatusOK,
 }
 
 func (e ErrorCode) GetCode() int {

@@ -1,7 +1,6 @@
 package ginendpoints
 
 import (
-	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	customizeginresponse "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/response"
 	customizeginendpoints "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/endpoints"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
@@ -39,12 +38,6 @@ func (endpoint *updateAccountImpl) Handle(c *gin.Context) {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
 	}
-
-	if req.ID == "" {
-		customizeginresponse.ResponseError(c, nil, "", customizeerrors.HTTPBadRequestError)
-		return
-	}
-
 	if err := endpoint.updateAccountService.UpdateAccount(c.Request.Context(), &req); err != nil {
 		customizeginresponse.ResponseError(c, nil, "", err)
 		return
