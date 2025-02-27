@@ -32,6 +32,9 @@ func (handle *restoreAccountImpl) RestoreAccount(ctx context.Context, req *featu
 	if req == nil {
 		return nil
 	}
+	if req.ID == "" {
+		return customizeerrors.IDInvalidError
+	}
 	account, err := handle.readAccountRepository.ReadAccount(ctx, req.ID)
 	if err != nil {
 		return err
