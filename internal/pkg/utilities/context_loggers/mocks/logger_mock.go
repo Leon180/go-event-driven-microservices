@@ -14,7 +14,7 @@ import (
 	reflect "reflect"
 
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	context_loggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
+	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -249,14 +249,14 @@ func (mr *MockContextLoggerMockRecorder) Warnf(template any, args ...any) *gomoc
 }
 
 // WithContextInfo mocks base method.
-func (m *MockContextLogger) WithContextInfo(ctx context.Context, keys ...enums.ContextKey) context_loggers.ContextLogger {
+func (m *MockContextLogger) WithContextInfo(ctx context.Context, keys ...enums.ContextKey) contextloggers.ContextLogger {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx}
 	for _, a := range keys {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "WithContextInfo", varargs...)
-	ret0, _ := ret[0].(context_loggers.ContextLogger)
+	ret0, _ := ret[0].(contextloggers.ContextLogger)
 	return ret0
 }
 

@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	accounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 	entities "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -82,7 +82,7 @@ func (m *MockReadAccountByMobileNumberAndAccountType) EXPECT() *MockReadAccountB
 }
 
 // ReadAccountByMobileNumberAndAccountType mocks base method.
-func (m *MockReadAccountByMobileNumberAndAccountType) ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode accounts.AccountTypeCode) (*entities.Account, error) {
+func (m *MockReadAccountByMobileNumberAndAccountType) ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) (*entities.Account, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAccountByMobileNumberAndAccountType", ctx, mobileNumber, accountTypeCode)
 	ret0, _ := ret[0].(*entities.Account)
