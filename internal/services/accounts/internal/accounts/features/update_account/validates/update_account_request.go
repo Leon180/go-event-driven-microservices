@@ -10,15 +10,16 @@ import (
 )
 
 func ValidateUpdateAccountRequest(req featuresdtos.UpdateAccountRequest) error {
+	if req.ID == "" {
+		return customizeerrors.InvalidIDError
+	}
 	if req.MobileNumber != nil {
-		if *req.MobileNumber == "" {
-			return customizeerrors.AccountInvalidMobileNumberError
-		} else if !enums.MobileNumberFormat.ValidateFormat(*req.MobileNumber) {
-			return customizeerrors.AccountInvalidMobileNumberError
+		if !enums.MobileNumberFormat.ValidateFormat(*req.MobileNumber) {
+			return customizeerrors.InvalidMobileNumberError
 		}
 	}
 	if req.BranchAddress != nil && !enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress)).IsValid() {
-		return customizeerrors.AccountInvalidBranchError
+		return customizeerrors.InvalidBranchError
 	}
 	return nil
 }

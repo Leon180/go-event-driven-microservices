@@ -18,16 +18,15 @@ var (
 	FxAppNotInitializedError = newErrorFromErrorCode(FxAppNotInitialized)
 
 	// common
-	IDInvalidError = newErrorFromErrorCode(IDInvalid)
+	InvalidIDError           = newErrorFromErrorCode(InvalidID)
+	InvalidMobileNumberError = newErrorFromErrorCode(InvalidMobileNumber)
+	InvalidAccountTypeError  = newErrorFromErrorCode(InvalidAccountType)
+	InvalidBranchError       = newErrorFromErrorCode(InvalidBranch)
 
 	// Account
 	AccountAlreadyExistsError = newErrorFromErrorCode(AccountAlreadyExists)
 	AccountNotFoundError      = newErrorFromErrorCode(AccountNotFound)
 	AccountNoUpdatesError     = newErrorFromErrorCode(AccountNoUpdates)
-
-	AccountInvalidMobileNumberError = newErrorFromErrorCode(AccountInvalidMobileNumber)
-	AccountInvalidAccountTypeError  = newErrorFromErrorCode(AccountInvalidAccountType)
-	AccountInvalidBranchError       = newErrorFromErrorCode(AccountInvalidBranch)
 )
 
 type CustomError interface {
@@ -52,16 +51,15 @@ const (
 	FxAppNotInitialized ErrorCode = 20001
 
 	// common
-	IDInvalid ErrorCode = 21001
+	InvalidID           ErrorCode = 21001
+	InvalidMobileNumber ErrorCode = 21002
+	InvalidAccountType  ErrorCode = 21003
+	InvalidBranch       ErrorCode = 21004
 
 	// Account
 	AccountAlreadyExists ErrorCode = 30001
 	AccountNotFound      ErrorCode = 30002
 	AccountNoUpdates     ErrorCode = 30003
-
-	AccountInvalidMobileNumber ErrorCode = 30004
-	AccountInvalidAccountType  ErrorCode = 30005
-	AccountInvalidBranch       ErrorCode = 30006
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -77,16 +75,15 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	FxAppNotInitialized: "fxapp is not initialized",
 
 	// common
-	IDInvalid: "id is invalid",
+	InvalidID:           "id is invalid",
+	InvalidMobileNumber: "mobile number is invalid",
+	InvalidAccountType:  "account type is invalid",
+	InvalidBranch:       "branch is invalid",
 
 	// Account
 	AccountAlreadyExists: "account already exists",
 	AccountNotFound:      "account not found",
 	AccountNoUpdates:     "account no updates",
-
-	AccountInvalidMobileNumber: "invalid mobile number",
-	AccountInvalidAccountType:  "invalid account type",
-	AccountInvalidBranch:       "invalid branch",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -101,14 +98,16 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	// fxapp
 	FxAppNotInitialized: http.StatusInternalServerError,
 
+	// common
+	InvalidID:           http.StatusBadRequest,
+	InvalidMobileNumber: http.StatusBadRequest,
+	InvalidAccountType:  http.StatusBadRequest,
+	InvalidBranch:       http.StatusBadRequest,
+
 	// Account
 	AccountAlreadyExists: http.StatusConflict,
 	AccountNotFound:      http.StatusNotFound,
 	AccountNoUpdates:     http.StatusOK,
-
-	AccountInvalidMobileNumber: http.StatusBadRequest,
-	AccountInvalidAccountType:  http.StatusBadRequest,
-	AccountInvalidBranch:       http.StatusBadRequest,
 }
 
 func (e ErrorCode) GetCode() int {

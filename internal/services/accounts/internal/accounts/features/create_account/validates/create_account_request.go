@@ -12,15 +12,15 @@ import (
 
 func ValidateCreateAccountRequest(req *featuresdtos.CreateAccountRequest) error {
 	if !enumsaccounts.AccountType(strings.ToLower(req.AccountType)).IsValid() {
-		return customizeerrors.AccountInvalidAccountTypeError
+		return customizeerrors.InvalidAccountTypeError
 	}
 	if !enumsbanks.BanksBranch(strings.ToLower(req.Branch)).IsValid() {
-		return customizeerrors.AccountInvalidBranchError
+		return customizeerrors.InvalidBranchError
 	}
 	if len(req.MobileNumber) == 0 {
-		return customizeerrors.AccountInvalidMobileNumberError
+		return customizeerrors.InvalidMobileNumberError
 	} else if !enums.MobileNumberFormat.ValidateFormat(req.MobileNumber) {
-		return customizeerrors.AccountInvalidMobileNumberError
+		return customizeerrors.InvalidMobileNumberError
 	}
 	return nil
 }
