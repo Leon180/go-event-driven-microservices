@@ -11,6 +11,10 @@ const (
 	AccountTypeBusiness AccountType = "business"
 )
 
+func (a AccountType) ToString() string {
+	return string(a)
+}
+
 func (a AccountType) IsValid() bool {
 	active, ok := AccountTypActiveMap[a]
 	return ok && active

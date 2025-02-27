@@ -8,6 +8,8 @@ import (
 	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 )
 
+//go:generate mockgen -source=account_number.go -destination=./mocks/account_number_mock.go -package=mocks
+
 type AccountNumberGenerator interface {
 	GenerateAccountNumber() string
 }

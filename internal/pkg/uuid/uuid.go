@@ -2,6 +2,8 @@ package uuid
 
 import "github.com/google/uuid"
 
+//go:generate mockgen -source=uuid.go -destination=./mocks/uuid_mock.go -package=mocks
+
 type UUIDGenerator interface {
 	GenerateUUID() string
 }

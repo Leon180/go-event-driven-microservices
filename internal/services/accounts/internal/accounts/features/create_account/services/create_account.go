@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
 	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/validates"
@@ -49,7 +49,7 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *feature
 		return err
 	}
 	systemTime := time.Now()
-	accountDTO := entities.Account{
+	accountEntity := entities.Account{
 		ID:              handle.uuidGenerator.GenerateUUID(),
 		MobileNumber:    req.MobileNumber,
 		AccountNumber:   handle.accountNumberGenerator.GenerateAccountNumber(),
@@ -67,8 +67,8 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *feature
 	if err != nil {
 		return err
 	}
-	if accounts.IncludeAccountTypeCode(req.MobileNumber, accountDTO.AccountTypeCode) {
+	if accounts.IncludeAccountTypeCode(req.MobileNumber, accountEntity.AccountTypeCode) {
 		return customizeerrors.AccountAlreadyExistsError
 	}
-	return handle.createAccountRepository.CreateAccount(ctx, accountDTO)
+	return handle.createAccountRepository.CreateAccount(ctx, accountEntity)
 }

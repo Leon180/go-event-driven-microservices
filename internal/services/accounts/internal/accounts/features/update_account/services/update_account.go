@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
-	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/validates"

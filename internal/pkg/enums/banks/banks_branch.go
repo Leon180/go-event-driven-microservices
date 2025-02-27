@@ -13,6 +13,10 @@ const (
 	BanksBranchTaipeiWanhua    BanksBranch = "台北市萬華區"
 )
 
+func (b BanksBranch) ToString() string {
+	return string(b)
+}
+
 func (b BanksBranch) IsValid() bool {
 	active, ok := BanksBranchActiveMap[b]
 	return ok && active
