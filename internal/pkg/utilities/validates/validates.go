@@ -20,3 +20,17 @@ func ValidateDecimal(st any) error {
 	}
 	return nil
 }
+
+func ValidateEmail(st any) error {
+	if !enums.EmailFormat.ValidateFormat(st) {
+		return customizeerrors.InvalidEmailError
+	}
+	return nil
+}
+
+func ValidateName(st string) error {
+	if st == "" {
+		return customizeerrors.InvalidNameError
+	}
+	return nil
+}

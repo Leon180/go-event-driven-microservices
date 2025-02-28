@@ -23,6 +23,8 @@ var (
 	InvalidAccountTypeError  = newErrorFromErrorCode(InvalidAccountType)
 	InvalidBranchError       = newErrorFromErrorCode(InvalidBranch)
 	InvalidDecimalError      = newErrorFromErrorCode(InvalidDecimal)
+	InvalidEmailError        = newErrorFromErrorCode(InvalidEmail)
+	InvalidNameError         = newErrorFromErrorCode(InvalidName)
 
 	// Account
 	AccountAlreadyExistsError   = newErrorFromErrorCode(AccountAlreadyExists)
@@ -37,6 +39,20 @@ var (
 	CardNoUpdatesError       = newErrorFromErrorCode(CardNoUpdates)
 	CardAlreadyDeletedError  = newErrorFromErrorCode(CardAlreadyDeleted)
 	CardAlreadyRestoredError = newErrorFromErrorCode(CardAlreadyRestored)
+
+	// Customer
+	CustomerAlreadyExistsError     = newErrorFromErrorCode(CustomerAlreadyExists)
+	CustomerExistsButInactiveError = newErrorFromErrorCode(CustomerExistsButInactive)
+	CustomerNotFoundError          = newErrorFromErrorCode(CustomerNotFound)
+	CustomerAlreadyDeletedError    = newErrorFromErrorCode(CustomerAlreadyDeleted)
+	CustomerNoUpdatesError         = newErrorFromErrorCode(CustomerNoUpdates)
+
+	// Loan
+	LoanTermInvalidError    = newErrorFromErrorCode(LoanTermInvalid)
+	LoanAlreadyExistsError  = newErrorFromErrorCode(LoanAlreadyExists)
+	LoanNotFoundError       = newErrorFromErrorCode(LoanNotFound)
+	LoanNoUpdatesError      = newErrorFromErrorCode(LoanNoUpdates)
+	LoanAlreadyDeletedError = newErrorFromErrorCode(LoanAlreadyDeleted)
 )
 
 type CustomError interface {
@@ -66,6 +82,8 @@ const (
 	InvalidAccountType  ErrorCode = 21003
 	InvalidBranch       ErrorCode = 21004
 	InvalidDecimal      ErrorCode = 21005
+	InvalidEmail        ErrorCode = 21006
+	InvalidName         ErrorCode = 21007
 
 	// Account
 	AccountAlreadyExists   ErrorCode = 30001
@@ -80,6 +98,20 @@ const (
 	CardNoUpdates       ErrorCode = 31003
 	CardAlreadyDeleted  ErrorCode = 31004
 	CardAlreadyRestored ErrorCode = 31005
+
+	// Customer
+	CustomerAlreadyExists     ErrorCode = 32001
+	CustomerExistsButInactive ErrorCode = 32002
+	CustomerNotFound          ErrorCode = 32003
+	CustomerAlreadyDeleted    ErrorCode = 32004
+	CustomerNoUpdates         ErrorCode = 32005
+
+	// Loan
+	LoanTermInvalid    ErrorCode = 33001
+	LoanAlreadyExists  ErrorCode = 33002
+	LoanNotFound       ErrorCode = 33003
+	LoanNoUpdates      ErrorCode = 33004
+	LoanAlreadyDeleted ErrorCode = 33005
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -100,6 +132,8 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	InvalidAccountType:  "account type is invalid",
 	InvalidBranch:       "branch is invalid",
 	InvalidDecimal:      "decimal is invalid",
+	InvalidEmail:        "email is invalid",
+	InvalidName:         "name is invalid",
 
 	// Account
 	AccountAlreadyExists:   "account already exists",
@@ -114,6 +148,20 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	CardNoUpdates:       "card no updates",
 	CardAlreadyDeleted:  "card already deleted",
 	CardAlreadyRestored: "card already restored",
+
+	// Customer
+	CustomerAlreadyExists:     "customer already exists",
+	CustomerExistsButInactive: "customer exists but is inactive",
+	CustomerNotFound:          "customer not found",
+	CustomerAlreadyDeleted:    "customer already deleted",
+	CustomerNoUpdates:         "customer no updates",
+
+	// Loan
+	LoanTermInvalid:    "loan term is invalid",
+	LoanAlreadyExists:  "loan already exists",
+	LoanNotFound:       "loan not found",
+	LoanNoUpdates:      "loan no updates",
+	LoanAlreadyDeleted: "loan already deleted",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -134,6 +182,8 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	InvalidAccountType:  http.StatusBadRequest,
 	InvalidBranch:       http.StatusBadRequest,
 	InvalidDecimal:      http.StatusBadRequest,
+	InvalidEmail:        http.StatusBadRequest,
+	InvalidName:         http.StatusBadRequest,
 
 	// Account
 	AccountAlreadyExists:   http.StatusConflict,
@@ -148,6 +198,20 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	CardNoUpdates:       http.StatusOK,
 	CardAlreadyDeleted:  http.StatusOK,
 	CardAlreadyRestored: http.StatusOK,
+
+	// Customer
+	CustomerAlreadyExists:     http.StatusConflict,
+	CustomerExistsButInactive: http.StatusOK,
+	CustomerNotFound:          http.StatusNotFound,
+	CustomerAlreadyDeleted:    http.StatusOK,
+	CustomerNoUpdates:         http.StatusOK,
+
+	// Loan
+	LoanTermInvalid:    http.StatusBadRequest,
+	LoanAlreadyExists:  http.StatusConflict,
+	LoanNotFound:       http.StatusNotFound,
+	LoanNoUpdates:      http.StatusOK,
+	LoanAlreadyDeleted: http.StatusOK,
 }
 
 func (e ErrorCode) GetCode() int {
