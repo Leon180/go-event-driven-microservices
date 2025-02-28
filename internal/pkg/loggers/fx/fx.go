@@ -2,10 +2,10 @@ package loggersfx
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
-	gormlogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/grom_logger"
-	zaplogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/zap_logger"
+	gormcustomizelogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/gorm_customize_logger"
+	zapcustomizelogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/zap_customize_logger"
 	"go.uber.org/fx"
-	gormiologger "gorm.io/gorm/logger"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 // loggers provide module provide loggers:
@@ -18,15 +18,15 @@ import (
 var ProvideModule = fx.Module(
 	"loggersProvideFx",
 	fx.Provide(
-		zaplogger.NewZapLogger,
+		zapcustomizelogger.NewZapLogger,
 		fx.Annotate(
-			zaplogger.NewZapLogger,
+			zapcustomizelogger.NewZapLogger,
 			fx.As(new(loggers.Logger)),
 		),
-		gormlogger.NewGormCustomLogger,
+		gormcustomizelogger.NewGormCustomLogger,
 		fx.Annotate(
-			gormlogger.NewGormCustomLogger,
-			fx.As(new(gormiologger.Interface)),
+			gormcustomizelogger.NewGormCustomLogger,
+			fx.As(new(gormlogger.Interface)),
 		),
 	),
 )

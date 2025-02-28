@@ -2,7 +2,7 @@ package validates
 
 import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/dtos"
 )
 

@@ -2,7 +2,6 @@ package postgresdbfx
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb"
-	gormconfigs "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/configs"
 	postgresdbmigrations "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/migrations"
 	"go.uber.org/fx"
 )
@@ -17,7 +16,7 @@ import (
 var ProvideModule = fx.Module(
 	"postgresdbProvideFx",
 	fx.Provide(
-		gormconfigs.NewGormDBConfig,
+		postgresdb.NewGormDBConfig,
 		postgresdb.NewGormDB,
 	),
 )

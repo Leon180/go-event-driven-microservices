@@ -1,6 +1,6 @@
 basePath: /v1/accounts
 definitions:
-  customizeginresponse.APIError:
+  customizegin.APIError:
     properties:
       code:
         type: integer
@@ -9,11 +9,11 @@ definitions:
       status:
         type: integer
     type: object
-  customizeginresponse.JSONResponse:
+  customizegin.JSONResponse:
     properties:
       data: {}
       error:
-        $ref: '#/definitions/customizeginresponse.APIError'
+        $ref: '#/definitions/customizegin.APIError'
       message:
         type: string
       success:
@@ -95,7 +95,7 @@ paths:
         "200":
           description: Account created successfully
           schema:
-            $ref: '#/definitions/customizeginresponse.JSONResponse'
+            $ref: '#/definitions/customizegin.JSONResponse'
       summary: Create a new account
       tags:
       - accounts
@@ -115,7 +115,7 @@ paths:
         "200":
           description: account deleted successfully
           schema:
-            $ref: '#/definitions/customizeginresponse.JSONResponse'
+            $ref: '#/definitions/customizegin.JSONResponse'
       summary: Delete an account
       tags:
       - accounts
@@ -135,7 +135,7 @@ paths:
         "200":
           description: account restored successfully
           schema:
-            $ref: '#/definitions/customizeginresponse.JSONResponse'
+            $ref: '#/definitions/customizegin.JSONResponse'
       summary: Restore an account
       tags:
       - accounts
@@ -157,7 +157,7 @@ paths:
         "200":
           description: account updated successfully
           schema:
-            $ref: '#/definitions/customizeginresponse.JSONResponse'
+            $ref: '#/definitions/customizegin.JSONResponse'
       summary: Update an account
       tags:
       - accounts
@@ -177,7 +177,7 @@ paths:
         "200":
           description: accounts retrieved successfully
           schema:
-            $ref: '#/definitions/customizeginresponse.JSONResponse'
+            $ref: '#/definitions/customizegin.JSONResponse'
       summary: Get accounts by mobile number
       tags:
       - accounts

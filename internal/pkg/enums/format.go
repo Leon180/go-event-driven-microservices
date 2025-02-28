@@ -21,7 +21,7 @@ func (f Format) ValidateFormatString(st string) bool {
 	return matched
 }
 
-func (f Format) ValidateFormat(st interface{}) bool {
+func (f Format) ValidateFormat(st any) bool {
 	switch v := st.(type) {
 	case string:
 		return f.ValidateFormatString(v)

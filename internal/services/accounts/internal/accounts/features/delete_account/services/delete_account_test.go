@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/dtos"
 	mocksrepositories "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/mocks"
@@ -62,13 +61,13 @@ func TestDeleteAccount(t *testing.T) {
 					ID:              "1111111111",
 					MobileNumber:    "1111111111",
 					AccountNumber:   "1111111111",
-					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
+					AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+					BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
 					ActiveSwitch:    false,
 				}, nil).AnyTimes()
 			},
 			req:         &featuresdtos.DeleteAccountRequest{ID: "1111111111"},
-			expectError: nil,
+			expectError: customizeerrors.AccountAlreadyDeletedError,
 		},
 		{
 			name: "account successfully deleted",
@@ -77,8 +76,8 @@ func TestDeleteAccount(t *testing.T) {
 					ID:              "1234567890",
 					MobileNumber:    "1234567890",
 					AccountNumber:   "1234567890",
-					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
+					AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+					BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
 					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 				mockUpdateAccountByIDRepository.EXPECT().UpdateAccountByID(ctx, gomock.Any()).Return(nil).AnyTimes()

@@ -1,0 +1,233 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Simple service for cards resources",
+        "title": "Cards Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:7002",
+    "basePath": "/v1/cards",
+    "paths": {
+        "/credit-card/create": {
+            "post": {
+                "description": "Create a new credit card",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Create a new credit card",
+                "parameters": [
+                    {
+                        "description": "Credit Card",
+                        "name": "credit-card",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.CreateCreditCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Credit Card created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/credit-card/delete": {
+            "post": {
+                "description": "Delete a credit card",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Delete a credit card",
+                "parameters": [
+                    {
+                        "description": "Credit Card",
+                        "name": "credit-card",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.DeleteCreditCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Credit Card deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/credit-card/update": {
+            "put": {
+                "description": "Update an card",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Update an card",
+                "parameters": [
+                    {
+                        "description": "Card",
+                        "name": "card",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.UpdateCreditCardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "card updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/credit-cards/get": {
+            "post": {
+                "description": "Get credit cards by mobile number and active switch",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cards"
+                ],
+                "summary": "Get credit cards by mobile number and active switch",
+                "parameters": [
+                    {
+                        "description": "Credit Card",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.GetCreditCardsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "credit card retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "customizegin.APIError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "customizegin.JSONResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/customizegin.APIError"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "featuresdtos.CreateCreditCardRequest": {
+            "type": "object",
+            "required": [
+                "mobile_number",
+                "total_limit"
+            ],
+            "properties": {
+                "mobile_number": {
+                    "description": "@example 0958308280",
+                    "type": "string"
+                },
+                "total_limit": {
+                    "description": "@example 100000",
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.DeleteCreditCardRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.GetCreditCardsRequest": {
+            "type": "object",
+            "required": [
+                "mobile_number"
+            ],
+            "properties": {
+                "active_switch": {
+                    "type": "boolean"
+                },
+                "mobile_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.UpdateCreditCardRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "amount_used": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "type": "string"
+                },
+                "total_limit": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

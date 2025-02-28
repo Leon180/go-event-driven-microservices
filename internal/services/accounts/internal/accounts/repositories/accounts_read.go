@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 )
 
@@ -14,7 +14,7 @@ type ReadAccountsByMobileNumber interface {
 }
 
 type ReadAccountByMobileNumberAndAccountType interface {
-	ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) (*entities.Account, error)
+	ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enums.AccountTypeCode) (*entities.Account, error)
 }
 
 type ReadAccount interface {

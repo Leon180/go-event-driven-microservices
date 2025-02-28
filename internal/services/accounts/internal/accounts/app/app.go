@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/fxapp"
+	fxapp "github.com/Leon180/go-event-driven-microservices/internal/pkg/fxapp"
 	accountsfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/fx"
 )
 

@@ -22,11 +22,21 @@ var (
 	InvalidMobileNumberError = newErrorFromErrorCode(InvalidMobileNumber)
 	InvalidAccountTypeError  = newErrorFromErrorCode(InvalidAccountType)
 	InvalidBranchError       = newErrorFromErrorCode(InvalidBranch)
+	InvalidDecimalError      = newErrorFromErrorCode(InvalidDecimal)
 
 	// Account
-	AccountAlreadyExistsError = newErrorFromErrorCode(AccountAlreadyExists)
-	AccountNotFoundError      = newErrorFromErrorCode(AccountNotFound)
-	AccountNoUpdatesError     = newErrorFromErrorCode(AccountNoUpdates)
+	AccountAlreadyExistsError   = newErrorFromErrorCode(AccountAlreadyExists)
+	AccountNotFoundError        = newErrorFromErrorCode(AccountNotFound)
+	AccountNoUpdatesError       = newErrorFromErrorCode(AccountNoUpdates)
+	AccountAlreadyDeletedError  = newErrorFromErrorCode(AccountAlreadyDeleted)
+	AccountAlreadyRestoredError = newErrorFromErrorCode(AccountAlreadyRestored)
+
+	// Card
+	CardAlreadyExistsError   = newErrorFromErrorCode(CardAlreadyExists)
+	CardNotFoundError        = newErrorFromErrorCode(CardNotFound)
+	CardNoUpdatesError       = newErrorFromErrorCode(CardNoUpdates)
+	CardAlreadyDeletedError  = newErrorFromErrorCode(CardAlreadyDeleted)
+	CardAlreadyRestoredError = newErrorFromErrorCode(CardAlreadyRestored)
 )
 
 type CustomError interface {
@@ -55,11 +65,21 @@ const (
 	InvalidMobileNumber ErrorCode = 21002
 	InvalidAccountType  ErrorCode = 21003
 	InvalidBranch       ErrorCode = 21004
+	InvalidDecimal      ErrorCode = 21005
 
 	// Account
-	AccountAlreadyExists ErrorCode = 30001
-	AccountNotFound      ErrorCode = 30002
-	AccountNoUpdates     ErrorCode = 30003
+	AccountAlreadyExists   ErrorCode = 30001
+	AccountNotFound        ErrorCode = 30002
+	AccountNoUpdates       ErrorCode = 30003
+	AccountAlreadyDeleted  ErrorCode = 30004
+	AccountAlreadyRestored ErrorCode = 30005
+
+	// Card
+	CardAlreadyExists   ErrorCode = 31001
+	CardNotFound        ErrorCode = 31002
+	CardNoUpdates       ErrorCode = 31003
+	CardAlreadyDeleted  ErrorCode = 31004
+	CardAlreadyRestored ErrorCode = 31005
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -79,11 +99,21 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	InvalidMobileNumber: "mobile number is invalid",
 	InvalidAccountType:  "account type is invalid",
 	InvalidBranch:       "branch is invalid",
+	InvalidDecimal:      "decimal is invalid",
 
 	// Account
-	AccountAlreadyExists: "account already exists",
-	AccountNotFound:      "account not found",
-	AccountNoUpdates:     "account no updates",
+	AccountAlreadyExists:   "account already exists",
+	AccountNotFound:        "account not found",
+	AccountNoUpdates:       "account no updates",
+	AccountAlreadyDeleted:  "account already deleted",
+	AccountAlreadyRestored: "account already restored",
+
+	// Card
+	CardAlreadyExists:   "card already exists",
+	CardNotFound:        "card not found",
+	CardNoUpdates:       "card no updates",
+	CardAlreadyDeleted:  "card already deleted",
+	CardAlreadyRestored: "card already restored",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -103,11 +133,21 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	InvalidMobileNumber: http.StatusBadRequest,
 	InvalidAccountType:  http.StatusBadRequest,
 	InvalidBranch:       http.StatusBadRequest,
+	InvalidDecimal:      http.StatusBadRequest,
 
 	// Account
-	AccountAlreadyExists: http.StatusConflict,
-	AccountNotFound:      http.StatusNotFound,
-	AccountNoUpdates:     http.StatusOK,
+	AccountAlreadyExists:   http.StatusConflict,
+	AccountNotFound:        http.StatusNotFound,
+	AccountNoUpdates:       http.StatusOK,
+	AccountAlreadyDeleted:  http.StatusOK,
+	AccountAlreadyRestored: http.StatusOK,
+
+	// Card
+	CardAlreadyExists:   http.StatusConflict,
+	CardNotFound:        http.StatusNotFound,
+	CardNoUpdates:       http.StatusOK,
+	CardAlreadyDeleted:  http.StatusOK,
+	CardAlreadyRestored: http.StatusOK,
 }
 
 func (e ErrorCode) GetCode() int {

@@ -3,8 +3,7 @@ package repositoriespostgres
 import (
 	"context"
 
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
@@ -50,7 +49,7 @@ func NewReadAccountByMobileNumberAndAccountType(
 	}
 }
 
-func (handle *readAccountByMobileNumberAndAccountTypeImpl) ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) (*entities.Account, error) {
+func (handle *readAccountByMobileNumberAndAccountTypeImpl) ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enums.AccountTypeCode) (*entities.Account, error) {
 	var account entities.Account
 	if err := handle.db.WithContext(ctx).Where("mobile_number = ? AND account_type_code = ?", mobileNumber, accountTypeCode).Limit(1).Find(&account).Error; err != nil {
 		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error getting account with history by mobile number and account type")

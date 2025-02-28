@@ -2,9 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "berforeInitServer",
+            "label": "berforeInitAccountsServer",
             "type": "shell",
-            "command": "go mod tidy; go get ; go generate ./...;git rev-parse --short HEAD > .git-revision-num;if [ ! -f '.env' ]; then touch .env ;fi; go test ./... -v -cover"
+            "command": "cd internal/services/accounts; go mod tidy; go generate ./...; go test ./... -v -cover"
+        },
+        {
+            "label": "berforeInitCardsServer",
+            "type": "shell",
+            "command": "cd internal/services/cards; go mod tidy; go generate ./...; go test ./... -v -cover"
         }
     ]
 }

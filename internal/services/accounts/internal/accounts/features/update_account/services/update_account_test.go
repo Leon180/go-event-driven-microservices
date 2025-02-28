@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	mocksrepositories "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/mocks"
@@ -31,9 +30,9 @@ func TestUpdateAccount(t *testing.T) {
 	invalidMobileNumber := "123456789000"
 	validMobileNumber := "1234567890"
 	updateMobileNumber := "1234567891"
-	invalidBranchAddress := enumsbanks.BanksBranchInvalid.ToString()
-	validBranchAddress := enumsbanks.BanksBranchTaipeiSongshan.ToString()
-	updateBranchAddress := enumsbanks.BanksBranchTaipeiZhongshan.ToString()
+	invalidBranchAddress := enums.BanksBranchInvalid.ToString()
+	validBranchAddress := enums.BanksBranchTaipeiSongshan.ToString()
+	updateBranchAddress := enums.BanksBranchTaipeiZhongshan.ToString()
 
 	// Test cases
 	var tests = []struct {
@@ -81,8 +80,8 @@ func TestUpdateAccount(t *testing.T) {
 					ID:              "1111111111",
 					MobileNumber:    validMobileNumber,
 					AccountNumber:   "1111111111",
-					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranch(validBranchAddress).ToBanksBranchCode(),
+					AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+					BranchCode:      enums.BanksBranch(validBranchAddress).ToBanksBranchCode(),
 					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 			},
@@ -96,8 +95,8 @@ func TestUpdateAccount(t *testing.T) {
 					ID:              "1234567890",
 					MobileNumber:    validMobileNumber,
 					AccountNumber:   "1234567890",
-					AccountTypeCode: enumsaccounts.AccountTypeSavings.ToAccountTypeCode(),
-					BranchCode:      enumsbanks.BanksBranch(validBranchAddress).ToBanksBranchCode(),
+					AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+					BranchCode:      enums.BanksBranch(validBranchAddress).ToBanksBranchCode(),
 					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 				mockUpdateAccountByIDRepository.EXPECT().UpdateAccountByID(ctx, gomock.Any()).Return(nil).AnyTimes()

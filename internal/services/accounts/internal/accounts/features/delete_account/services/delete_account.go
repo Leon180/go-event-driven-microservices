@@ -43,7 +43,7 @@ func (handle *deleteAccountImpl) DeleteAccount(ctx context.Context, req *feature
 		return customizeerrors.AccountNotFoundError
 	}
 	if !account.IsActive() {
-		return nil
+		return customizeerrors.AccountAlreadyDeletedError
 	}
 	activeSwitch := false
 	updateAccount := entities.UpdateAccount{

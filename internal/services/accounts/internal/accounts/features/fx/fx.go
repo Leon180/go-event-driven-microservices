@@ -3,8 +3,8 @@ package featuresfx
 import (
 	"fmt"
 
-	customizeginendpoints "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/endpoints"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	createAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/gin_endpoints"
 	createAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/services"
 	deleteAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/gin_endpoints"
@@ -73,7 +73,7 @@ func fxTagEndpoints(handlers ...any) []any {
 func fxTagEndpoint(handler any) any {
 	return fx.Annotate(
 		handler,
-		fx.As(new(customizeginendpoints.Endpoint)),
+		fx.As(new(customizegin.Endpoint)),
 		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupEndpoints.ToString())),
 	)
 }

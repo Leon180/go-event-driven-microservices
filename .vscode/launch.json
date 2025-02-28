@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Debug Accounts",
             "type": "go",
             "request": "launch",
             "mode": "auto",
@@ -13,23 +13,24 @@
             "env": {
                 "TZ": "Asia/Taipei",
                 "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
-                // "GormLogLevel": "4", // set gorm log level Info
                 "CGO_ENABLED": "1"
             },
             "args": [],
-            "preLaunchTask": "berforeInitServer" // 更新swagger文件, mod參考
+            "preLaunchTask": "berforeInitAccountsServer" // 更新swagger文件, mod參考
         },
         {
-            "name": "Launch debug",
+            "name": "Debug Cards",
             "type": "go",
-            "request": "attach",
-            "mode": "remote",
-            "remotePath": "",
-            "port": 2345,
-            "host": "127.0.0.1",
-            "cwd": "${workspaceFolder}",
-            "trace": "verbose",
-            "apiVersion": 2,
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/internal/services/cards/cmd/app/main.go",
+            "env": {
+                "TZ": "Asia/Taipei",
+                "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
+                "CGO_ENABLED": "1"
+            },
+            "args": [],
+            "preLaunchTask": "berforeInitCardsServer" // 更新swagger文件, mod參考
         },
-    ]
+    ],
 }
