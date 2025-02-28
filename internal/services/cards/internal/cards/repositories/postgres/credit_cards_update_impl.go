@@ -10,8 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:generate mockgen -source=credit_cards_update_impl.go -destination=./mocks/credit_cards_update_impl_mock.go -package=mocks
-
 type updateCreditCardByIDImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
