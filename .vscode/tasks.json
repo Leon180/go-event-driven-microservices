@@ -15,6 +15,11 @@
             "label": "berforeInitCustomersServer",
             "type": "shell",
             "command": "cd internal/services/customers; go mod tidy; go generate ./...; go test ./... -v -cover"
+        },
+        {
+            "label": "berforeInitLoansServer",
+            "type": "shell",
+            "command": "cd internal/services/loans; go mod tidy; go generate ./...; go test ./... -v -cover"
         }
     ]
 }
