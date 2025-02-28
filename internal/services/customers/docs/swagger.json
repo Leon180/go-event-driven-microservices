@@ -1,0 +1,246 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Simple service for customers resources",
+        "title": "Customers Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:7003",
+    "basePath": "/v1/customers",
+    "paths": {
+        "/customer/create": {
+            "post": {
+                "description": "Create a new customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Create a new customer",
+                "parameters": [
+                    {
+                        "description": "Customer",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.CreateCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/delete": {
+            "post": {
+                "description": "Delete a customer",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Delete a customer",
+                "parameters": [
+                    {
+                        "description": "Customer",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.DeleteCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/get": {
+            "post": {
+                "description": "Get customer by mobile number and active switch",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get customer by mobile number and active switch",
+                "parameters": [
+                    {
+                        "description": "Customer",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.GetCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "customer retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/update": {
+            "put": {
+                "description": "Update an customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Update an customer",
+                "parameters": [
+                    {
+                        "description": "Customer",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.UpdateCustomerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "customer updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "customizegin.APIError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "customizegin.JSONResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/customizegin.APIError"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "featuresdtos.CreateCustomerRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "mobile_number"
+            ],
+            "properties": {
+                "email": {
+                    "description": "@example john.doe@example.com",
+                    "type": "string"
+                },
+                "first_name": {
+                    "description": "@example John",
+                    "type": "string"
+                },
+                "last_name": {
+                    "description": "@example Doe",
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "description": "@example 0958308280",
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.DeleteCustomerRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.GetCustomerRequest": {
+            "type": "object",
+            "required": [
+                "mobile_number"
+            ],
+            "properties": {
+                "active_switch": {
+                    "type": "boolean"
+                },
+                "mobile_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "featuresdtos.UpdateCustomerRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
