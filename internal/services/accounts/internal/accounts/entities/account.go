@@ -1,18 +1,17 @@
 package entities
 
 import (
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/samber/lo"
 )
 
 type Account struct {
-	ID              string                        `gorm:"primaryKey;type:uuid" comment:"ID"`
-	MobileNumber    string                        `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
-	AccountNumber   string                        `gorm:"not null;type:varchar(20)" comment:"Account Number"`
-	AccountTypeCode enumsaccounts.AccountTypeCode `gorm:"not null;type:int" comment:"Account Type Code"`
-	BranchCode      enumsbanks.BanksBranchCode    `gorm:"not null;type:int" comment:"Branch Code"`
-	ActiveSwitch    bool                          `gorm:"not null;type:boolean" comment:"Active Switch"`
+	ID              string                `gorm:"primaryKey;type:uuid" comment:"ID"`
+	MobileNumber    string                `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
+	AccountNumber   string                `gorm:"not null;type:varchar(20)" comment:"Account Number"`
+	AccountTypeCode enums.AccountTypeCode `gorm:"not null;type:int" comment:"Account Type Code"`
+	BranchCode      enums.BanksBranchCode `gorm:"not null;type:int" comment:"Branch Code"`
+	ActiveSwitch    bool                  `gorm:"not null;type:boolean" comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 
@@ -22,7 +21,7 @@ func (a *Account) IsActive() bool {
 
 type Accounts []Account
 
-func (a Accounts) IncludeAccountTypeCode(mobileNumber string, accountTypeCode enumsaccounts.AccountTypeCode) bool {
+func (a Accounts) IncludeAccountTypeCode(mobileNumber string, accountTypeCode enums.AccountTypeCode) bool {
 	_, ok := lo.Find(a, func(a Account) bool {
 		return a.MobileNumber == mobileNumber && a.AccountTypeCode == accountTypeCode
 	})
@@ -33,7 +32,7 @@ type UpdateAccount struct {
 	ID            string
 	MobileNumber  *string
 	AccountNumber *string
-	BranchCode    *enumsbanks.BanksBranchCode
+	BranchCode    *enums.BanksBranchCode
 	ActiveSwitch  *bool
 }
 

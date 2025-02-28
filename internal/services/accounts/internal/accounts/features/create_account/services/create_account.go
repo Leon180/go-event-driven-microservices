@@ -6,14 +6,13 @@ import (
 	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/validates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"
-	accountnumberutilities "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number.go"
+	accountnumberutilities "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number"
 )
 
 type CreateAccount interface {
@@ -53,8 +52,8 @@ func (handle *createAccountImpl) CreateAccount(ctx context.Context, req *feature
 		ID:              handle.uuidGenerator.GenerateUUID(),
 		MobileNumber:    req.MobileNumber,
 		AccountNumber:   handle.accountNumberGenerator.GenerateAccountNumber(),
-		AccountTypeCode: enumsaccounts.AccountType(strings.ToLower(req.AccountType)).ToAccountTypeCode(),
-		BranchCode:      enumsbanks.BanksBranch(strings.ToLower(req.Branch)).ToBanksBranchCode(),
+		AccountTypeCode: enums.AccountType(strings.ToLower(req.AccountType)).ToAccountTypeCode(),
+		BranchCode:      enums.BanksBranch(strings.ToLower(req.Branch)).ToBanksBranchCode(),
 		ActiveSwitch:    true,
 		CommonHistoryModelWithUpdate: entities.CommonHistoryModelWithUpdate{
 			CommonHistoryModel: entities.CommonHistoryModel{

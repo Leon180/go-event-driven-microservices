@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Account created successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -74,7 +74,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account deleted successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -105,7 +105,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account restored successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -139,7 +139,7 @@ const docTemplate = `{
                     "200": {
                         "description": "account updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -170,7 +170,7 @@ const docTemplate = `{
                     "200": {
                         "description": "accounts retrieved successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -178,7 +178,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "customizeginresponse.APIError": {
+        "customizegin.APIError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -192,12 +192,12 @@ const docTemplate = `{
                 }
             }
         },
-        "customizeginresponse.JSONResponse": {
+        "customizegin.JSONResponse": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
-                    "$ref": "#/definitions/customizeginresponse.APIError"
+                    "$ref": "#/definitions/customizegin.APIError"
                 },
                 "message": {
                     "type": "string"

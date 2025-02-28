@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	ginserver "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server"
-	ginendpoints "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/endpoints"
-	ginmiddlewares "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server/middlewares"
+	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
+	customizeginmiddlewares "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/middlewares"
+	customizeginserver "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/server"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"go.uber.org/fx"
 )
@@ -29,10 +29,10 @@ var ProvideModule = fx.Module(
 	"ginserverProvideFx",
 	fx.Provide(
 		fx.Annotate(
-			ginmiddlewares.NewTraceIDMiddleware,
+			customizeginmiddlewares.NewTraceIDMiddleware,
 			fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupMiddlewares.ToString())),
 		),
-		ginserver.NewGinServer,
+		customizeginserver.NewGinServer,
 	),
 )
 
@@ -50,9 +50,9 @@ type RegisterHooksParams struct {
 	fx.In
 
 	Lc          fx.Lifecycle
-	Server      ginserver.GinServer
-	Middlewares []ginmiddlewares.GinMiddleware `group:"middlewares"`
-	Endpoints   []ginendpoints.Endpoint        `group:"endpoints"`
+	Server      customizegin.GinServer
+	Middlewares []customizegin.GinMiddleware `group:"middlewares"`
+	Endpoints   []customizegin.Endpoint      `group:"endpoints"`
 }
 
 func registerHooks(

@@ -37,7 +37,7 @@
                     "200": {
                         "description": "Account created successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -68,7 +68,7 @@
                     "200": {
                         "description": "account deleted successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -99,7 +99,7 @@
                     "200": {
                         "description": "account restored successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -133,7 +133,7 @@
                     "200": {
                         "description": "account updated successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -164,7 +164,7 @@
                     "200": {
                         "description": "accounts retrieved successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizeginresponse.JSONResponse"
+                            "$ref": "#/definitions/customizegin.JSONResponse"
                         }
                     }
                 }
@@ -172,7 +172,7 @@
         }
     },
     "definitions": {
-        "customizeginresponse.APIError": {
+        "customizegin.APIError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -186,12 +186,12 @@
                 }
             }
         },
-        "customizeginresponse.JSONResponse": {
+        "customizegin.JSONResponse": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
-                    "$ref": "#/definitions/customizeginresponse.APIError"
+                    "$ref": "#/definitions/customizegin.APIError"
                 },
                 "message": {
                     "type": "string"

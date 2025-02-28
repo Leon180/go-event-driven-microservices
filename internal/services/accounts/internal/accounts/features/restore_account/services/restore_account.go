@@ -43,7 +43,7 @@ func (handle *restoreAccountImpl) RestoreAccount(ctx context.Context, req *featu
 		return customizeerrors.AccountNotFoundError
 	}
 	if account.IsActive() {
-		return nil
+		return customizeerrors.AccountAlreadyRestoredError
 	}
 	activeSwitch := true
 	updateAccount := entities.UpdateAccount{

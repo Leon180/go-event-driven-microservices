@@ -4,8 +4,7 @@ import (
 	"strings"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 )
 
@@ -18,7 +17,7 @@ func ValidateUpdateAccountRequest(req featuresdtos.UpdateAccountRequest) error {
 			return customizeerrors.InvalidMobileNumberError
 		}
 	}
-	if req.BranchAddress != nil && !enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress)).IsValid() {
+	if req.BranchAddress != nil && !enums.BanksBranch(strings.ToLower(*req.BranchAddress)).IsValid() {
 		return customizeerrors.InvalidBranchError
 	}
 	return nil

@@ -1,7 +1,7 @@
 package configsfx
 
 import (
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/configs"
+	accountconfigs "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/configs"
 	"go.uber.org/fx"
 )
 
@@ -13,6 +13,6 @@ import (
 var ProvideModule = fx.Module(
 	"configsProvideFx",
 	fx.Provide(
-		configs.NewAppConfig,
+		accountconfigs.NewAppConfig,
 	),
 )

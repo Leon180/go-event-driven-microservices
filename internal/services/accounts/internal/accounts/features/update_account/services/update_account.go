@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/validates"
@@ -49,9 +49,9 @@ func (handle *updateAccountImpl) UpdateAccount(ctx context.Context, req *feature
 		ID:            account.ID,
 		MobileNumber:  req.MobileNumber,
 		AccountNumber: req.AccountNumber,
-		BranchCode: func() *enumsbanks.BanksBranchCode {
+		BranchCode: func() *enums.BanksBranchCode {
 			if req.BranchAddress != nil {
-				branchCode := enumsbanks.BanksBranch(strings.ToLower(*req.BranchAddress)).ToBanksBranchCode()
+				branchCode := enums.BanksBranch(strings.ToLower(*req.BranchAddress)).ToBanksBranchCode()
 				return &branchCode
 			}
 			return nil

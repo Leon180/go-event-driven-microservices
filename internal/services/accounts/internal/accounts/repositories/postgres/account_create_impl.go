@@ -3,7 +3,7 @@ package repositoriespostgres
 import (
 	"context"
 
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories"

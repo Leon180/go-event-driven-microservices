@@ -1,8 +1,7 @@
 package featuresdtos
 
 import (
-	enumsaccounts "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/accounts"
-	enumsbanks "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums/banks"
+	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/entities"
 	"github.com/samber/lo"
@@ -12,8 +11,8 @@ type GetAccountsResponse struct {
 	ID            string                            `json:"id"`
 	MobileNumber  string                            `json:"mobile_number"`
 	AccountNumber string                            `json:"account_number"`
-	AccountType   enumsaccounts.AccountType         `json:"account_type"`
-	Branch        enumsbanks.BanksBranch            `json:"branch"`
+	AccountType   enums.AccountType                 `json:"account_type"`
+	Branch        enums.BanksBranch                 `json:"branch"`
 	ActiveSwitch  bool                              `json:"active_switch"`
 	History       dtos.CommonHistoryModelWithUpdate `json:"history"`
 }

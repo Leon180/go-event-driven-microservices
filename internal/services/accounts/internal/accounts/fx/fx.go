@@ -10,7 +10,7 @@ import (
 	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/fx"
 	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/fx"
 	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/fx"
-	accountnumberutilitiesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number.go/fx"
+	accountnumberutilitiesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number/fx"
 	"go.uber.org/fx"
 )
 

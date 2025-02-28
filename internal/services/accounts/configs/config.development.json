@@ -1,5 +1,5 @@
 {
-  "app": {
+  "appConfig": {
     "connWebPort": "7001",
     "serviceName": "accounts",
     "version": "v1",
@@ -10,14 +10,14 @@
     "allowHeaders": "X-PINGOTHER, Accept, Authorization, Content-Type, X-CSRF-Token, Upgrade, Origin, Connection, Accept-Encoding, Accept-Language, Host, Access-Control-Request-Method, Access-Control-Request-Headers",
     "exposeHeaders": "Content-Length, Link"
   },
-  "gormdb": {
+  "gormDBConfig": {
     "dsn": "postgresql://postgres:postgres@localhost:5432/accounts?sslmode=disable",
     "dbDisableForeignKeyConstraintWhenMigrating": false,
     "dbMaxIdle": 10,
     "dbMaxOpen": 100,
     "dbMaxLifetimeMinute": 10
   },
-  "logger": {
+  "loggerConfig": {
     "logLevel": -1,
     "callerEnabled": true,
     "enableTracing": true

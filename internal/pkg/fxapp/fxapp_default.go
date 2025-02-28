@@ -8,14 +8,14 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/environments"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
-	fxlogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx_logger"
-	zaplogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/zap_logger"
+	fxcustomizelogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx_customize_logger"
+	zapcustomizelogger "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/zap_customize_logger"
 	"go.uber.org/fx"
 )
 
 func NewFxApp() FxApp {
 	env := environments.InitEnv()
-	logger := zaplogger.NewZapLogger(env)
+	logger := zapcustomizelogger.NewZapLogger(env)
 	return &fxAppImpl{
 		logger: logger,
 		env:    env,
@@ -78,7 +78,7 @@ func createFxApp(
 	logger loggers.Logger,
 ) *fx.App {
 	return fx.New(
-		fxlogger.FxLogger,
+		fxcustomizelogger.FxLogger,
 		fx.StartTimeout(30*time.Second),
 		fx.ErrorHook(newFxErrorHandler(logger)),
 		fx.Module("fxapp",

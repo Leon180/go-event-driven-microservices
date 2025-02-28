@@ -26,10 +26,10 @@ func NewUpdateAccountByID(
 }
 
 func (handle *updateAccountByIDImpl) UpdateAccountByID(ctx context.Context, update entities.UpdateAccount) error {
-	updateMap := update.ToUpdateMap()
-	if update.ID == "" || len(updateMap) == 0 {
+	if update.NoUpdates() {
 		return nil
 	}
+	updateMap := update.ToUpdateMap()
 	if err := handle.db.WithContext(ctx).Model(&entities.Account{}).Where("id = ?", update.ID).Updates(updateMap).Error; err != nil {
 		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error updating account by id")
 		return err
