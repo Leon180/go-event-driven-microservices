@@ -8,7 +8,7 @@ import (
 )
 
 var migrationsV2 = []*gormigrate.Migration{
-	v202502271845, // add user, session, place and favorite table
+	v202502271845, // add credit card table
 }
 
 var migrateOptionsV2 = &gormigrate.Options{
