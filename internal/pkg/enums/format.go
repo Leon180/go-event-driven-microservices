@@ -10,6 +10,7 @@ type Format string
 
 const (
 	MobileNumberFormat Format = "^[0-9]{10}$"
+	EmailFormat        Format = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
 )
 
 func (f Format) String() string {

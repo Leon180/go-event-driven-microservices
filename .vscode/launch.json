@@ -32,5 +32,19 @@
             "args": [],
             "preLaunchTask": "berforeInitCardsServer" // 更新swagger文件, mod參考
         },
+        {
+            "name": "Debug Customers",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/internal/services/customers/cmd/app/main.go",
+            "env": {
+                "TZ": "Asia/Taipei",
+                "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
+                "CGO_ENABLED": "1"
+            },
+            "args": [],
+            "preLaunchTask": "berforeInitCustomersServer" // 更新swagger文件, mod參考
+        },
     ],
 }
