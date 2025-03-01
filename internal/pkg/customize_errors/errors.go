@@ -53,6 +53,7 @@ var (
 	LoanNotFoundError       = newErrorFromErrorCode(LoanNotFound)
 	LoanNoUpdatesError      = newErrorFromErrorCode(LoanNoUpdates)
 	LoanAlreadyDeletedError = newErrorFromErrorCode(LoanAlreadyDeleted)
+	InvalidLoanTypeError    = newErrorFromErrorCode(InvalidLoanType)
 )
 
 type CustomError interface {
@@ -112,6 +113,7 @@ const (
 	LoanNotFound       ErrorCode = 33003
 	LoanNoUpdates      ErrorCode = 33004
 	LoanAlreadyDeleted ErrorCode = 33005
+	InvalidLoanType    ErrorCode = 33006
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -162,6 +164,7 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	LoanNotFound:       "loan not found",
 	LoanNoUpdates:      "loan no updates",
 	LoanAlreadyDeleted: "loan already deleted",
+	InvalidLoanType:    "loan type is invalid",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -212,6 +215,7 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	LoanNotFound:       http.StatusNotFound,
 	LoanNoUpdates:      http.StatusOK,
 	LoanAlreadyDeleted: http.StatusOK,
+	InvalidLoanType:    http.StatusBadRequest,
 }
 
 func (e ErrorCode) GetCode() int {

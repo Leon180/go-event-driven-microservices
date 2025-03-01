@@ -4,14 +4,13 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/cards/internal/cards/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/cards/internal/cards/entities"
 	"github.com/samber/lo"
-	"github.com/shopspring/decimal"
 )
 
 type GetCreditCardsResponse struct {
 	ID           string                            `json:"id"`
 	MobileNumber string                            `json:"mobile_number"`
-	TotalLimit   decimal.Decimal                   `json:"total_limit"`
-	AmountUsed   decimal.Decimal                   `json:"amount_used"`
+	TotalLimit   string                            `json:"total_limit"`
+	AmountUsed   string                            `json:"amount_used"`
 	ActiveSwitch bool                              `json:"active_switch"`
 	History      dtos.CommonHistoryModelWithUpdate `json:"history"`
 }
@@ -22,8 +21,8 @@ func (c *CreditCardEntity) ToGetCreditCardsResponse() *GetCreditCardsResponse {
 	return &GetCreditCardsResponse{
 		ID:           c.ID,
 		MobileNumber: c.MobileNumber,
-		TotalLimit:   c.TotalLimit,
-		AmountUsed:   c.AmountUsed,
+		TotalLimit:   c.TotalLimit.String(),
+		AmountUsed:   c.AmountUsed.String(),
 		ActiveSwitch: c.ActiveSwitch,
 		History: dtos.CommonHistoryModelWithUpdate{
 			CommonHistoryModel: dtos.CommonHistoryModel{

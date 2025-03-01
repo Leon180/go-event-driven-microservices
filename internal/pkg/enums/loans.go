@@ -1,5 +1,9 @@
 package enums
 
+const (
+	LoanNumberDigits = 16
+)
+
 type LoanType string
 
 const (
