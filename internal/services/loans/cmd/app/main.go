@@ -10,7 +10,7 @@ import (
 // @Title           Loans Service API
 // @Version         1.0
 // @Description     Simple service for loans resources
-// @Host           localhost:7003
+// @Host           localhost:7004
 // @BasePath       /v1/loans
 func main() {
 	app.NewLoansFxApp().Run()

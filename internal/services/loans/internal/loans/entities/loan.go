@@ -27,7 +27,6 @@ type Loans []Loan
 type UpdateLoan struct {
 	ID           string
 	MobileNumber *string
-	LoanTypeCode *enums.LoanTypeCode
 	TotalAmount  *decimal.Decimal
 	PaidAmount   *decimal.Decimal
 	InterestRate *decimal.Decimal
@@ -41,9 +40,6 @@ func (u *UpdateLoan) RemoveUnchangedFields(loan Loan) {
 	}
 	if u.MobileNumber != nil && *u.MobileNumber == loan.MobileNumber {
 		u.MobileNumber = nil
-	}
-	if u.LoanTypeCode != nil && *u.LoanTypeCode == loan.LoanTypeCode {
-		u.LoanTypeCode = nil
 	}
 	if u.TotalAmount != nil && u.TotalAmount.Equal(loan.TotalAmount) {
 		u.TotalAmount = nil
@@ -63,16 +59,13 @@ func (u *UpdateLoan) RemoveUnchangedFields(loan Loan) {
 }
 
 func (u *UpdateLoan) NoUpdates() bool {
-	return u.MobileNumber == nil && u.LoanTypeCode == nil && u.TotalAmount == nil && u.PaidAmount == nil && u.InterestRate == nil && u.Term == nil && u.ActiveSwitch == nil
+	return u.MobileNumber == nil && u.TotalAmount == nil && u.PaidAmount == nil && u.InterestRate == nil && u.Term == nil && u.ActiveSwitch == nil
 }
 
 func (u *UpdateLoan) ToUpdateMap() map[string]interface{} {
 	updateMap := make(map[string]interface{})
 	if u.MobileNumber != nil {
 		updateMap["mobile_number"] = *u.MobileNumber
-	}
-	if u.LoanTypeCode != nil {
-		updateMap["loan_type_code"] = *u.LoanTypeCode
 	}
 	if u.TotalAmount != nil {
 		updateMap["total_amount"] = *u.TotalAmount

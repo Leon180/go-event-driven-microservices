@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:7003",
+    "host": "localhost:7004",
     "basePath": "/v1/loans",
     "paths": {
         "/loan/create": {

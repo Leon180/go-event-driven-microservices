@@ -87,7 +87,7 @@ definitions:
     required:
     - id
     type: object
-host: localhost:7003
+host: localhost:7004
 info:
   contact: {}
   description: Simple service for loans resources
