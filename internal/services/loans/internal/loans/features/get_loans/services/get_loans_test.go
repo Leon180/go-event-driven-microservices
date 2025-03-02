@@ -17,7 +17,9 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockReadLoanByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadLoanByMobileNumberAndActiveSwitch(ctrl)
+	mockReadLoanByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadLoanByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 
 	service := NewGetLoansByMobileNumberAndActiveSwitch(
 		mockReadLoanByMobileNumberAndActiveSwitchRepository,
@@ -26,7 +28,7 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name         string
 		setup        func()
 		req          *featuresdtos.GetLoansRequest
@@ -50,7 +52,10 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "loan not found",
 			setup: func() {
-				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().ReadLoanByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).Return(nil, nil).AnyTimes()
+				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadLoanByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).
+					Return(nil, nil).
+					AnyTimes()
 			},
 			req:          &featuresdtos.GetLoansRequest{MobileNumber: "9999999999"},
 			expectResult: nil,
@@ -59,16 +64,19 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "loan found",
 			setup: func() {
-				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().ReadLoanByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).Return(entities.Loans{
-					entities.Loan{
-						ID:           "1234567890",
-						MobileNumber: "1234567890",
-						LoanNumber:   "1234567890",
-						TotalAmount:  decimal.NewFromInt(100000),
-						PaidAmount:   decimal.NewFromInt(0),
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadLoanByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).
+					Return(entities.Loans{
+						entities.Loan{
+							ID:           "1234567890",
+							MobileNumber: "1234567890",
+							LoanNumber:   "1234567890",
+							TotalAmount:  decimal.NewFromInt(100000),
+							PaidAmount:   decimal.NewFromInt(0),
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
 			req: &featuresdtos.GetLoansRequest{MobileNumber: "1234567890"},
 			expectResult: entities.Loans{

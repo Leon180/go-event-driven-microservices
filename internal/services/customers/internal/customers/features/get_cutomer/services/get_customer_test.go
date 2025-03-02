@@ -16,7 +16,9 @@ func TestGetCustomerByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockReadCustomerByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCustomerByMobileNumberAndActiveSwitch(ctrl)
+	mockReadCustomerByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCustomerByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 
 	service := NewGetCustomerByMobileNumberAndActiveSwitch(
 		mockReadCustomerByMobileNumberAndActiveSwitchRepository,
@@ -25,7 +27,7 @@ func TestGetCustomerByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name         string
 		setup        func()
 		req          *featuresdtos.GetCustomerRequest
@@ -49,7 +51,10 @@ func TestGetCustomerByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "credit card not found",
 			setup: func() {
-				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCustomerByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).Return(nil, nil).AnyTimes()
+				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCustomerByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).
+					Return(nil, nil).
+					AnyTimes()
 			},
 			req:          &featuresdtos.GetCustomerRequest{MobileNumber: "9999999999"},
 			expectResult: nil,
@@ -58,16 +63,19 @@ func TestGetCustomerByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "customer found",
 			setup: func() {
-				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).Return(entities.Customers{
-					entities.Customer{
-						ID:           "1234567890",
-						MobileNumber: "1234567890",
-						Email:        "test@test.com",
-						FirstName:    "Test",
-						LastName:     "Test",
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).
+					Return(entities.Customers{
+						entities.Customer{
+							ID:           "1234567890",
+							MobileNumber: "1234567890",
+							Email:        "test@test.com",
+							FirstName:    "Test",
+							LastName:     "Test",
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
 			req: &featuresdtos.GetCustomerRequest{MobileNumber: "1234567890"},
 			expectResult: entities.Customers{

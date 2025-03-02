@@ -9,7 +9,11 @@ import (
 //go:generate mockgen -source=credit_cards_read.go -destination=mocks/credit_cards_read_mock.go -package=mocks
 
 type ReadCreditCardByMobileNumberAndActiveSwitch interface {
-	ReadCreditCardByMobileNumberAndActiveSwitch(ctx context.Context, mobileNumber string, activeSwitch *bool) (entities.CreditCards, error)
+	ReadCreditCardByMobileNumberAndActiveSwitch(
+		ctx context.Context,
+		mobileNumber string,
+		activeSwitch *bool,
+	) (entities.CreditCards, error)
 }
 
 type ReadCreditCard interface {

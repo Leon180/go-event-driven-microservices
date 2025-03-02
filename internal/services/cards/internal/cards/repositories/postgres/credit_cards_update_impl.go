@@ -25,7 +25,10 @@ func NewUpdateCreditCardByID(
 	}
 }
 
-func (handle *updateCreditCardByIDImpl) UpdateCreditCardByID(ctx context.Context, update entities.UpdateCreditCard) error {
+func (handle *updateCreditCardByIDImpl) UpdateCreditCardByID(
+	ctx context.Context,
+	update entities.UpdateCreditCard,
+) error {
 	if update.NoUpdates() {
 		return nil
 	}

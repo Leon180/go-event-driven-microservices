@@ -48,7 +48,11 @@ func (handle *createLoanImpl) CreateLoan(ctx context.Context, req *featuresdtos.
 	}
 
 	activeSwitch := true
-	loans, err := handle.readLoanByMobileNumberAndActiveSwitch.ReadLoanByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, &activeSwitch)
+	loans, err := handle.readLoanByMobileNumberAndActiveSwitch.ReadLoanByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		&activeSwitch,
+	)
 	if err != nil {
 		return err
 	}

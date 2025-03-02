@@ -37,7 +37,7 @@ func TestUpdateAccount(t *testing.T) {
 	amountUsedZero := decimal.NewFromInt(0).String()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.UpdateCreditCardRequest
@@ -99,7 +99,12 @@ func TestUpdateAccount(t *testing.T) {
 					ActiveSwitch: true,
 				}, nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateCreditCardRequest{ID: "1111111111", MobileNumber: &validMobileNumber, TotalLimit: &validTotalLimit, AmountUsed: &amountUsedZero},
+			req: &featuresdtos.UpdateCreditCardRequest{
+				ID:           "1111111111",
+				MobileNumber: &validMobileNumber,
+				TotalLimit:   &validTotalLimit,
+				AmountUsed:   &amountUsedZero,
+			},
 			expectError: customizeerrors.CardNoUpdatesError,
 		},
 		{
@@ -116,7 +121,10 @@ func TestUpdateAccount(t *testing.T) {
 					AmountUsed:   decimal.Zero,
 					ActiveSwitch: true,
 				}, nil).AnyTimes()
-				mockUpdateCreditCardByIDRepository.EXPECT().UpdateCreditCardByID(ctx, gomock.Any()).Return(nil).AnyTimes()
+				mockUpdateCreditCardByIDRepository.EXPECT().
+					UpdateCreditCardByID(ctx, gomock.Any()).
+					Return(nil).
+					AnyTimes()
 			},
 			req:         &featuresdtos.UpdateCreditCardRequest{ID: "1234567890", AmountUsed: &validAmountUsed},
 			expectError: nil,

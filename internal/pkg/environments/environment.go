@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-
 	"github.com/spf13/viper"
 )
 

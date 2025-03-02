@@ -39,7 +39,10 @@ type createCreditCardImpl struct {
 	cardNumberGenerator                         cardnumberutilities.CardNumberGenerator
 }
 
-func (handle *createCreditCardImpl) CreateCreditCard(ctx context.Context, req *featuresdtos.CreateCreditCardRequest) error {
+func (handle *createCreditCardImpl) CreateCreditCard(
+	ctx context.Context,
+	req *featuresdtos.CreateCreditCardRequest,
+) error {
 	if req == nil {
 		return nil
 	}
@@ -48,7 +51,11 @@ func (handle *createCreditCardImpl) CreateCreditCard(ctx context.Context, req *f
 	}
 
 	activeSwitch := true
-	cards, err := handle.readCreditCardByMobileNumberAndActiveSwitch.ReadCreditCardByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, &activeSwitch)
+	cards, err := handle.readCreditCardByMobileNumberAndActiveSwitch.ReadCreditCardByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		&activeSwitch,
+	)
 	if err != nil {
 		return err
 	}

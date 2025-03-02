@@ -35,7 +35,7 @@ func TestCreateAccount(t *testing.T) {
 
 	// Test cases
 
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.CreateAccountRequest
@@ -48,21 +48,33 @@ func TestCreateAccount(t *testing.T) {
 			expectError: nil,
 		},
 		{
-			name:        "invalid request - invalid mobile number",
-			setup:       func() {},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "12345678900", AccountType: enums.AccountTypeSavings.ToString(), Branch: enums.BanksBranchTaipeiSongshan.ToString()},
+			name:  "invalid request - invalid mobile number",
+			setup: func() {},
+			req: &featuresdtos.CreateAccountRequest{
+				MobileNumber: "12345678900",
+				AccountType:  enums.AccountTypeSavings.ToString(),
+				Branch:       enums.BanksBranchTaipeiSongshan.ToString(),
+			},
 			expectError: customizeerrors.InvalidMobileNumberError,
 		},
 		{
-			name:        "invalid request - invalid account type",
-			setup:       func() {},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1234567890", AccountType: "invalid", Branch: enums.BanksBranchTaipeiSongshan.ToString()},
+			name:  "invalid request - invalid account type",
+			setup: func() {},
+			req: &featuresdtos.CreateAccountRequest{
+				MobileNumber: "1234567890",
+				AccountType:  "invalid",
+				Branch:       enums.BanksBranchTaipeiSongshan.ToString(),
+			},
 			expectError: customizeerrors.InvalidAccountTypeError,
 		},
 		{
-			name:        "invalid request - invalid branch",
-			setup:       func() {},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1234567890", AccountType: enums.AccountTypeSavings.ToString(), Branch: "invalid"},
+			name:  "invalid request - invalid branch",
+			setup: func() {},
+			req: &featuresdtos.CreateAccountRequest{
+				MobileNumber: "1234567890",
+				AccountType:  enums.AccountTypeSavings.ToString(),
+				Branch:       "invalid",
+			},
 			expectError: customizeerrors.InvalidBranchError,
 		},
 		{
@@ -70,10 +82,17 @@ func TestCreateAccount(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockAccountNumberGenerator.EXPECT().GenerateAccountNumber().Return("1234567890").AnyTimes()
-				mockReadAcountsByMobileNumberRepository.EXPECT().ReadAccountsByMobileNumber(ctx, "1234567890").Return(nil, nil).AnyTimes()
+				mockReadAcountsByMobileNumberRepository.EXPECT().
+					ReadAccountsByMobileNumber(ctx, "1234567890").
+					Return(nil, nil).
+					AnyTimes()
 				mockCreateAccountRepository.EXPECT().CreateAccount(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1234567890", AccountType: enums.AccountTypeSavings.ToString(), Branch: enums.BanksBranchTaipeiSongshan.ToString()},
+			req: &featuresdtos.CreateAccountRequest{
+				MobileNumber: "1234567890",
+				AccountType:  enums.AccountTypeSavings.ToString(),
+				Branch:       enums.BanksBranchTaipeiSongshan.ToString(),
+			},
 			expectError: nil,
 		},
 		{
@@ -81,19 +100,29 @@ func TestCreateAccount(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockAccountNumberGenerator.EXPECT().GenerateAccountNumber().Return("1234567890").AnyTimes()
-				mockReadAcountsByMobileNumberRepository.EXPECT().ReadAccountsByMobileNumber(ctx, "1111111111").Return(entities.Accounts{
-					entities.Account{
-						ID:              "1234567890",
-						MobileNumber:    "1111111111",
-						AccountNumber:   "1234567890",
-						AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
-						BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
-						ActiveSwitch:    true,
-					},
-				}, nil).AnyTimes()
-				mockCreateAccountRepository.EXPECT().CreateAccount(ctx, gomock.Any()).Return(customizeerrors.AccountAlreadyExistsError).AnyTimes()
+				mockReadAcountsByMobileNumberRepository.EXPECT().
+					ReadAccountsByMobileNumber(ctx, "1111111111").
+					Return(entities.Accounts{
+						entities.Account{
+							ID:              "1234567890",
+							MobileNumber:    "1111111111",
+							AccountNumber:   "1234567890",
+							AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+							BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
+							ActiveSwitch:    true,
+						},
+					}, nil).
+					AnyTimes()
+				mockCreateAccountRepository.EXPECT().
+					CreateAccount(ctx, gomock.Any()).
+					Return(customizeerrors.AccountAlreadyExistsError).
+					AnyTimes()
 			},
-			req:         &featuresdtos.CreateAccountRequest{MobileNumber: "1111111111", AccountType: enums.AccountTypeSavings.ToString(), Branch: enums.BanksBranchTaipeiSongshan.ToString()},
+			req: &featuresdtos.CreateAccountRequest{
+				MobileNumber: "1111111111",
+				AccountType:  enums.AccountTypeSavings.ToString(),
+				Branch:       enums.BanksBranchTaipeiSongshan.ToString(),
+			},
 			expectError: customizeerrors.AccountAlreadyExistsError,
 		},
 	}

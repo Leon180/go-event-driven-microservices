@@ -9,7 +9,11 @@ import (
 //go:generate mockgen -source=customers_read.go -destination=mocks/customers_read_mock.go -package=mocks
 
 type ReadCustomerByMobileNumberAndActiveSwitch interface {
-	ReadCustomerByMobileNumberAndActiveSwitch(ctx context.Context, mobileNumber string, activeSwitch *bool) (entities.Customers, error)
+	ReadCustomerByMobileNumberAndActiveSwitch(
+		ctx context.Context,
+		mobileNumber string,
+		activeSwitch *bool,
+	) (entities.Customers, error)
 }
 
 type ReadCustomer interface {

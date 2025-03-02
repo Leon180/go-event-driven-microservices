@@ -28,7 +28,7 @@ func TestDeleteCreditCard(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.DeleteLoanRequest

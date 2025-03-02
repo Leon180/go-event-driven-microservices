@@ -28,7 +28,7 @@ func TestDeleteCreditCard(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.DeleteCreditCardRequest
@@ -78,7 +78,10 @@ func TestDeleteCreditCard(t *testing.T) {
 					TotalLimit:   decimal.NewFromInt(100000),
 					ActiveSwitch: true,
 				}, nil).AnyTimes()
-				mockUpdateCreditCardByIDRepository.EXPECT().UpdateCreditCardByID(ctx, gomock.Any()).Return(nil).AnyTimes()
+				mockUpdateCreditCardByIDRepository.EXPECT().
+					UpdateCreditCardByID(ctx, gomock.Any()).
+					Return(nil).
+					AnyTimes()
 			},
 			req:         &featuresdtos.DeleteCreditCardRequest{ID: "1234567890"},
 			expectError: nil,

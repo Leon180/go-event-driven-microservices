@@ -28,7 +28,10 @@ type deleteCreditCardImpl struct {
 	updateCreditCardByIDRepository repositories.UpdateCreditCardByID
 }
 
-func (handle *deleteCreditCardImpl) DeleteCreditCard(ctx context.Context, req *featuresdtos.DeleteCreditCardRequest) error {
+func (handle *deleteCreditCardImpl) DeleteCreditCard(
+	ctx context.Context,
+	req *featuresdtos.DeleteCreditCardRequest,
+) error {
 	if req == nil {
 		return nil
 	}

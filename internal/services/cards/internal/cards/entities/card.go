@@ -5,12 +5,12 @@ import (
 )
 
 type CreditCard struct {
-	ID           string          `gorm:"primaryKey;type:uuid" comment:"ID"`
-	CardNumber   string          `gorm:"not null;type:varchar(20)" comment:"Card Number"`
-	MobileNumber string          `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
-	TotalLimit   decimal.Decimal `gorm:"type:NUMERIC(20,6)" comment:"Total Limit"`
+	ID           string          `gorm:"primaryKey;type:uuid"        comment:"ID"`
+	CardNumber   string          `gorm:"not null;type:varchar(20)"   comment:"Card Number"`
+	MobileNumber string          `gorm:"not null;type:varchar(20)"   comment:"Mobile Number"`
+	TotalLimit   decimal.Decimal `gorm:"type:NUMERIC(20,6)"          comment:"Total Limit"`
 	AmountUsed   decimal.Decimal `gorm:"not null;type:NUMERIC(20,6)" comment:"Amount Used"`
-	ActiveSwitch bool            `gorm:"not null;type:boolean" comment:"Active Switch"`
+	ActiveSwitch bool            `gorm:"not null;type:boolean"       comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 

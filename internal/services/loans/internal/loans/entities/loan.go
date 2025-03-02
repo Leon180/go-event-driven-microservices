@@ -6,15 +6,15 @@ import (
 )
 
 type Loan struct {
-	ID           string             `gorm:"primaryKey;type:uuid" comment:"ID"`
-	MobileNumber string             `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
-	LoanNumber   string             `gorm:"not null;type:varchar(20)" comment:"Loan Number"`
-	LoanTypeCode enums.LoanTypeCode `gorm:"not null;type:integer" comment:"Loan Type Code"`
-	TotalAmount  decimal.Decimal    `gorm:"type:NUMERIC(20,6)" comment:"Total Amount"`
+	ID           string             `gorm:"primaryKey;type:uuid"        comment:"ID"`
+	MobileNumber string             `gorm:"not null;type:varchar(20)"   comment:"Mobile Number"`
+	LoanNumber   string             `gorm:"not null;type:varchar(20)"   comment:"Loan Number"`
+	LoanTypeCode enums.LoanTypeCode `gorm:"not null;type:integer"       comment:"Loan Type Code"`
+	TotalAmount  decimal.Decimal    `gorm:"type:NUMERIC(20,6)"          comment:"Total Amount"`
 	PaidAmount   decimal.Decimal    `gorm:"not null;type:NUMERIC(20,6)" comment:"Paid Amount"`
-	InterestRate decimal.Decimal    `gorm:"type:NUMERIC(20,6)" comment:"Interest Rate"`
-	Term         int                `gorm:"not null;type:integer" comment:"Term"`
-	ActiveSwitch bool               `gorm:"not null;type:boolean" comment:"Active Switch"`
+	InterestRate decimal.Decimal    `gorm:"type:NUMERIC(20,6)"          comment:"Interest Rate"`
+	Term         int                `gorm:"not null;type:integer"       comment:"Term"`
+	ActiveSwitch bool               `gorm:"not null;type:boolean"       comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 
@@ -59,7 +59,9 @@ func (u *UpdateLoan) RemoveUnchangedFields(loan Loan) {
 }
 
 func (u *UpdateLoan) NoUpdates() bool {
-	return u.MobileNumber == nil && u.TotalAmount == nil && u.PaidAmount == nil && u.InterestRate == nil && u.Term == nil && u.ActiveSwitch == nil
+	return u.MobileNumber == nil && u.TotalAmount == nil && u.PaidAmount == nil && u.InterestRate == nil &&
+		u.Term == nil &&
+		u.ActiveSwitch == nil
 }
 
 func (u *UpdateLoan) ToUpdateMap() map[string]interface{} {

@@ -25,10 +25,14 @@ func NewReadAccountsByMobileNumber(
 	}
 }
 
-func (handle *readAccountsByMobileNumberImpl) ReadAccountsByMobileNumber(ctx context.Context, mobileNumber string) (entities.Accounts, error) {
+func (handle *readAccountsByMobileNumberImpl) ReadAccountsByMobileNumber(
+	ctx context.Context,
+	mobileNumber string,
+) (entities.Accounts, error) {
 	var accounts entities.Accounts
 	if err := handle.db.WithContext(ctx).Where("mobile_number = ?", mobileNumber).Find(&accounts).Error; err != nil {
-		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error getting account with history by mobile number")
+		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("error getting account with history by mobile number")
 		return nil, err
 	}
 	return accounts, nil
@@ -49,10 +53,15 @@ func NewReadAccountByMobileNumberAndAccountType(
 	}
 }
 
-func (handle *readAccountByMobileNumberAndAccountTypeImpl) ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enums.AccountTypeCode) (*entities.Account, error) {
+func (handle *readAccountByMobileNumberAndAccountTypeImpl) ReadAccountByMobileNumberAndAccountType(
+	ctx context.Context,
+	mobileNumber string,
+	accountTypeCode enums.AccountTypeCode,
+) (*entities.Account, error) {
 	var account entities.Account
 	if err := handle.db.WithContext(ctx).Where("mobile_number = ? AND account_type_code = ?", mobileNumber, accountTypeCode).Limit(1).Find(&account).Error; err != nil {
-		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error getting account with history by mobile number and account type")
+		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("error getting account with history by mobile number and account type")
 		return nil, err
 	}
 	if account.ID == "" {

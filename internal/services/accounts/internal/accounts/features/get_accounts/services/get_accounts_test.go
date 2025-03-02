@@ -26,7 +26,7 @@ func TestGetAccountsByMobileNumber(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name         string
 		setup        func()
 		req          *featuresdtos.GetAccountsByMobileNumberRequest
@@ -57,7 +57,10 @@ func TestGetAccountsByMobileNumber(t *testing.T) {
 		{
 			name: "account not found",
 			setup: func() {
-				mockReadAccountsByMobileNumberRepository.EXPECT().ReadAccountsByMobileNumber(ctx, "9999999999").Return(nil, nil).AnyTimes()
+				mockReadAccountsByMobileNumberRepository.EXPECT().
+					ReadAccountsByMobileNumber(ctx, "9999999999").
+					Return(nil, nil).
+					AnyTimes()
 			},
 			req:          &featuresdtos.GetAccountsByMobileNumberRequest{MobileNumber: "9999999999"},
 			expectResult: nil,
@@ -66,16 +69,19 @@ func TestGetAccountsByMobileNumber(t *testing.T) {
 		{
 			name: "account found",
 			setup: func() {
-				mockReadAccountsByMobileNumberRepository.EXPECT().ReadAccountsByMobileNumber(ctx, "1234567890").Return(entities.Accounts{
-					entities.Account{
-						ID:              "1234567890",
-						MobileNumber:    "1234567890",
-						AccountNumber:   "1234567890",
-						AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
-						BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
-						ActiveSwitch:    true,
-					},
-				}, nil).AnyTimes()
+				mockReadAccountsByMobileNumberRepository.EXPECT().
+					ReadAccountsByMobileNumber(ctx, "1234567890").
+					Return(entities.Accounts{
+						entities.Account{
+							ID:              "1234567890",
+							MobileNumber:    "1234567890",
+							AccountNumber:   "1234567890",
+							AccountTypeCode: enums.AccountTypeSavings.ToAccountTypeCode(),
+							BranchCode:      enums.BanksBranchTaipeiSongshan.ToBanksBranchCode(),
+							ActiveSwitch:    true,
+						},
+					}, nil).
+					AnyTimes()
 			},
 			req: &featuresdtos.GetAccountsByMobileNumberRequest{MobileNumber: "1234567890"},
 			expectResult: entities.Accounts{

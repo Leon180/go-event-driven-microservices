@@ -37,7 +37,7 @@ func TestUpdateCustomer(t *testing.T) {
 	validLastName := "Doe"
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.UpdateCustomerRequest
@@ -93,7 +93,13 @@ func TestUpdateCustomer(t *testing.T) {
 					ActiveSwitch: true,
 				}, nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateCustomerRequest{ID: "1111111111", MobileNumber: &validMobileNumber, Email: &validEmail, FirstName: &validFirstName, LastName: &validLastName},
+			req: &featuresdtos.UpdateCustomerRequest{
+				ID:           "1111111111",
+				MobileNumber: &validMobileNumber,
+				Email:        &validEmail,
+				FirstName:    &validFirstName,
+				LastName:     &validLastName,
+			},
 			expectError: customizeerrors.CustomerNoUpdatesError,
 		},
 		{

@@ -11,27 +11,39 @@ import (
 )
 
 type GetCreditCardsByMobileNumberAndActiveSwitch interface {
-	GetCreditCardsByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetCreditCardsRequest) (entities.CreditCards, error)
+	GetCreditCardsByMobileNumberAndActiveSwitch(
+		ctx context.Context,
+		req *featuresdtos.GetCreditCardsRequest,
+	) (entities.CreditCards, error)
 }
 
 func NewGetCreditCardsByMobileNumberAndActiveSwitch(
 	readCreditCardByMobileNumberAndActiveSwitchRepository repositories.ReadCreditCardByMobileNumberAndActiveSwitch,
 ) GetCreditCardsByMobileNumberAndActiveSwitch {
-	return &getCreditCardsByMobileNumberAndActiveSwitchImpl{readCreditCardByMobileNumberAndActiveSwitchRepository: readCreditCardByMobileNumberAndActiveSwitchRepository}
+	return &getCreditCardsByMobileNumberAndActiveSwitchImpl{
+		readCreditCardByMobileNumberAndActiveSwitchRepository: readCreditCardByMobileNumberAndActiveSwitchRepository,
+	}
 }
 
 type getCreditCardsByMobileNumberAndActiveSwitchImpl struct {
 	readCreditCardByMobileNumberAndActiveSwitchRepository repositories.ReadCreditCardByMobileNumberAndActiveSwitch
 }
 
-func (handle *getCreditCardsByMobileNumberAndActiveSwitchImpl) GetCreditCardsByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetCreditCardsRequest) (entities.CreditCards, error) {
+func (handle *getCreditCardsByMobileNumberAndActiveSwitchImpl) GetCreditCardsByMobileNumberAndActiveSwitch(
+	ctx context.Context,
+	req *featuresdtos.GetCreditCardsRequest,
+) (entities.CreditCards, error) {
 	if req == nil {
 		return nil, nil
 	}
 	if err := validates.ValidateGetCreditCardsRequest(req); err != nil {
 		return nil, err
 	}
-	creditCards, err := handle.readCreditCardByMobileNumberAndActiveSwitchRepository.ReadCreditCardByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, req.ActiveSwitch)
+	creditCards, err := handle.readCreditCardByMobileNumberAndActiveSwitchRepository.ReadCreditCardByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		req.ActiveSwitch,
+	)
 	if err != nil {
 		return nil, err
 	}

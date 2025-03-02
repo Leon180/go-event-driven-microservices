@@ -12,7 +12,6 @@ import (
 )
 
 func NewGormDB(cfg *GormDBConfig, logger gormcustomizelogger.GormCustomLogger) *gorm.DB {
-
 	gormConfig := &gorm.Config{
 		SkipDefaultTransaction: true,
 		NamingStrategy: schema.NamingStrategy{

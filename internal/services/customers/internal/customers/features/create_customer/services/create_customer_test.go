@@ -18,7 +18,9 @@ func TestCreateCustomer(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCreateCustomerRepository := mocksrepositories.NewMockCreateCustomer(ctrl)
-	mockReadCustomerByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCustomerByMobileNumberAndActiveSwitch(ctrl)
+	mockReadCustomerByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCustomerByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 	mockUUIDGenerator := mocksuuid.NewMockUUIDGenerator(ctrl)
 
 	service := NewCreateCustomer(
@@ -31,7 +33,7 @@ func TestCreateCustomer(t *testing.T) {
 
 	// Test cases
 
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.CreateCustomerRequest
@@ -44,67 +46,106 @@ func TestCreateCustomer(t *testing.T) {
 			expectError: nil,
 		},
 		{
-			name:        "invalid request - invalid mobile number",
-			setup:       func() {},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "12345678900", Email: "test@test.com", FirstName: "test", LastName: "test"},
+			name:  "invalid request - invalid mobile number",
+			setup: func() {},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "12345678900",
+				Email:        "test@test.com",
+				FirstName:    "test",
+				LastName:     "test",
+			},
 			expectError: customizeerrors.InvalidMobileNumberError,
 		},
 		{
-			name:        "invalid request - invalid email",
-			setup:       func() {},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "1234567890", Email: "invalid", FirstName: "test", LastName: "test"},
+			name:  "invalid request - invalid email",
+			setup: func() {},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "1234567890",
+				Email:        "invalid",
+				FirstName:    "test",
+				LastName:     "test",
+			},
 			expectError: customizeerrors.InvalidEmailError,
 		},
 		{
-			name:        "invalid request - invalid name",
-			setup:       func() {},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "1234567890", Email: "test@test.com", FirstName: "", LastName: "test"},
+			name:  "invalid request - invalid name",
+			setup: func() {},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "1234567890",
+				Email:        "test@test.com",
+				FirstName:    "",
+				LastName:     "test",
+			},
 			expectError: customizeerrors.InvalidNameError,
 		},
 		{
 			name: "successful customer creation",
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
-				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).Return(nil, nil).AnyTimes()
+				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).
+					Return(nil, nil).
+					AnyTimes()
 				mockCreateCustomerRepository.EXPECT().CreateCustomer(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "1234567890", Email: "test@test.com", FirstName: "test", LastName: "test"},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "1234567890",
+				Email:        "test@test.com",
+				FirstName:    "test",
+				LastName:     "test",
+			},
 			expectError: nil,
 		},
 		{
 			name: "customer already exists",
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
-				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1111111111", nil).Return(entities.Customers{
-					entities.Customer{
-						ID:           "1111111111",
-						MobileNumber: "1111111111",
-						Email:        "test@test.com",
-						FirstName:    "test",
-						LastName:     "test",
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1111111111", nil).
+					Return(entities.Customers{
+						entities.Customer{
+							ID:           "1111111111",
+							MobileNumber: "1111111111",
+							Email:        "test@test.com",
+							FirstName:    "test",
+							LastName:     "test",
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "1111111111", Email: "test@test.com", FirstName: "test", LastName: "test"},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "1111111111",
+				Email:        "test@test.com",
+				FirstName:    "test",
+				LastName:     "test",
+			},
 			expectError: customizeerrors.CustomerAlreadyExistsError,
 		},
 		{
 			name: "customer exists but inactive",
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
-				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1111111112", nil).Return(entities.Customers{
-					entities.Customer{
-						ID:           "1111111112",
-						MobileNumber: "1111111112",
-						Email:        "test2@test.com",
-						FirstName:    "test2",
-						LastName:     "test2",
-						ActiveSwitch: false,
-					},
-				}, nil).AnyTimes()
+				mockReadCustomerByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCustomerByMobileNumberAndActiveSwitch(ctx, "1111111112", nil).
+					Return(entities.Customers{
+						entities.Customer{
+							ID:           "1111111112",
+							MobileNumber: "1111111112",
+							Email:        "test2@test.com",
+							FirstName:    "test2",
+							LastName:     "test2",
+							ActiveSwitch: false,
+						},
+					}, nil).
+					AnyTimes()
 			},
-			req:         &featuresdtos.CreateCustomerRequest{MobileNumber: "1111111112", Email: "test2@test.com", FirstName: "test2", LastName: "test2"},
+			req: &featuresdtos.CreateCustomerRequest{
+				MobileNumber: "1111111112",
+				Email:        "test2@test.com",
+				FirstName:    "test2",
+				LastName:     "test2",
+			},
 			expectError: customizeerrors.CustomerExistsButInactiveError,
 		},
 	}

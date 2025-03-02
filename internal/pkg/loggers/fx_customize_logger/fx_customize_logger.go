@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
-
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 )
