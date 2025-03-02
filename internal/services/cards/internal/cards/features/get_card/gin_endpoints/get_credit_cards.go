@@ -36,10 +36,17 @@ func (handle *getCreditCardsByMobileNumberAndActiveSwitchImpl) Handle(c *gin.Con
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	creditCards, err := handle.getCreditCardsByMobileNumberAndActiveSwitchService.GetCreditCardsByMobileNumberAndActiveSwitch(c.Request.Context(), &req)
+	creditCards, err := handle.getCreditCardsByMobileNumberAndActiveSwitchService.GetCreditCardsByMobileNumberAndActiveSwitch(
+		c.Request.Context(),
+		&req,
+	)
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	customizegin.ResponseSuccess(c, featuresdtos.CreditCardEntities(creditCards).ToGetCreditCardsResponse(), "credit card retrieved successfully")
+	customizegin.ResponseSuccess(
+		c,
+		featuresdtos.CreditCardEntities(creditCards).ToGetCreditCardsResponse(),
+		"credit card retrieved successfully",
+	)
 }

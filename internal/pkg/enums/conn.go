@@ -80,7 +80,13 @@ const (
 func (r RequestMethodGroup) GetSlice() RequestMethodSlice {
 	switch r {
 	case RequestMethodGroupDefault:
-		return RequestMethodSlice{RequestMethodGET, RequestMethodPOST, RequestMethodPUT, RequestMethodDELETE, RequestMethodOPTIONS}
+		return RequestMethodSlice{
+			RequestMethodGET,
+			RequestMethodPOST,
+			RequestMethodPUT,
+			RequestMethodDELETE,
+			RequestMethodOPTIONS,
+		}
 	default:
 		return RequestMethodSlice{}
 	}
@@ -127,7 +133,21 @@ const (
 func (r RequestHeaderGroup) GetSlice() RequestHeaderSlice {
 	switch r {
 	case RequestHeaderGroupDefault:
-		return RequestHeaderSlice{RequestHeaderXPINGOTHER, RequestHeaderAccept, RequestHeaderAuthorization, RequestHeaderContentType, RequestHeaderXCSRFToken, RequestHeaderUpgrade, RequestHeaderOrigin, RequestHeaderConnection, RequestHeaderAcceptEncoding, RequestHeaderAcceptLanguage, RequestHeaderHost, RequestHeaderAccessControl, RequestHeaderAccessHeaders}
+		return RequestHeaderSlice{
+			RequestHeaderXPINGOTHER,
+			RequestHeaderAccept,
+			RequestHeaderAuthorization,
+			RequestHeaderContentType,
+			RequestHeaderXCSRFToken,
+			RequestHeaderUpgrade,
+			RequestHeaderOrigin,
+			RequestHeaderConnection,
+			RequestHeaderAcceptEncoding,
+			RequestHeaderAcceptLanguage,
+			RequestHeaderHost,
+			RequestHeaderAccessControl,
+			RequestHeaderAccessHeaders,
+		}
 	default:
 		return RequestHeaderSlice{}
 	}

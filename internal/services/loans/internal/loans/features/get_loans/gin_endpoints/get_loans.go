@@ -36,10 +36,17 @@ func (handle *getLoansByMobileNumberAndActiveSwitchImpl) Handle(c *gin.Context) 
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	loans, err := handle.getLoansByMobileNumberAndActiveSwitchService.GetLoansByMobileNumberAndActiveSwitch(c.Request.Context(), &req)
+	loans, err := handle.getLoansByMobileNumberAndActiveSwitchService.GetLoansByMobileNumberAndActiveSwitch(
+		c.Request.Context(),
+		&req,
+	)
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	customizegin.ResponseSuccess(c, featuresdtos.LoanEntities(loans).ToGetLoansResponse(), "loan retrieved successfully")
+	customizegin.ResponseSuccess(
+		c,
+		featuresdtos.LoanEntities(loans).ToGetLoansResponse(),
+		"loan retrieved successfully",
+	)
 }

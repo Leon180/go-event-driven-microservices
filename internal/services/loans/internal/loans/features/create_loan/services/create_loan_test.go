@@ -21,7 +21,9 @@ func TestCreateCreditCard(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCreateLoanRepository := mocksrepositories.NewMockCreateLoan(ctrl)
-	mockReadLoanByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadLoanByMobileNumberAndActiveSwitch(ctrl)
+	mockReadLoanByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadLoanByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 	mockUUIDGenerator := mocksuuid.NewMockUUIDGenerator(ctrl)
 	mockLoanNumberGenerator := mocksloannumberutilities.NewMockLoanNumberGenerator(ctrl)
 
@@ -43,7 +45,7 @@ func TestCreateCreditCard(t *testing.T) {
 	inValidTerm := 0
 	activeSwitch := true
 
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.CreateLoanRequest
@@ -56,27 +58,51 @@ func TestCreateCreditCard(t *testing.T) {
 			expectError: nil,
 		},
 		{
-			name:        "invalid request - invalid mobile number",
-			setup:       func() {},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "12345678900", LoanType: enums.LoanTypeCar, TotalAmount: validTotalAmount, InterestRate: validInterestRate, Term: validTerm},
+			name:  "invalid request - invalid mobile number",
+			setup: func() {},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "12345678900",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  validTotalAmount,
+				InterestRate: validInterestRate,
+				Term:         validTerm,
+			},
 			expectError: customizeerrors.InvalidMobileNumberError,
 		},
 		{
-			name:        "invalid request - invalid total amount",
-			setup:       func() {},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "1234567890", LoanType: enums.LoanTypeCar, TotalAmount: inValidTotalAmount, InterestRate: validInterestRate, Term: validTerm},
+			name:  "invalid request - invalid total amount",
+			setup: func() {},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "1234567890",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  inValidTotalAmount,
+				InterestRate: validInterestRate,
+				Term:         validTerm,
+			},
 			expectError: customizeerrors.InvalidDecimalError,
 		},
 		{
-			name:        "invalid request - invalid interest rate",
-			setup:       func() {},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "1234567890", LoanType: enums.LoanTypeCar, TotalAmount: validTotalAmount, InterestRate: inValidInterestRate, Term: validTerm},
+			name:  "invalid request - invalid interest rate",
+			setup: func() {},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "1234567890",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  validTotalAmount,
+				InterestRate: inValidInterestRate,
+				Term:         validTerm,
+			},
 			expectError: customizeerrors.InvalidDecimalError,
 		},
 		{
-			name:        "invalid request - invalid term",
-			setup:       func() {},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "1234567890", LoanType: enums.LoanTypeCar, TotalAmount: validTotalAmount, InterestRate: validInterestRate, Term: inValidTerm},
+			name:  "invalid request - invalid term",
+			setup: func() {},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "1234567890",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  validTotalAmount,
+				InterestRate: validInterestRate,
+				Term:         inValidTerm,
+			},
 			expectError: customizeerrors.LoanTermInvalidError,
 		},
 		{
@@ -84,10 +110,19 @@ func TestCreateCreditCard(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockLoanNumberGenerator.EXPECT().GenerateLoanNumber().Return("0000111122223333").AnyTimes()
-				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().ReadLoanByMobileNumberAndActiveSwitch(ctx, "1234567890", &activeSwitch).Return(nil, nil).AnyTimes()
+				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadLoanByMobileNumberAndActiveSwitch(ctx, "1234567890", &activeSwitch).
+					Return(nil, nil).
+					AnyTimes()
 				mockCreateLoanRepository.EXPECT().CreateLoan(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "1234567890", LoanType: enums.LoanTypeCar, TotalAmount: validTotalAmount, InterestRate: validInterestRate, Term: validTerm},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "1234567890",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  validTotalAmount,
+				InterestRate: validInterestRate,
+				Term:         validTerm,
+			},
 			expectError: nil,
 		},
 		{
@@ -95,18 +130,27 @@ func TestCreateCreditCard(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockLoanNumberGenerator.EXPECT().GenerateLoanNumber().Return("0000111122223333").AnyTimes()
-				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().ReadLoanByMobileNumberAndActiveSwitch(ctx, "1111111111", &activeSwitch).Return(entities.Loans{
-					entities.Loan{
-						ID:           "1234567890",
-						MobileNumber: "1111111111",
-						LoanNumber:   "0000111122223333",
-						TotalAmount:  decimal.NewFromInt(100000),
-						PaidAmount:   decimal.NewFromInt(0),
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadLoanByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadLoanByMobileNumberAndActiveSwitch(ctx, "1111111111", &activeSwitch).
+					Return(entities.Loans{
+						entities.Loan{
+							ID:           "1234567890",
+							MobileNumber: "1111111111",
+							LoanNumber:   "0000111122223333",
+							TotalAmount:  decimal.NewFromInt(100000),
+							PaidAmount:   decimal.NewFromInt(0),
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
-			req:         &featuresdtos.CreateLoanRequest{MobileNumber: "1111111111", LoanType: enums.LoanTypeCar, TotalAmount: validTotalAmount, InterestRate: validInterestRate, Term: validTerm},
+			req: &featuresdtos.CreateLoanRequest{
+				MobileNumber: "1111111111",
+				LoanType:     enums.LoanTypeCar,
+				TotalAmount:  validTotalAmount,
+				InterestRate: validInterestRate,
+				Term:         validTerm,
+			},
 			expectError: customizeerrors.LoanAlreadyExistsError,
 		},
 	}

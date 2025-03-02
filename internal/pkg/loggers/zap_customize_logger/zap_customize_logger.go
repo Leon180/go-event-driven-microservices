@@ -9,7 +9,6 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
 	"github.com/samber/lo"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

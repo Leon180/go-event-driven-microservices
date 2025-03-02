@@ -35,7 +35,7 @@ func TestUpdateAccount(t *testing.T) {
 	updateBranchAddress := enums.BanksBranchTaipeiZhongshan.ToString()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.UpdateAccountRequest
@@ -85,7 +85,11 @@ func TestUpdateAccount(t *testing.T) {
 					ActiveSwitch:    true,
 				}, nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateAccountRequest{ID: "1111111111", MobileNumber: &validMobileNumber, BranchAddress: &validBranchAddress},
+			req: &featuresdtos.UpdateAccountRequest{
+				ID:            "1111111111",
+				MobileNumber:  &validMobileNumber,
+				BranchAddress: &validBranchAddress,
+			},
 			expectError: customizeerrors.AccountNoUpdatesError,
 		},
 		{
@@ -101,7 +105,11 @@ func TestUpdateAccount(t *testing.T) {
 				}, nil).AnyTimes()
 				mockUpdateAccountByIDRepository.EXPECT().UpdateAccountByID(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateAccountRequest{ID: "1234567890", MobileNumber: &updateMobileNumber, BranchAddress: &updateBranchAddress},
+			req: &featuresdtos.UpdateAccountRequest{
+				ID:            "1234567890",
+				MobileNumber:  &updateMobileNumber,
+				BranchAddress: &updateBranchAddress,
+			},
 			expectError: nil,
 		},
 	}

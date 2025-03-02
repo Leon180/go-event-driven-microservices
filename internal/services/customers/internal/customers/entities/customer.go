@@ -1,12 +1,12 @@
 package entities
 
 type Customer struct {
-	ID           string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	ID           string `gorm:"primaryKey;type:uuid"       comment:"ID"`
 	FirstName    string `gorm:"not null;type:varchar(255)" comment:"First Name"`
 	LastName     string `gorm:"not null;type:varchar(255)" comment:"Last Name"`
 	Email        string `gorm:"not null;type:varchar(255)" comment:"Email"`
 	MobileNumber string `gorm:"not null;type:varchar(255)" comment:"Mobile Number"`
-	ActiveSwitch bool   `gorm:"not null;type:boolean" comment:"Active Switch"`
+	ActiveSwitch bool   `gorm:"not null;type:boolean"      comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 

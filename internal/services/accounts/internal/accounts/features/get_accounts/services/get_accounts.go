@@ -11,7 +11,10 @@ import (
 )
 
 type GetAccountsByMobileNumber interface {
-	GetAccountsByMobileNumber(ctx context.Context, req *featuresdtos.GetAccountsByMobileNumberRequest) (entities.Accounts, error)
+	GetAccountsByMobileNumber(
+		ctx context.Context,
+		req *featuresdtos.GetAccountsByMobileNumberRequest,
+	) (entities.Accounts, error)
 }
 
 func NewGetAccountsByMobileNumber(
@@ -24,7 +27,10 @@ type getAccountsByMobileNumberImpl struct {
 	readAccountsByMobileNumberRepository repositories.ReadAccountsByMobileNumber
 }
 
-func (handle *getAccountsByMobileNumberImpl) GetAccountsByMobileNumber(ctx context.Context, req *featuresdtos.GetAccountsByMobileNumberRequest) (entities.Accounts, error) {
+func (handle *getAccountsByMobileNumberImpl) GetAccountsByMobileNumber(
+	ctx context.Context,
+	req *featuresdtos.GetAccountsByMobileNumberRequest,
+) (entities.Accounts, error) {
 	if req == nil {
 		return nil, nil
 	}

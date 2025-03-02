@@ -72,17 +72,29 @@ func registerHooks(
 
 				// run server
 				if err := params.Server.Run(); !errors.Is(err, http.ErrServerClosed) {
-					log.Fatalf("[%s] (GinServer.RunHttpServer) error in running server: {%v}", params.Server.GetConfig().GetServiceName(), err)
+					log.Fatalf(
+						"[%s] (GinServer.RunHttpServer) error in running server: {%v}",
+						params.Server.GetConfig().GetServiceName(),
+						err,
+					)
 				}
 			}()
-			log.Printf("[%s] GinServer is listening on:{%s}", params.Server.GetConfig().GetServiceName(), params.Server.GetConfig().GetConnWebPort())
+			log.Printf(
+				"[%s] GinServer is listening on:{%s}",
+				params.Server.GetConfig().GetServiceName(),
+				params.Server.GetConfig().GetConnWebPort(),
+			)
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			if err := params.Server.GracefulShutdown(shutdownCtx); err != nil {
-				log.Printf("[%s] (GinServer.GracefulShutdown) error in shutting down server: {%v}", params.Server.GetConfig().GetServiceName(), err)
+				log.Printf(
+					"[%s] (GinServer.GracefulShutdown) error in shutting down server: {%v}",
+					params.Server.GetConfig().GetServiceName(),
+					err,
+				)
 			}
 			log.Printf("[%s] GinServer shutdown gracefully", params.Server.GetConfig().GetServiceName())
 			log.Printf("[%s] Server shutdown", params.Server.GetConfig().GetServiceName())

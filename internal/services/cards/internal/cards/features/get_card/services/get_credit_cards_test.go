@@ -17,7 +17,9 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockReadCreditCardByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCreditCardByMobileNumberAndActiveSwitch(ctrl)
+	mockReadCreditCardByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCreditCardByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 
 	service := NewGetCreditCardsByMobileNumberAndActiveSwitch(
 		mockReadCreditCardByMobileNumberAndActiveSwitchRepository,
@@ -26,7 +28,7 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 	ctx := context.Background()
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name         string
 		setup        func()
 		req          *featuresdtos.GetCreditCardsRequest
@@ -50,7 +52,10 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "credit card not found",
 			setup: func() {
-				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).Return(nil, nil).AnyTimes()
+				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "9999999999", gomock.Any()).
+					Return(nil, nil).
+					AnyTimes()
 			},
 			req:          &featuresdtos.GetCreditCardsRequest{MobileNumber: "9999999999"},
 			expectResult: nil,
@@ -59,16 +64,19 @@ func TestGetCreditCardsByMobileNumberAndActiveSwitch(t *testing.T) {
 		{
 			name: "credit card found",
 			setup: func() {
-				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).Return(entities.CreditCards{
-					entities.CreditCard{
-						ID:           "1234567890",
-						MobileNumber: "1234567890",
-						CardNumber:   "1234567890",
-						TotalLimit:   decimal.NewFromInt(100000),
-						AmountUsed:   decimal.NewFromInt(0),
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1234567890", nil).
+					Return(entities.CreditCards{
+						entities.CreditCard{
+							ID:           "1234567890",
+							MobileNumber: "1234567890",
+							CardNumber:   "1234567890",
+							TotalLimit:   decimal.NewFromInt(100000),
+							AmountUsed:   decimal.NewFromInt(0),
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
 			req: &featuresdtos.GetCreditCardsRequest{MobileNumber: "1234567890"},
 			expectResult: entities.CreditCards{

@@ -11,27 +11,39 @@ import (
 )
 
 type GetCustomerByMobileNumberAndActiveSwitch interface {
-	GetCustomerByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetCustomerRequest) (entities.Customers, error)
+	GetCustomerByMobileNumberAndActiveSwitch(
+		ctx context.Context,
+		req *featuresdtos.GetCustomerRequest,
+	) (entities.Customers, error)
 }
 
 func NewGetCustomerByMobileNumberAndActiveSwitch(
 	readCustomerByMobileNumberAndActiveSwitchRepository repositories.ReadCustomerByMobileNumberAndActiveSwitch,
 ) GetCustomerByMobileNumberAndActiveSwitch {
-	return &getCustomerByMobileNumberAndActiveSwitchImpl{readCustomerByMobileNumberAndActiveSwitchRepository: readCustomerByMobileNumberAndActiveSwitchRepository}
+	return &getCustomerByMobileNumberAndActiveSwitchImpl{
+		readCustomerByMobileNumberAndActiveSwitchRepository: readCustomerByMobileNumberAndActiveSwitchRepository,
+	}
 }
 
 type getCustomerByMobileNumberAndActiveSwitchImpl struct {
 	readCustomerByMobileNumberAndActiveSwitchRepository repositories.ReadCustomerByMobileNumberAndActiveSwitch
 }
 
-func (handle *getCustomerByMobileNumberAndActiveSwitchImpl) GetCustomerByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetCustomerRequest) (entities.Customers, error) {
+func (handle *getCustomerByMobileNumberAndActiveSwitchImpl) GetCustomerByMobileNumberAndActiveSwitch(
+	ctx context.Context,
+	req *featuresdtos.GetCustomerRequest,
+) (entities.Customers, error) {
 	if req == nil {
 		return nil, nil
 	}
 	if err := validates.ValidateGetCustomerRequest(req); err != nil {
 		return nil, err
 	}
-	customers, err := handle.readCustomerByMobileNumberAndActiveSwitchRepository.ReadCustomerByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, req.ActiveSwitch)
+	customers, err := handle.readCustomerByMobileNumberAndActiveSwitchRepository.ReadCustomerByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		req.ActiveSwitch,
+	)
 	if err != nil {
 		return nil, err
 	}

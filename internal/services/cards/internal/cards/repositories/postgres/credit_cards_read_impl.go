@@ -25,7 +25,11 @@ func NewReadCreditCardByMobileNumberAndActiveSwitch(
 	}
 }
 
-func (handle *readCreditCardByMobileNumberAndActiveSwitchImpl) ReadCreditCardByMobileNumberAndActiveSwitch(ctx context.Context, mobileNumber string, activeSwitch *bool) (entities.CreditCards, error) {
+func (handle *readCreditCardByMobileNumberAndActiveSwitchImpl) ReadCreditCardByMobileNumberAndActiveSwitch(
+	ctx context.Context,
+	mobileNumber string,
+	activeSwitch *bool,
+) (entities.CreditCards, error) {
 	var cards entities.CreditCards
 	sql := handle.db.WithContext(ctx)
 	if activeSwitch != nil {
@@ -34,7 +38,8 @@ func (handle *readCreditCardByMobileNumberAndActiveSwitchImpl) ReadCreditCardByM
 		sql = sql.Where("mobile_number = ?", mobileNumber)
 	}
 	if err := sql.Find(&cards).Error; err != nil {
-		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error reading credit card by mobile number and active switch")
+		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("error reading credit card by mobile number and active switch")
 		return nil, err
 	}
 	return cards, nil

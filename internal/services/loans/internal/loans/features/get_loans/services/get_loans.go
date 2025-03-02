@@ -11,27 +11,39 @@ import (
 )
 
 type GetLoansByMobileNumberAndActiveSwitch interface {
-	GetLoansByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetLoansRequest) (entities.Loans, error)
+	GetLoansByMobileNumberAndActiveSwitch(
+		ctx context.Context,
+		req *featuresdtos.GetLoansRequest,
+	) (entities.Loans, error)
 }
 
 func NewGetLoansByMobileNumberAndActiveSwitch(
 	readLoanByMobileNumberAndActiveSwitchRepository repositories.ReadLoanByMobileNumberAndActiveSwitch,
 ) GetLoansByMobileNumberAndActiveSwitch {
-	return &getLoansByMobileNumberAndActiveSwitchImpl{readLoanByMobileNumberAndActiveSwitchRepository: readLoanByMobileNumberAndActiveSwitchRepository}
+	return &getLoansByMobileNumberAndActiveSwitchImpl{
+		readLoanByMobileNumberAndActiveSwitchRepository: readLoanByMobileNumberAndActiveSwitchRepository,
+	}
 }
 
 type getLoansByMobileNumberAndActiveSwitchImpl struct {
 	readLoanByMobileNumberAndActiveSwitchRepository repositories.ReadLoanByMobileNumberAndActiveSwitch
 }
 
-func (handle *getLoansByMobileNumberAndActiveSwitchImpl) GetLoansByMobileNumberAndActiveSwitch(ctx context.Context, req *featuresdtos.GetLoansRequest) (entities.Loans, error) {
+func (handle *getLoansByMobileNumberAndActiveSwitchImpl) GetLoansByMobileNumberAndActiveSwitch(
+	ctx context.Context,
+	req *featuresdtos.GetLoansRequest,
+) (entities.Loans, error) {
 	if req == nil {
 		return nil, nil
 	}
 	if err := validates.ValidateGetLoansRequest(req); err != nil {
 		return nil, err
 	}
-	loans, err := handle.readLoanByMobileNumberAndActiveSwitchRepository.ReadLoanByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, req.ActiveSwitch)
+	loans, err := handle.readLoanByMobileNumberAndActiveSwitchRepository.ReadLoanByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		req.ActiveSwitch,
+	)
 	if err != nil {
 		return nil, err
 	}

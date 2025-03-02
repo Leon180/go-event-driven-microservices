@@ -6,12 +6,12 @@ import (
 )
 
 type Account struct {
-	ID              string                `gorm:"primaryKey;type:uuid" comment:"ID"`
+	ID              string                `gorm:"primaryKey;type:uuid"      comment:"ID"`
 	MobileNumber    string                `gorm:"not null;type:varchar(20)" comment:"Mobile Number"`
 	AccountNumber   string                `gorm:"not null;type:varchar(20)" comment:"Account Number"`
-	AccountTypeCode enums.AccountTypeCode `gorm:"not null;type:int" comment:"Account Type Code"`
-	BranchCode      enums.BanksBranchCode `gorm:"not null;type:int" comment:"Branch Code"`
-	ActiveSwitch    bool                  `gorm:"not null;type:boolean" comment:"Active Switch"`
+	AccountTypeCode enums.AccountTypeCode `gorm:"not null;type:int"         comment:"Account Type Code"`
+	BranchCode      enums.BanksBranchCode `gorm:"not null;type:int"         comment:"Branch Code"`
+	ActiveSwitch    bool                  `gorm:"not null;type:boolean"     comment:"Active Switch"`
 	CommonHistoryModelWithUpdate
 }
 

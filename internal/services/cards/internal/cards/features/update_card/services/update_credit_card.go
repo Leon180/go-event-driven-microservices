@@ -30,7 +30,10 @@ func NewUpdateCreditCard(
 	}
 }
 
-func (handle *updateCreditCardImpl) UpdateCreditCard(ctx context.Context, req *featuresdtos.UpdateCreditCardRequest) error {
+func (handle *updateCreditCardImpl) UpdateCreditCard(
+	ctx context.Context,
+	req *featuresdtos.UpdateCreditCardRequest,
+) error {
 	if req == nil {
 		return nil
 	}

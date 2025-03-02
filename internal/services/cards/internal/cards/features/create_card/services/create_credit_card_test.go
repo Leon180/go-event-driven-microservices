@@ -20,7 +20,9 @@ func TestCreateCreditCard(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockCreateCreditCardRepository := mocksrepositories.NewMockCreateCreditCard(ctrl)
-	mockReadCreditCardByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCreditCardByMobileNumberAndActiveSwitch(ctrl)
+	mockReadCreditCardByMobileNumberAndActiveSwitchRepository := mocksrepositories.NewMockReadCreditCardByMobileNumberAndActiveSwitch(
+		ctrl,
+	)
 	mockUUIDGenerator := mocksuuid.NewMockUUIDGenerator(ctrl)
 	mockCardNumberGenerator := mockscardnumberutilities.NewMockCardNumberGenerator(ctrl)
 
@@ -38,7 +40,7 @@ func TestCreateCreditCard(t *testing.T) {
 	inValidTotalLimit := "invalid"
 	activeSwitch := true
 
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.CreateCreditCardRequest
@@ -51,15 +53,21 @@ func TestCreateCreditCard(t *testing.T) {
 			expectError: nil,
 		},
 		{
-			name:        "invalid request - invalid mobile number",
-			setup:       func() {},
-			req:         &featuresdtos.CreateCreditCardRequest{MobileNumber: "12345678900", TotalLimit: validTotalLimit},
+			name:  "invalid request - invalid mobile number",
+			setup: func() {},
+			req: &featuresdtos.CreateCreditCardRequest{
+				MobileNumber: "12345678900",
+				TotalLimit:   validTotalLimit,
+			},
 			expectError: customizeerrors.InvalidMobileNumberError,
 		},
 		{
-			name:        "invalid request - invalid total limit",
-			setup:       func() {},
-			req:         &featuresdtos.CreateCreditCardRequest{MobileNumber: "1234567890", TotalLimit: inValidTotalLimit},
+			name:  "invalid request - invalid total limit",
+			setup: func() {},
+			req: &featuresdtos.CreateCreditCardRequest{
+				MobileNumber: "1234567890",
+				TotalLimit:   inValidTotalLimit,
+			},
 			expectError: customizeerrors.InvalidDecimalError,
 		},
 		{
@@ -67,7 +75,10 @@ func TestCreateCreditCard(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockCardNumberGenerator.EXPECT().GenerateCardNumber().Return("0000111122223333").AnyTimes()
-				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1234567890", &activeSwitch).Return(nil, nil).AnyTimes()
+				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1234567890", &activeSwitch).
+					Return(nil, nil).
+					AnyTimes()
 				mockCreateCreditCardRepository.EXPECT().CreateCreditCard(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
 			req:         &featuresdtos.CreateCreditCardRequest{MobileNumber: "1234567890", TotalLimit: validTotalLimit},
@@ -78,16 +89,19 @@ func TestCreateCreditCard(t *testing.T) {
 			setup: func() {
 				mockUUIDGenerator.EXPECT().GenerateUUID().Return("1234567890").AnyTimes()
 				mockCardNumberGenerator.EXPECT().GenerateCardNumber().Return("0000111122223333").AnyTimes()
-				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1111111111", &activeSwitch).Return(entities.CreditCards{
-					entities.CreditCard{
-						ID:           "1234567890",
-						MobileNumber: "1111111111",
-						CardNumber:   "0000111122223333",
-						TotalLimit:   decimal.NewFromInt(100000),
-						AmountUsed:   decimal.NewFromInt(0),
-						ActiveSwitch: true,
-					},
-				}, nil).AnyTimes()
+				mockReadCreditCardByMobileNumberAndActiveSwitchRepository.EXPECT().
+					ReadCreditCardByMobileNumberAndActiveSwitch(ctx, "1111111111", &activeSwitch).
+					Return(entities.CreditCards{
+						entities.CreditCard{
+							ID:           "1234567890",
+							MobileNumber: "1111111111",
+							CardNumber:   "0000111122223333",
+							TotalLimit:   decimal.NewFromInt(100000),
+							AmountUsed:   decimal.NewFromInt(0),
+							ActiveSwitch: true,
+						},
+					}, nil).
+					AnyTimes()
 			},
 			req:         &featuresdtos.CreateCreditCardRequest{MobileNumber: "1111111111", TotalLimit: validTotalLimit},
 			expectError: customizeerrors.CardAlreadyExistsError,

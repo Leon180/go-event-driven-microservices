@@ -36,10 +36,17 @@ func (handle *getCustomerByMobileNumberAndActiveSwitchImpl) Handle(c *gin.Contex
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	customers, err := handle.getCustomerByMobileNumberAndActiveSwitchService.GetCustomerByMobileNumberAndActiveSwitch(c.Request.Context(), &req)
+	customers, err := handle.getCustomerByMobileNumberAndActiveSwitchService.GetCustomerByMobileNumberAndActiveSwitch(
+		c.Request.Context(),
+		&req,
+	)
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	customizegin.ResponseSuccess(c, featuresdtos.CustomerEntities(customers).ToGetCustomerResponse(), "customer retrieved successfully")
+	customizegin.ResponseSuccess(
+		c,
+		featuresdtos.CustomerEntities(customers).ToGetCustomerResponse(),
+		"customer retrieved successfully",
+	)
 }

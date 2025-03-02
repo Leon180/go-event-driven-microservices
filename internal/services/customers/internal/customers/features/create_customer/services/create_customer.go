@@ -42,7 +42,11 @@ func (handle *createCustomerImpl) CreateCustomer(ctx context.Context, req *featu
 		return err
 	}
 
-	customers, err := handle.readCustomerByMobileNumberAndActiveSwitch.ReadCustomerByMobileNumberAndActiveSwitch(ctx, req.MobileNumber, nil)
+	customers, err := handle.readCustomerByMobileNumberAndActiveSwitch.ReadCustomerByMobileNumberAndActiveSwitch(
+		ctx,
+		req.MobileNumber,
+		nil,
+	)
 	if err != nil {
 		return err
 	}

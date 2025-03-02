@@ -25,7 +25,11 @@ func NewReadLoanByMobileNumberAndActiveSwitch(
 	}
 }
 
-func (handle *readLoanByMobileNumberAndActiveSwitchImpl) ReadLoanByMobileNumberAndActiveSwitch(ctx context.Context, mobileNumber string, activeSwitch *bool) (entities.Loans, error) {
+func (handle *readLoanByMobileNumberAndActiveSwitchImpl) ReadLoanByMobileNumberAndActiveSwitch(
+	ctx context.Context,
+	mobileNumber string,
+	activeSwitch *bool,
+) (entities.Loans, error) {
 	var loans entities.Loans
 	sql := handle.db.WithContext(ctx)
 	if activeSwitch != nil {
@@ -34,7 +38,8 @@ func (handle *readLoanByMobileNumberAndActiveSwitchImpl) ReadLoanByMobileNumberA
 		sql = sql.Where("mobile_number = ?", mobileNumber)
 	}
 	if err := sql.Find(&loans).Error; err != nil {
-		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("error reading loan by mobile number and active switch")
+		handle.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("error reading loan by mobile number and active switch")
 		return nil, err
 	}
 	return loans, nil

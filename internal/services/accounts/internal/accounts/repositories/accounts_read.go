@@ -14,7 +14,11 @@ type ReadAccountsByMobileNumber interface {
 }
 
 type ReadAccountByMobileNumberAndAccountType interface {
-	ReadAccountByMobileNumberAndAccountType(ctx context.Context, mobileNumber string, accountTypeCode enums.AccountTypeCode) (*entities.Account, error)
+	ReadAccountByMobileNumberAndAccountType(
+		ctx context.Context,
+		mobileNumber string,
+		accountTypeCode enums.AccountTypeCode,
+	) (*entities.Account, error)
 }
 
 type ReadAccount interface {

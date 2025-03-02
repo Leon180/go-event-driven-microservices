@@ -40,7 +40,7 @@ func TestUpdateAccount(t *testing.T) {
 	validTerm := 84
 
 	// Test cases
-	var tests = []struct {
+	tests := []struct {
 		name        string
 		setup       func()
 		req         *featuresdtos.UpdateLoanRequest
@@ -118,7 +118,12 @@ func TestUpdateAccount(t *testing.T) {
 					Term: validTerm,
 				}, nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateLoanRequest{ID: "1111111111", MobileNumber: &validMobileNumber, TotalAmount: &validTotalAmount, InterestRate: &validInterestRate},
+			req: &featuresdtos.UpdateLoanRequest{
+				ID:           "1111111111",
+				MobileNumber: &validMobileNumber,
+				TotalAmount:  &validTotalAmount,
+				InterestRate: &validInterestRate,
+			},
 			expectError: customizeerrors.LoanNoUpdatesError,
 		},
 		{
@@ -137,7 +142,13 @@ func TestUpdateAccount(t *testing.T) {
 				}, nil).AnyTimes()
 				mockUpdateLoanByIDRepository.EXPECT().UpdateLoanByID(ctx, gomock.Any()).Return(nil).AnyTimes()
 			},
-			req:         &featuresdtos.UpdateLoanRequest{ID: "1234567890", MobileNumber: &updateMobileNumber, TotalAmount: &validTotalAmount, InterestRate: &validInterestRate, Term: &validTerm},
+			req: &featuresdtos.UpdateLoanRequest{
+				ID:           "1234567890",
+				MobileNumber: &updateMobileNumber,
+				TotalAmount:  &validTotalAmount,
+				InterestRate: &validInterestRate,
+				Term:         &validTerm,
+			},
 			expectError: nil,
 		},
 	}

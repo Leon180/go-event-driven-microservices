@@ -6,7 +6,6 @@ import (
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
-
 	gormlogger "gorm.io/gorm/logger"
 )
 
