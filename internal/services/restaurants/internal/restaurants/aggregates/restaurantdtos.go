@@ -70,6 +70,14 @@ type RestaurantEditEntities struct {
 	DeleteEntities *RestaurantDeleteEntities
 }
 
+func newRestaurantEditEntities() RestaurantEditEntities {
+	return RestaurantEditEntities{
+		CreateEntities: &RestaurantCreateEntities{},
+		UpdateEntities: &RestaurantUpdateEntities{},
+		DeleteEntities: &RestaurantDeleteEntities{},
+	}
+}
+
 type RestaurantCreateEntities struct {
 	Restaurants       []entities.Restaurant
 	Branches          []entities.Branch
@@ -91,6 +99,7 @@ type RestaurantUpdateEntities struct {
 }
 
 type RestaurantDeleteEntities struct {
+	Restaurants       []entities.Restaurant
 	Branches          []entities.Branch
 	Addresses         []entities.Address
 	PriceRanges       []entities.PriceRange
@@ -101,7 +110,7 @@ type RestaurantDeleteEntities struct {
 
 type Restaurant struct {
 	entities.Restaurant
-	editType enums.EditType
+	editTypeCode enums.EditTypeCode
 
 	// Relations
 	Branches []Branch `gorm:"foreignKey:RestaurantID;references:ID" comment:"Branches"`
@@ -111,18 +120,9 @@ func (r *Restaurant) TableName() string {
 	return "restaurant"
 }
 
-func (r *Restaurant) ToEntity() entities.Restaurant {
-	return entities.Restaurant{
-		ID:                     r.ID,
-		Name:                   r.Name,
-		Description:            r.Description,
-		CommonCQRSHistoryModel: r.CommonCQRSHistoryModel,
-	}
-}
-
 type Branch struct {
 	entities.Branch
-	editType enums.EditType
+	editTypeCode enums.EditTypeCode
 
 	// Relations
 	Address                 *Address                 `gorm:"foreignKey:BranchID;references:ID" comment:"Address"`
@@ -135,51 +135,19 @@ func (b *Branch) TableName() string {
 	return "branch"
 }
 
-func (b *Branch) ToEntity() entities.Branch {
-	return entities.Branch{
-		ID:                     b.ID,
-		RestaurantID:           b.RestaurantID,
-		Name:                   b.Name,
-		Description:            b.Description,
-		CommonCQRSHistoryModel: b.CommonCQRSHistoryModel,
-	}
-}
-
 type Address struct {
 	entities.Address
-	editType enums.EditType
-}
-
-func (a *Address) ToEntity() entities.Address {
-	return entities.Address{
-		ID:                     a.ID,
-		BranchID:               a.BranchID,
-		Street:                 a.Street,
-		City:                   a.City,
-		PostalCode:             a.PostalCode,
-		Country:                a.Country,
-		CommonCQRSHistoryModel: a.CommonCQRSHistoryModel,
-	}
+	editTypeCode enums.EditTypeCode
 }
 
 type PriceRange struct {
 	entities.PriceRange
-	editType enums.EditType
-}
-
-func (p *PriceRange) ToEntity() entities.PriceRange {
-	return entities.PriceRange{
-		ID:                     p.ID,
-		BranchID:               p.BranchID,
-		MinPrice:               p.MinPrice,
-		MaxPrice:               p.MaxPrice,
-		CommonCQRSHistoryModel: p.CommonCQRSHistoryModel,
-	}
+	editTypeCode enums.EditTypeCode
 }
 
 type BranchCategoryRelation struct {
 	entities.BranchCategoryRelation
-	editType enums.EditType
+	editTypeCode enums.EditTypeCode
 
 	// Relations
 	Category Category `gorm:"foreignKey:ID;references:CategoryID" comment:"Category"`
@@ -189,24 +157,11 @@ func (bcr *BranchCategoryRelation) TableName() string {
 	return "branch_category_relation"
 }
 
-func (bcr *BranchCategoryRelation) ToEntity() entities.BranchCategoryRelation {
-	return entities.BranchCategoryRelation{
-		ID:                     bcr.ID,
-		BranchID:               bcr.BranchID,
-		CategoryID:             bcr.CategoryID,
-		CommonCQRSHistoryModel: bcr.CommonCQRSHistoryModel,
-	}
-}
-
 type Category entities.Category
-
-func (c *Category) ToEntity() entities.Category {
-	return entities.Category(*c)
-}
 
 type Table struct {
 	entities.Table
-	editType enums.EditType
+	editTypeCode enums.EditTypeCode
 
 	// Relations
 	TableAvailables []TableAvailable `gorm:"foreignKey:TableID;references:ID" comment:"Table Availables"`
@@ -216,30 +171,9 @@ func (t *Table) TableName() string {
 	return "table"
 }
 
-func (t *Table) ToEntity() entities.Table {
-	return entities.Table{
-		ID:                     t.ID,
-		BranchID:               t.BranchID,
-		Capacity:               t.Capacity,
-		CommonCQRSHistoryModel: t.CommonCQRSHistoryModel,
-	}
-}
-
 type TableAvailable struct {
 	entities.TableAvailable
-	editType enums.EditType
-}
-
-func (ta *TableAvailable) ToEntity() entities.TableAvailable {
-	return entities.TableAvailable{
-		ID:                     ta.ID,
-		TableID:                ta.TableID,
-		Weekday:                ta.Weekday,
-		StartTime:              ta.StartTime,
-		EndTime:                ta.EndTime,
-		Booked:                 ta.Booked,
-		CommonCQRSHistoryModel: ta.CommonCQRSHistoryModel,
-	}
+	editTypeCode enums.EditTypeCode
 }
 
 // restaurant aggregate methods
@@ -284,7 +218,7 @@ func (r *RestaurantDTOAggregateImpl) addRestaurant(restaurant *dtos.Restaurant) 
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	})
 	for i := range restaurant.Branches {
 		err := r.addBranch(&r.restaurants[len(r.restaurants)-1], &restaurant.Branches[i])
@@ -302,7 +236,7 @@ func (r *RestaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, updat
 	updated.Name = update.Name
 	updated.Description = update.Description
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.editType = enums.EditTypeUpdate
+	updated.editTypeCode = enums.EditTypeCodeUpdate
 
 	deletedMap := make(map[string]struct{}) // id -> deleted
 	for i := range update.Branches {
@@ -376,7 +310,7 @@ func (r *RestaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *d
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	})
 
 	err := r.addAddress(&restaurant.Branches[len(restaurant.Branches)-1], branch.Address)
@@ -412,7 +346,7 @@ func (r *RestaurantDTOAggregateImpl) deleteBranch(branch *Branch) error {
 	}
 	branch.ActiveStatus = false
 	branch.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	branch.editType = enums.EditTypeDelete
+	branch.editTypeCode = enums.EditTypeCodeDelete
 
 	err := r.deleteAddress(branch.Address)
 	if err != nil {
@@ -444,7 +378,7 @@ func (r *RestaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 	updated.Name = update.Name
 	updated.Description = update.Description
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.editType = enums.EditTypeUpdate
+	updated.editTypeCode = enums.EditTypeCodeUpdate
 
 	err := r.saveAddress(updated, update.Address)
 	if err != nil {
@@ -510,11 +444,11 @@ func (r *RestaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.A
 	}
 	if updated.Address != nil {
 		updated.Address.Street = update.Street
-		updated.Address.City = update.City
+		updated.Address.CityCode = update.City.ToCityCode()
 		updated.Address.PostalCode = update.PostalCode
-		updated.Address.Country = update.Country
+		updated.Address.CountryCode = update.Country.ToCountryCode()
 		updated.Address.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-		updated.Address.editType = enums.EditTypeUpdate
+		updated.Address.editTypeCode = enums.EditTypeCodeUpdate
 		return nil
 	}
 	return r.addAddress(updated, update)
@@ -533,19 +467,19 @@ func (r *RestaurantDTOAggregateImpl) addAddress(updated *Branch, update *dtos.Ad
 	timeNow := time.Now()
 	updated.Address = &Address{
 		Address: entities.Address{
-			ID:         addressID,
-			BranchID:   updated.ID,
-			Street:     update.Street,
-			City:       update.City,
-			PostalCode: update.PostalCode,
-			Country:    update.Country,
+			ID:          addressID,
+			BranchID:    updated.ID,
+			Street:      update.Street,
+			CityCode:    update.City.ToCityCode(),
+			PostalCode:  update.PostalCode,
+			CountryCode: update.Country.ToCountryCode(),
 			CommonCQRSHistoryModel: entities.CommonCQRSHistoryModel{
 				ActiveStatus: true,
 				CreatedAt:    timeNow,
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	}
 	return nil
 }
@@ -556,7 +490,7 @@ func (r *RestaurantDTOAggregateImpl) deleteAddress(address *Address) error {
 	}
 	address.ActiveStatus = false
 	address.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	address.editType = enums.EditTypeDelete
+	address.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -611,7 +545,7 @@ func (r *RestaurantDTOAggregateImpl) addPriceRange(updated *Branch, update *dtos
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	}
 	return nil
 }
@@ -622,7 +556,7 @@ func (r *RestaurantDTOAggregateImpl) deletePriceRange(priceRange *PriceRange) er
 	}
 	priceRange.ActiveStatus = false
 	priceRange.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	priceRange.editType = enums.EditTypeDelete
+	priceRange.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -642,7 +576,7 @@ func (r *RestaurantDTOAggregateImpl) saveCategoryRelation(updated *Branch, updat
 	if updated == nil || update == nil {
 		return nil
 	}
-	if update.Name == "" {
+	if update.Category == "" {
 		return customizeerrors.CategoryNameEmptyError
 	}
 	if update.ID == "" {
@@ -674,15 +608,15 @@ func (r *RestaurantDTOAggregateImpl) addCategoryRelation(branch *Branch, categor
 			},
 		},
 		Category: Category{
-			ID:   category.ID,
-			Name: category.Name,
+			ID:           category.ID,
+			CategoryCode: category.Category.ToCategoryCode(),
 			CommonCQRSHistoryModel: entities.CommonCQRSHistoryModel{
 				ActiveStatus: category.ActiveStatus,
 				CreatedAt:    category.CreatedAt,
 				UpdatedAt:    category.UpdatedAt,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	})
 
 	return nil
@@ -694,7 +628,7 @@ func (r *RestaurantDTOAggregateImpl) deleteCategoryRelation(category *BranchCate
 	}
 	category.ActiveStatus = false
 	category.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	category.editType = enums.EditTypeDelete
+	category.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -747,7 +681,7 @@ func (r *RestaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table)
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	})
 
 	for i := range table.TableAvailables {
@@ -765,7 +699,7 @@ func (r *RestaurantDTOAggregateImpl) deleteTable(table *Table) error {
 	}
 	table.ActiveStatus = false
 	table.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	table.editType = enums.EditTypeDelete
+	table.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -775,7 +709,7 @@ func (r *RestaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Ta
 	}
 	updated.Capacity = update.Capacity
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.editType = enums.EditTypeUpdate
+	updated.editTypeCode = enums.EditTypeCodeUpdate
 
 	deletedMap := make(map[string]struct{}) // id -> deleted
 	for i := range update.TableAvailables {
@@ -859,7 +793,7 @@ func (r *RestaurantDTOAggregateImpl) addTableAvailable(table *Table, tableAvaila
 				UpdatedAt:    timeNow,
 			},
 		},
-		editType: enums.EditTypeCreate,
+		editTypeCode: enums.EditTypeCodeCreate,
 	})
 
 	return nil
@@ -874,7 +808,7 @@ func (r *RestaurantDTOAggregateImpl) updateTableAvailable(updated *TableAvailabl
 	updated.EndTime = update.EndTime
 	updated.Booked = update.Booked
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.editType = enums.EditTypeUpdate
+	updated.editTypeCode = enums.EditTypeCodeUpdate
 	return nil
 }
 
@@ -884,7 +818,7 @@ func (r *RestaurantDTOAggregateImpl) deleteTableAvailable(tableAvailable *TableA
 	}
 	tableAvailable.ActiveStatus = false
 	tableAvailable.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	tableAvailable.editType = enums.EditTypeDelete
+	tableAvailable.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -894,7 +828,54 @@ func (r *RestaurantDTOAggregateImpl) GetAggregates() []Restaurant {
 
 func (r *RestaurantDTOAggregateImpl) GetEditEntities() []RestaurantEditEntities {
 	res := make([]RestaurantEditEntities, len(r.restaurants))
-	// TODO: implement
-	// use edit type to determine the edit entities
+	for i, restaurant := range r.restaurants {
+		// Initialize container
+		res[i] = newRestaurantEditEntities()
+		createEntities, updateEntities, deleteEntities := res[i].CreateEntities, res[i].UpdateEntities, res[i].DeleteEntities
+
+		// Handle restaurant
+		appendEntityByType(&createEntities.Restaurants, &updateEntities.Restaurants, &deleteEntities.Restaurants, restaurant.Restaurant, restaurant.editTypeCode)
+
+		for _, branch := range restaurant.Branches {
+			// Handle branch
+			appendEntityByType(&createEntities.Branches, &updateEntities.Branches, &deleteEntities.Branches, branch.Branch, branch.editTypeCode)
+
+			// Handle address
+			if branch.Address != nil {
+				appendEntityByType(&createEntities.Addresses, &updateEntities.Addresses, &deleteEntities.Addresses, branch.Address.Address, branch.Address.editTypeCode)
+			}
+
+			// Handle price range
+			if branch.PriceRange != nil {
+				appendEntityByType(&createEntities.PriceRanges, &updateEntities.PriceRanges, &deleteEntities.PriceRanges, branch.PriceRange.PriceRange, branch.PriceRange.editTypeCode)
+			}
+
+			// Handle category relations
+			for _, relation := range branch.BranchCategoryRelations {
+				appendEntityByType(&createEntities.CategoryRelations, &updateEntities.CategoryRelations, &deleteEntities.CategoryRelations, relation.BranchCategoryRelation, relation.editTypeCode)
+			}
+
+			for _, table := range branch.Tables {
+				// Handle table
+				appendEntityByType(&createEntities.Tables, &updateEntities.Tables, &deleteEntities.Tables, table.Table, table.editTypeCode)
+
+				// Handle table availabilities
+				for _, available := range table.TableAvailables {
+					appendEntityByType(&createEntities.TableAvailables, &updateEntities.TableAvailables, &deleteEntities.TableAvailables, available.TableAvailable, available.editTypeCode)
+				}
+			}
+		}
+	}
 	return res
+}
+
+func appendEntityByType[T any](create *[]T, update *[]T, delete *[]T, entity T, editTypeCode enums.EditTypeCode) {
+	switch editTypeCode {
+	case enums.EditTypeCodeCreate:
+		*create = append(*create, entity)
+	case enums.EditTypeCodeUpdate:
+		*update = append(*update, entity)
+	case enums.EditTypeCodeDelete:
+		*delete = append(*delete, entity)
+	}
 }

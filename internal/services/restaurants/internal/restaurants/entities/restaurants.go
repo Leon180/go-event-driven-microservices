@@ -31,10 +31,6 @@ func (u *UpdateRestaurant) RemoveUnchangedFields(restaurant Restaurant) {
 	}
 }
 
-func (u *UpdateRestaurant) NoUpdates() bool {
-	return u.Name == nil && u.Description == nil && u.ActiveStatus == nil
-}
-
 func (u *UpdateRestaurant) ToUpdateMap() map[string]interface{} {
 	updateMap := make(map[string]interface{})
 	if u.Name != nil {
@@ -48,3 +44,5 @@ func (u *UpdateRestaurant) ToUpdateMap() map[string]interface{} {
 	}
 	return updateMap
 }
+
+type UpdateRestaurants []UpdateRestaurant

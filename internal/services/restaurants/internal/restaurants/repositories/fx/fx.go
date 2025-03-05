@@ -1,30 +1,33 @@
 package repositoriesfx
 
 import (
-	repositoriespostgres "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/postgres"
+	repositoriespostgres "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories/postgres"
 	"go.uber.org/fx"
 )
 
 // ProvideModule is the module for the repositories
 // It provides the repositories:
-// - repositories.CreateAccount
-// - repositories.CreateAccounts
-// - repositories.GetAccountWithHistoryByMobileNumber
-// - repositories.GetAccountWithHistory
-// - repositories.UpdateAccountByID
-// - repositories.DeleteAccountByID
+// - repositories.SearchRestaurantsFullInfo
+// - repositories.Restaurants
+// - repositories.Branches
+// - repositories.Addresses
+// - repositories.PriceRanges
+// - repositories.BranchCategoryRelations
+// - repositories.Tables
+// - repositories.TableAvailables
 // dependencies:
 // - *gorm.DB
 // - contextloggers.ContextLogger
 var ProvideModule = fx.Module(
-	"accountsRepositoriesProvideFx",
+	"restaurantsRepositoriesProvideFx",
 	fx.Provide(
-		repositoriespostgres.NewCreateAccount,
-		repositoriespostgres.NewCreateAccounts,
-		repositoriespostgres.NewReadAccountsByMobileNumber,
-		repositoriespostgres.NewReadAccountByMobileNumberAndAccountType,
-		repositoriespostgres.NewReadAccount,
-		repositoriespostgres.NewUpdateAccountByID,
-		repositoriespostgres.NewDeleteAccountByID,
+		repositoriespostgres.NewSearchRestaurantsFullInfoRepository,
+		repositoriespostgres.NewRestaurantsRepository,
+		repositoriespostgres.NewBranchesRepository,
+		repositoriespostgres.NewAddressesRepository,
+		repositoriespostgres.NewPriceRangesRepository,
+		repositoriespostgres.NewBranchCategoryRelationsRepository,
+		repositoriespostgres.NewTablesRepository,
+		repositoriespostgres.NewTableAvailablesRepository,
 	),
 )

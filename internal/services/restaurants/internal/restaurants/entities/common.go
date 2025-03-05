@@ -20,7 +20,7 @@ type CommonHistoryModel struct {
 }
 
 type CommonCQRSHistoryModel struct {
-	ActiveStatus bool `gorm:"not null;type:boolean" comment:"Active Status"`
+	ActiveStatus bool `gorm:"not null;type:boolean;default:true" comment:"Active Status"`
 	CreatedAt    time.Time
 	CreatedBy    string
 	UpdatedAt    time.Time

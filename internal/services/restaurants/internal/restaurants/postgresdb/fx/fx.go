@@ -1,8 +1,8 @@
 package postgresdbfx
 
 import (
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb"
-	postgresdbmigrations "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/migrations"
+	postgresdb "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/postgresdb"
+	postgresdbmigrations "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/postgresdb/migrations"
 	"go.uber.org/fx"
 )
 

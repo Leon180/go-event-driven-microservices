@@ -1,5 +1,7 @@
 package dtos
 
+import "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+
 type Branch struct {
 	ID          *string `json:"id,omitempty"`
 	Name        string  `json:"name"`
@@ -13,11 +15,11 @@ type Branch struct {
 }
 
 type Address struct {
-	ID         *string `json:"id,omitempty"`
-	Street     string  `json:"street"`
-	City       string  `json:"city"`
-	PostalCode string  `json:"postalCode"`
-	Country    string  `json:"country"`
+	ID         *string       `json:"id,omitempty"`
+	Street     string        `json:"street"`
+	City       enums.City    `json:"city"`
+	PostalCode string        `json:"postalCode"`
+	Country    enums.Country `json:"country"`
 }
 
 type PriceRange struct {
@@ -27,7 +29,7 @@ type PriceRange struct {
 }
 
 type Category struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string         `json:"id"`
+	Category enums.Category `json:"category"`
 	CommonCQRSHistoryModel
 }

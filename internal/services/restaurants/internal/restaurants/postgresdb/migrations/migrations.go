@@ -8,7 +8,8 @@ import (
 )
 
 var migrationsV2 = []*gormigrate.Migration{
-	v202502171350, // add account table
+	v202503052348, // add restaurant, branch, address, price range, branch category relation, category, table, table available table
+	v202503052351, // add category
 }
 
 var migrateOptionsV2 = &gormigrate.Options{
