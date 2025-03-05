@@ -1,0 +1,184 @@
+basePath: /v1/accounts
+definitions:
+  customizegin.APIError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  customizegin.JSONResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/customizegin.APIError'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  featuresdtos.CreateAccountRequest:
+    properties:
+      account_type:
+        description: '@enum "checking", "savings", "currency", "salary", "business"'
+        type: string
+      branch:
+        description: '@enum "台北市中山區", "台北市松山區", "台北市信義區", "台北市文山區", "台北市北投區", "台北市南港區",
+          "台北市萬華區"'
+        type: string
+      mobile_number:
+        description: '@example 0958308280'
+        type: string
+    required:
+    - account_type
+    - branch
+    - mobile_number
+    type: object
+  featuresdtos.DeleteAccountRequest:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  featuresdtos.GetAccountsByMobileNumberRequest:
+    properties:
+      mobile_number:
+        type: string
+    required:
+    - mobile_number
+    type: object
+  featuresdtos.RestoreAccountRequest:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  featuresdtos.UpdateAccountRequest:
+    properties:
+      account_number:
+        type: string
+      branch_address:
+        type: string
+      id:
+        type: string
+      mobile_number:
+        type: string
+    required:
+    - id
+    type: object
+host: localhost:7001
+info:
+  contact: {}
+  description: Simple service for accounts resources
+  title: Accounts Service API
+  version: "1.0"
+paths:
+  /account/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account created successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Create a new account
+      tags:
+      - accounts
+  /account/delete:
+    post:
+      description: Delete an account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.DeleteAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account deleted successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Delete an account
+      tags:
+      - accounts
+  /account/restore:
+    post:
+      description: Restore an account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.RestoreAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account restored successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Restore an account
+      tags:
+      - accounts
+  /account/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an account
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account updated successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Update an account
+      tags:
+      - accounts
+  /accounts/get:
+    post:
+      description: Get accounts by mobile number
+      parameters:
+      - description: Account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.GetAccountsByMobileNumberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: accounts retrieved successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Get accounts by mobile number
+      tags:
+      - accounts
+swagger: "2.0"
