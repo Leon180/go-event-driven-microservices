@@ -5,7 +5,6 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	customizetime "github.com/Leon180/go-event-driven-microservices/internal/pkg/time"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
@@ -751,11 +750,11 @@ func (r *RestaurantDTOAggregateImpl) saveTableAvailable(updated *Table, update *
 	if update.Weekday < 0 || update.Weekday > 6 {
 		return customizeerrors.TableAvailableTimeInvalidError
 	}
-	_, err := time.Parse(customizetime.ClockOnly, update.StartTime)
+	_, err := time.Parse(enums.TimeFormatClockOnly.ToString(), update.StartTime)
 	if err != nil {
 		return customizeerrors.TableAvailableTimeInvalidError
 	}
-	_, err = time.Parse(customizetime.ClockOnly, update.EndTime)
+	_, err = time.Parse(enums.TimeFormatClockOnly.ToString(), update.EndTime)
 	if err != nil {
 		return customizeerrors.TableAvailableTimeInvalidError
 	}
