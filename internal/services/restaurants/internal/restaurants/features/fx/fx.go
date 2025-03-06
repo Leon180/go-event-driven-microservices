@@ -5,57 +5,50 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	createAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/gin_endpoints"
-	createAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/create_account/services"
-	deleteAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/gin_endpoints"
-	deleteAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/delete_account/services"
-	getAccountsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/gin_endpoints"
-	getAccountsServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/get_accounts/services"
-	restoreAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/restore_account/gin_endpoints"
-	restoreAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/restore_account/services"
-	updateAccountGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/gin_endpoints"
-	updateAccountServices "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/update_account/services"
+	createRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_restaurant/gin_endpoints"
+	createRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_restaurant/services"
+	deleteRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/gin_endpoints"
+	deleteRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/services"
+	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
+	getRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/services"
+	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
+	searchRestaurantsServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_restaurants/services"
 	"github.com/samber/lo"
 	"go.uber.org/fx"
 )
 
 // ProvideModule is the module for the accounts features
-// It provides the services and customizeginendpoints.Endpoint for the accounts features:
-// - createAccountServices.CreateAccount
-// - getAccountServices.GetAccount
-// - updateAccountServices.UpdateAccount
-// - deleteAccountServices.DeleteAccount
-// - customizeginendpoints.Endpoint(createAccountGinEndpoints.NewCreateAccount)
-// - customizeginendpoints.Endpoint(getAccountGinEndpoints.NewGetAccount)
-// - customizeginendpoints.Endpoint(updateAccountGinEndpoints.NewUpdateAccount)
-// - customizeginendpoints.Endpoint(deleteAccountGinEndpoints.NewDeleteAccount)
+// It provides the services and customizeginendpoints.Endpoint for the restaurants features:
+// - createRestaurantServices.CreateRestaurant
+// - deleteRestaurantServices.DeleteRestaurant
+// - getRestaurantServices.GetRestaurant
+// - searchRestaurantsServices.SearchRestaurants
+// - customizeginendpoints.Endpoint(createRestaurantGinEndpoints.NewCreateRestaurant)
+// - customizeginendpoints.Endpoint(deleteRestaurantGinEndpoints.NewDeleteRestaurant)
+// - customizeginendpoints.Endpoint(getRestaurantGinEndpoints.NewGetRestaurant)
+// - customizeginendpoints.Endpoint(searchRestaurantsGinEndpoints.NewSearchRestaurants)
 // dependencies:
-// - accountnumberutilities.AccountNumberGenerator
 // - uuid.UUIDGenerator
-// - repositories.CreateAccount
-// - repositories.GetAccountWithHistoryByMobileNumber
-// - repositories.UpdateAccountByID
-// - repositories.DeleteAccount
+// - repositories.SearchRestaurantsFullInfo
+// - repositories.Restaurants
 var ProvideModule = fx.Module(
-	"accountsFeaturesProvideFx",
+	"restaurantsFeaturesProvideFx",
 
 	// services
 	fx.Provide(
-		createAccountServices.NewCreateAccount,
-		getAccountsServices.NewGetAccountsByMobileNumber,
-		updateAccountServices.NewUpdateAccount,
-		deleteAccountServices.NewDeleteAccount,
-		restoreAccountServices.NewRestoreAccount,
+		createRestaurantServices.NewCreateRestaurant,
+		deleteRestaurantServices.NewDeleteRestaurant,
+		getRestaurantServices.NewGetRestaurant,
+		searchRestaurantsServices.NewSearchRestaurants,
 	),
 
 	// endpoints
 	fx.Provide(
 		fxTagEndpoints(
-			createAccountGinEndpoints.NewCreateAccount,
-			getAccountsGinEndpoints.NewGetAccountsByMobileNumber,
-			updateAccountGinEndpoints.NewUpdateAccount,
-			deleteAccountGinEndpoints.NewDeleteAccount,
-			restoreAccountGinEndpoints.NewRestoreAccount,
+			createRestaurantGinEndpoints.NewCreateRestaurant,
+			deleteRestaurantGinEndpoints.NewDeleteRestaurant,
+			getRestaurantGinEndpoints.NewGetRestaurant,
+			searchRestaurantsGinEndpoints.NewSearchRestaurants,
 		)...,
 	),
 )

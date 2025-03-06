@@ -7,7 +7,9 @@ import (
 )
 
 type SearchRestaurants struct {
-	NameFilter              *string
+	NameFilter        *string
+	NamePreciseSearch bool
+
 	DescriptionFilter       *string
 	CityFilter              []enums.City
 	CountryFilter           []enums.Country

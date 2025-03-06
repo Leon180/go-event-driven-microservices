@@ -1,5 +1,5 @@
 package featuresdtos
 
-type DeleteAccountRequest struct {
+type DeleteRestaurantRequest struct {
 	ID string `json:"id" binding:"required"`
 }

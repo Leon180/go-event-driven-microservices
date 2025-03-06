@@ -2,6 +2,7 @@ package repostgresespostgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
@@ -28,30 +29,32 @@ type SearchRestaurantsFullInfoImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (r *SearchRestaurantsFullInfoImpl) SearchRestaurantsFullInfo(ctx context.Context, search dtos.SearchRestaurants) ([]aggregates.Restaurant, error) {
-	sql := r.buildBaseQuery(ctx).
+func (impl *SearchRestaurantsFullInfoImpl) SearchRestaurantsFullInfo(ctx context.Context, search *dtos.SearchRestaurants) (aggregates.Restaurants, error) {
+	if search == nil {
+		return nil, nil
+	}
+	sql := impl.buildBaseQuery(ctx).
 		Scopes(
-			r.applyNameFilter(search.NameFilter),
-			r.applyDescriptionFilter(search.DescriptionFilter),
-			r.applyCityFilter(search.CityFilter),
-			r.applyCountryFilter(search.CountryFilter),
-			r.applyPriceRangeFilter(search.MinPriceFilter, search.MaxPriceFilter),
-			r.applyCategoryFilter(search.CategoryFilter),
-			r.applyTableAvailabilityFilter(search),
-			r.applyPagination(search.Pagination),
-			r.applyOrdering(search.OrderBy),
+			impl.applyNameFilter(search.NameFilter, search.NamePreciseSearch),
+			impl.applyDescriptionFilter(search.DescriptionFilter),
+			impl.applyCityFilter(search.CityFilter),
+			impl.applyCountryFilter(search.CountryFilter),
+			impl.applyPriceRangeFilter(search.MinPriceFilter, search.MaxPriceFilter),
+			impl.applyCategoryFilter(search.CategoryFilter),
+			impl.applyTableAvailabilityFilter(search.TableAvailableWeek, search.TableAvailableStartTime, search.TableAvailableEndTime),
+			impl.applyPagination(search.Pagination),
+			impl.applyOrdering(search.OrderBy),
 		)
-
 	var restaurants []aggregates.Restaurant
 	if err := sql.Find(&restaurants).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to search restaurants full info", err)
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to search restaurants full info", err)
 		return nil, err
 	}
 	return restaurants, nil
 }
 
-func (r *SearchRestaurantsFullInfoImpl) buildBaseQuery(ctx context.Context) *gorm.DB {
-	return r.db.WithContext(ctx).
+func (impl *SearchRestaurantsFullInfoImpl) buildBaseQuery(ctx context.Context) *gorm.DB {
+	return impl.db.WithContext(ctx).
 		Preload("Branches").
 		Preload("Branches.Address").
 		Preload("Branches.PriceRange").
@@ -61,16 +64,19 @@ func (r *SearchRestaurantsFullInfoImpl) buildBaseQuery(ctx context.Context) *gor
 		Preload("Branches.Availables")
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyNameFilter(name *string) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyNameFilter(name *string, preciseSearch bool) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if name != nil {
+			if preciseSearch {
+				return db.Where("name = ?", *name)
+			}
 			return db.Where("name LIKE ?", "%"+*name+"%")
 		}
 		return db
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyDescriptionFilter(desc *string) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyDescriptionFilter(desc *string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if desc != nil {
 			return db.Where("description LIKE ?", "%"+*desc+"%")
@@ -79,7 +85,7 @@ func (r *SearchRestaurantsFullInfoImpl) applyDescriptionFilter(desc *string) fun
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyCityFilter(cities []enums.City) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyCityFilter(cities []enums.City) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if len(cities) > 0 {
 			cityCodes := lo.Map(cities, func(city enums.City, _ int) int {
@@ -96,7 +102,7 @@ func (r *SearchRestaurantsFullInfoImpl) applyCityFilter(cities []enums.City) fun
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyCountryFilter(countries []enums.Country) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyCountryFilter(countries []enums.Country) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if len(countries) > 0 {
 			countryCodes := lo.Map(countries, func(country enums.Country, _ int) int {
@@ -113,7 +119,7 @@ func (r *SearchRestaurantsFullInfoImpl) applyCountryFilter(countries []enums.Cou
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyPriceRangeFilter(min, max *int) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyPriceRangeFilter(min, max *int) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if min != nil || max != nil {
 			query := db.Where(`EXISTS (
@@ -133,7 +139,7 @@ func (r *SearchRestaurantsFullInfoImpl) applyPriceRangeFilter(min, max *int) fun
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyCategoryFilter(categories []enums.Category) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyCategoryFilter(categories []enums.Category) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if len(categories) > 0 {
 			categoryCodes := lo.Map(categories, func(category enums.Category, _ int) int {
@@ -151,9 +157,9 @@ func (r *SearchRestaurantsFullInfoImpl) applyCategoryFilter(categories []enums.C
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(search dtos.SearchRestaurants) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(availableWeek []time.Weekday, availableStartTime *string, availableEndTime *string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if len(search.TableAvailableWeek) == 0 && search.TableAvailableStartTime == nil && search.TableAvailableEndTime == nil {
+		if len(availableWeek) == 0 && availableStartTime == nil && availableEndTime == nil {
 			return db
 		}
 
@@ -162,21 +168,21 @@ func (r *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(search dtos
             JOIN available ON branch.id = available.branch_id
             WHERE branch.restaurant_id = restaurant.id`)
 
-		if len(search.TableAvailableWeek) > 0 {
-			query = query.Where("available.weekday IN (?)", search.TableAvailableWeek)
+		if len(availableWeek) > 0 {
+			query = query.Where("available.weekday IN (?)", availableWeek)
 		}
-		if search.TableAvailableStartTime != nil {
-			query = query.Where("available.start_time >= ?", *search.TableAvailableStartTime)
+		if availableStartTime != nil {
+			query = query.Where("available.start_time >= ?", *availableStartTime)
 		}
-		if search.TableAvailableEndTime != nil {
-			query = query.Where("available.end_time <= ?", *search.TableAvailableEndTime)
+		if availableEndTime != nil {
+			query = query.Where("available.end_time <= ?", *availableEndTime)
 		}
 
 		return query.Where(")")
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyPagination(pagination *dtos.Pagination) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyPagination(pagination *dtos.Pagination) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if pagination != nil {
 			return db.Limit(pagination.PageSize).
@@ -186,7 +192,7 @@ func (r *SearchRestaurantsFullInfoImpl) applyPagination(pagination *dtos.Paginat
 	}
 }
 
-func (r *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []dtos.OrderBy) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []dtos.OrderBy) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		for _, ob := range orderBy {
 			db = db.Order(ob.ToSort())
@@ -211,23 +217,23 @@ type RestaurantsImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (r *RestaurantsImpl) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
+func (impl *RestaurantsImpl) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
 	if len(restaurants) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&restaurants).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
+	if err := impl.db.WithContext(ctx).Create(&restaurants).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
 		return err
 	}
 	return nil
 }
 
-func (r *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string) (aggregates.Restaurant, error) {
+func (impl *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
 	if id == "" {
-		return aggregates.Restaurant{}, nil
+		return nil, nil
 	}
 	var restaurant aggregates.Restaurant
-	if err := r.db.WithContext(ctx).
+	if err := impl.db.WithContext(ctx).
 		Preload("Branches").
 		Preload("Branches.Address").
 		Preload("Branches.PriceRange").
@@ -236,323 +242,239 @@ func (r *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string)
 		Preload("Branches.Tables").
 		Preload("Branches.Availables").
 		Where("id = ?", id).Limit(1).Find(&restaurant).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read restaurant full info", err)
-		return aggregates.Restaurant{}, err
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read restaurant full info", err)
+		return nil, err
 	}
-	return restaurant, nil
+	return &restaurant, nil
 }
 
-func (r *RestaurantsImpl) UpdateRestaurant(ctx context.Context, updateRestaurant entities.UpdateRestaurant) error {
-	if updateRestaurant.ID == "" {
+func (impl *RestaurantsImpl) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
+	if id == "" {
+		return nil, nil
+	}
+	var restaurant entities.Restaurant
+	if err := impl.db.WithContext(ctx).Where("id = ?", id).Limit(1).Find(&restaurant).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read restaurant", err)
+		return nil, err
+	}
+	return &restaurant, nil
+}
+
+func (impl *RestaurantsImpl) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
+	if updateRestaurant == nil || updateRestaurant.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.Restaurant{}).Where("id = ?", updateRestaurant.ID).Updates(updateRestaurant.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update restaurant", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.Restaurant{}).Where("id = ?", updateRestaurant.ID).Updates(updateRestaurant.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update restaurant", err)
 		return err
 	}
 	return nil
 }
 
-func (r *RestaurantsImpl) DeleteRestaurants(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteRestaurants(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Restaurant{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete restaurants", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Restaurant{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete restaurants", err)
 		return err
 	}
 	return nil
 }
 
-// Branches Impl
-func NewBranchesRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.Branches {
-	return &BranchesImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type BranchesImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *BranchesImpl) CreateBranches(ctx context.Context, branches entities.Branches) error {
+func (impl *RestaurantsImpl) CreateBranches(ctx context.Context, branches entities.Branches) error {
 	if len(branches) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&branches).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create branches", err)
+	if err := impl.db.WithContext(ctx).Create(&branches).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create branches", err)
 		return err
 	}
 	return nil
 }
 
-func (r *BranchesImpl) UpdateBranch(ctx context.Context, updateBranch entities.UpdateBranch) error {
-	if updateBranch.ID == "" {
+func (impl *RestaurantsImpl) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
+	if updateBranch == nil || updateBranch.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.Branch{}).Where("id = ?", updateBranch.ID).Updates(updateBranch.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update branch", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.Branch{}).Where("id = ?", updateBranch.ID).Updates(updateBranch.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update branch", err)
 		return err
 	}
 	return nil
 }
 
-func (r *BranchesImpl) DeleteBranches(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteBranches(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Branch{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete branches", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Branch{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete branches", err)
 		return err
 	}
 	return nil
 }
 
-// Addresses Impl
-func NewAddressesRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.Addresses {
-	return &AddressesImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type AddressesImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *AddressesImpl) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
+func (impl *RestaurantsImpl) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
 	if len(addresses) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&addresses).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create addresses", err)
+	if err := impl.db.WithContext(ctx).Create(&addresses).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create addresses", err)
 		return err
 	}
 	return nil
 }
 
-func (r *AddressesImpl) UpdateAddress(ctx context.Context, updateAddress entities.UpdateAddress) error {
-	if updateAddress.ID == "" {
+func (impl *RestaurantsImpl) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
+	if updateAddress == nil || updateAddress.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.Address{}).Where("id = ?", updateAddress.ID).Updates(updateAddress.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update address", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.Address{}).Where("id = ?", updateAddress.ID).Updates(updateAddress.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update address", err)
 		return err
 	}
 	return nil
 }
 
-func (r *AddressesImpl) DeleteAddresses(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteAddresses(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Address{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete addresses", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Address{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete addresses", err)
 		return err
 	}
 	return nil
 }
 
-// PriceRanges Impl
-func NewPriceRangesRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.PriceRanges {
-	return &PriceRangesImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type PriceRangesImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *PriceRangesImpl) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
+func (impl *RestaurantsImpl) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
 	if len(priceRanges) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&priceRanges).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create price ranges", err)
+	if err := impl.db.WithContext(ctx).Create(&priceRanges).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create price ranges", err)
 		return err
 	}
 	return nil
 }
 
-func (r *PriceRangesImpl) UpdatePriceRange(ctx context.Context, updatePriceRange entities.UpdatePriceRange) error {
-	if updatePriceRange.ID == "" {
+func (impl *RestaurantsImpl) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
+	if updatePriceRange == nil || updatePriceRange.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.PriceRange{}).Where("id = ?", updatePriceRange.ID).Updates(updatePriceRange.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update price range", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.PriceRange{}).Where("id = ?", updatePriceRange.ID).Updates(updatePriceRange.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update price range", err)
 		return err
 	}
 	return nil
 }
 
-func (r *PriceRangesImpl) DeletePriceRanges(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeletePriceRanges(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.PriceRange{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete price ranges", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.PriceRange{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete price ranges", err)
 		return err
 	}
 	return nil
 }
 
-// BranchCategoryRelations Impl
-func NewBranchCategoryRelationsRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.BranchCategoryRelations {
-	return &BranchCategoryRelationsImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type BranchCategoryRelationsImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *BranchCategoryRelationsImpl) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
+func (impl *RestaurantsImpl) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
 	if len(branchCategoryRelations) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&branchCategoryRelations).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create branch category relations", err)
+	if err := impl.db.WithContext(ctx).Create(&branchCategoryRelations).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create branch category relations", err)
 		return err
 	}
 	return nil
 }
 
-func (r *BranchCategoryRelationsImpl) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation entities.UpdateBranchCategoryRelation) error {
-	if updateBranchCategoryRelation.ID == "" {
+func (impl *RestaurantsImpl) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
+	if updateBranchCategoryRelation == nil || updateBranchCategoryRelation.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.BranchCategoryRelation{}).Where("id = ?", updateBranchCategoryRelation.ID).Updates(updateBranchCategoryRelation.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update branch category relation", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.BranchCategoryRelation{}).Where("id = ?", updateBranchCategoryRelation.ID).Updates(updateBranchCategoryRelation.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update branch category relation", err)
 		return err
 	}
 	return nil
 }
 
-func (r *BranchCategoryRelationsImpl) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.BranchCategoryRelation{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete branch category relations", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.BranchCategoryRelation{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete branch category relations", err)
 		return err
 	}
 	return nil
 }
 
-// Tables Impl
-func NewTablesRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.Tables {
-	return &TablesImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type TablesImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *TablesImpl) CreateTables(ctx context.Context, tables entities.Tables) error {
+func (impl *RestaurantsImpl) CreateTables(ctx context.Context, tables entities.Tables) error {
 	if len(tables) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&tables).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create tables", err)
+	if err := impl.db.WithContext(ctx).Create(&tables).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create tables", err)
 		return err
 	}
 	return nil
 }
 
-func (r *TablesImpl) UpdateTable(ctx context.Context, updateTable entities.UpdateTable) error {
-	if updateTable.ID == "" {
+func (impl *RestaurantsImpl) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
+	if updateTable == nil || updateTable.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.Table{}).Where("id = ?", updateTable.ID).Updates(updateTable.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update table", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.Table{}).Where("id = ?", updateTable.ID).Updates(updateTable.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update table", err)
 		return err
 	}
 	return nil
 }
 
-func (r *TablesImpl) DeleteTables(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteTables(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Table{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete tables", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Table{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete tables", err)
 		return err
 	}
 	return nil
 }
 
-// Availables Impl
-func NewAvailablesRepository(
-	db *gorm.DB,
-	contextLogger contextloggers.ContextLogger,
-) repositories.Availables {
-	return &AvailablesImpl{
-		db:            db,
-		contextLogger: contextLogger,
-	}
-}
-
-type AvailablesImpl struct {
-	db            *gorm.DB
-	contextLogger contextloggers.ContextLogger
-}
-
-func (r *AvailablesImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+func (impl *RestaurantsImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
 	if len(availables) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&availables).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create availables", err)
+	if err := impl.db.WithContext(ctx).Create(&availables).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create availables", err)
 		return err
 	}
 	return nil
 }
 
-func (r *AvailablesImpl) UpdateAvailable(ctx context.Context, updateAvailable entities.UpdateAvailable) error {
-	if updateAvailable.ID == "" {
+func (impl *RestaurantsImpl) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
+	if updateAvailable == nil || updateAvailable.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.Available{}).Where("id = ?", updateAvailable.ID).Updates(updateAvailable.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update available", err)
+	if err := impl.db.WithContext(ctx).Model(&entities.Available{}).Where("id = ?", updateAvailable.ID).Updates(updateAvailable.ToUpdateMap()).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update available", err)
 		return err
 	}
 	return nil
 }
 
-func (r *AvailablesImpl) DeleteAvailables(ctx context.Context, ids []string) error {
+func (impl *RestaurantsImpl) DeleteAvailables(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Available{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete availables", err)
+	if err := impl.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Available{}).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete availables", err)
 		return err
 	}
 	return nil

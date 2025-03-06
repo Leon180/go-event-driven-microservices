@@ -29,6 +29,10 @@ var (
 	InvalidCountryError      = newErrorFromErrorCode(InvalidCountry)
 	InvalidCategoryError     = newErrorFromErrorCode(InvalidCategory)
 
+	// action
+	AlreadyDeletedError = newErrorFromErrorCode(AlreadyDeleted)
+	AlreadyActiveError  = newErrorFromErrorCode(AlreadyActive)
+
 	// Account
 	AccountAlreadyExistsError   = newErrorFromErrorCode(AccountAlreadyExists)
 	AccountNotFoundError        = newErrorFromErrorCode(AccountNotFound)
@@ -120,6 +124,10 @@ const (
 	InvalidCity         ErrorCode = 21008
 	InvalidCountry      ErrorCode = 21009
 	InvalidCategory     ErrorCode = 21010
+
+	// action
+	AlreadyDeleted ErrorCode = 22001
+	AlreadyActive  ErrorCode = 22002
 	// Account
 	AccountAlreadyExists   ErrorCode = 30001
 	AccountNotFound        ErrorCode = 30002
@@ -207,6 +215,9 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	InvalidCountry:      "country is invalid",
 	InvalidCategory:     "category is invalid",
 
+	// action
+	AlreadyDeleted: "already deleted",
+	AlreadyActive:  "already active",
 	// Account
 	AccountAlreadyExists:   "account already exists",
 	AccountNotFound:        "account not found",
@@ -293,6 +304,10 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	InvalidCity:         http.StatusBadRequest,
 	InvalidCountry:      http.StatusBadRequest,
 	InvalidCategory:     http.StatusBadRequest,
+
+	// action
+	AlreadyDeleted: http.StatusOK,
+	AlreadyActive:  http.StatusOK,
 	// Account
 	AccountAlreadyExists:   http.StatusConflict,
 	AccountNotFound:        http.StatusNotFound,

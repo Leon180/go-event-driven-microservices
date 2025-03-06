@@ -26,3 +26,7 @@ type CommonCQRSHistoryModel struct {
 	UpdatedAt    time.Time
 	UpdatedBy    string
 }
+
+func (c *CommonCQRSHistoryModel) IsActive() bool {
+	return c.ActiveStatus
+}

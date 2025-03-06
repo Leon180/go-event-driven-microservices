@@ -1,5 +1,5 @@
 package featuresdtos
 
-type RestoreAccountRequest struct {
+type RestoreRestaurantRequest struct {
 	ID string `json:"id" binding:"required"`
 }

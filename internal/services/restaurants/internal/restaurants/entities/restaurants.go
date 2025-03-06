@@ -15,6 +15,75 @@ type Restaurant struct {
 
 type Restaurants []Restaurant
 
+type Branch struct {
+	ID           string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	RestaurantID string `gorm:"not null;type:uuid" comment:"Restaurant ID"`
+	Name         string `gorm:"not null;type:varchar(255)" comment:"Name"`
+	Description  string `gorm:"not null;type:text" comment:"Description"`
+	CommonCQRSHistoryModel
+}
+
+type Branches []Branch
+
+type Address struct {
+	ID          string            `gorm:"primaryKey;type:uuid" comment:"ID"`
+	BranchID    string            `gorm:"not null;type:uuid" comment:"Branch ID"`
+	Street      string            `gorm:"not null;type:varchar(255)" comment:"Street"`
+	CityCode    enums.CityCode    `gorm:"not null;type:int" comment:"City Code"`
+	PostalCode  string            `gorm:"not null;type:varchar(255)" comment:"Postal Code"`
+	CountryCode enums.CountryCode `gorm:"not null;type:varchar(255)" comment:"Country"`
+	CommonCQRSHistoryModel
+}
+
+type Addresses []Address
+
+type PriceRange struct {
+	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
+	MinPrice int    `gorm:"not null;type:int" comment:"Min Price"`
+	MaxPrice int    `gorm:"not null;type:int" comment:"Max Price"`
+	CommonCQRSHistoryModel
+}
+
+type PriceRanges []PriceRange
+
+type BranchCategoryRelation struct {
+	ID         string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	BranchID   string `gorm:"not null;type:uuid" comment:"Branch ID"`
+	CategoryID string `gorm:"not null;type:uuid" comment:"Category ID"`
+	CommonCQRSHistoryModel
+}
+
+type BranchCategoryRelations []BranchCategoryRelation
+
+type Category struct {
+	ID           string             `gorm:"primaryKey;type:uuid" comment:"ID"`
+	CategoryCode enums.CategoryCode `gorm:"not null;type:int" comment:"Category Code"`
+	CommonCQRSHistoryModel
+}
+
+type Categories []Category
+
+type Available struct {
+	ID        string       `gorm:"primaryKey;type:uuid" comment:"ID"`
+	BranchID  string       `gorm:"not null;type:uuid" comment:"Branch ID"`
+	Weekday   time.Weekday `gorm:"not null;type:int" comment:"Weekday"`
+	StartTime string       `gorm:"not null;type:varchar(5)" comment:"Start Time HH:MM"`
+	EndTime   string       `gorm:"not null;type:varchar(5)" comment:"End Time HH:MM"`
+	CommonCQRSHistoryModel
+}
+
+type Availables []Available
+
+type Table struct {
+	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
+	Capacity int    `gorm:"not null;type:int" comment:"Capacity"`
+	CommonCQRSHistoryModel
+}
+
+type Tables []Table
+
 type UpdateRestaurant struct {
 	ID           string
 	Name         *string
@@ -22,9 +91,12 @@ type UpdateRestaurant struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdateRestaurant) RemoveUnchangedFields(restaurant Restaurant) {
+func (u *UpdateRestaurant) RemoveUnchangedFields(restaurant Restaurant) *UpdateRestaurant {
+	if u == nil {
+		return nil
+	}
 	if u.ID != restaurant.ID {
-		return
+		return nil
 	}
 	if u.Name != nil && *u.Name == restaurant.Name {
 		u.Name = nil
@@ -35,6 +107,7 @@ func (u *UpdateRestaurant) RemoveUnchangedFields(restaurant Restaurant) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == restaurant.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateRestaurant) ToUpdateMap() map[string]any {
@@ -51,16 +124,6 @@ func (u *UpdateRestaurant) ToUpdateMap() map[string]any {
 	return updateMap
 }
 
-type Branch struct {
-	ID           string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	RestaurantID string `gorm:"not null;type:uuid" comment:"Restaurant ID"`
-	Name         string `gorm:"not null;type:varchar(255)" comment:"Name"`
-	Description  string `gorm:"not null;type:text" comment:"Description"`
-	CommonCQRSHistoryModel
-}
-
-type Branches []Branch
-
 type UpdateBranch struct {
 	ID           string
 	Name         *string
@@ -68,9 +131,12 @@ type UpdateBranch struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdateBranch) RemoveUnchangedFields(branch Branch) {
+func (u *UpdateBranch) RemoveUnchangedFields(branch Branch) *UpdateBranch {
+	if u == nil {
+		return nil
+	}
 	if u.ID != branch.ID {
-		return
+		return nil
 	}
 	if u.Name != nil && *u.Name == branch.Name {
 		u.Name = nil
@@ -81,6 +147,7 @@ func (u *UpdateBranch) RemoveUnchangedFields(branch Branch) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == branch.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateBranch) ToUpdateMap() map[string]any {
@@ -97,20 +164,6 @@ func (u *UpdateBranch) ToUpdateMap() map[string]any {
 	return updateMap
 }
 
-type UpdateBranches []UpdateBranch
-
-type Address struct {
-	ID          string            `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID    string            `gorm:"not null;type:uuid" comment:"Branch ID"`
-	Street      string            `gorm:"not null;type:varchar(255)" comment:"Street"`
-	CityCode    enums.CityCode    `gorm:"not null;type:int" comment:"City Code"`
-	PostalCode  string            `gorm:"not null;type:varchar(255)" comment:"Postal Code"`
-	CountryCode enums.CountryCode `gorm:"not null;type:varchar(255)" comment:"Country"`
-	CommonCQRSHistoryModel
-}
-
-type Addresses []Address
-
 type UpdateAddress struct {
 	ID           string
 	Street       *string
@@ -120,9 +173,12 @@ type UpdateAddress struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdateAddress) RemoveUnchangedFields(address Address) {
+func (u *UpdateAddress) RemoveUnchangedFields(address Address) *UpdateAddress {
+	if u == nil {
+		return nil
+	}
 	if u.ID != address.ID {
-		return
+		return nil
 	}
 	if u.Street != nil && *u.Street == address.Street {
 		u.Street = nil
@@ -139,6 +195,7 @@ func (u *UpdateAddress) RemoveUnchangedFields(address Address) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == address.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateAddress) ToUpdateMap() map[string]any {
@@ -161,18 +218,6 @@ func (u *UpdateAddress) ToUpdateMap() map[string]any {
 	return updateMap
 }
 
-type UpdateAddresses []UpdateAddress
-
-type PriceRange struct {
-	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
-	MinPrice int    `gorm:"not null;type:int" comment:"Min Price"`
-	MaxPrice int    `gorm:"not null;type:int" comment:"Max Price"`
-	CommonCQRSHistoryModel
-}
-
-type PriceRanges []PriceRange
-
 type UpdatePriceRange struct {
 	ID           string
 	MinPrice     *int
@@ -180,9 +225,12 @@ type UpdatePriceRange struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdatePriceRange) RemoveUnchangedFields(priceRange PriceRange) {
+func (u *UpdatePriceRange) RemoveUnchangedFields(priceRange PriceRange) *UpdatePriceRange {
+	if u == nil {
+		return nil
+	}
 	if u.ID != priceRange.ID {
-		return
+		return nil
 	}
 	if u.MinPrice != nil && *u.MinPrice == priceRange.MinPrice {
 		u.MinPrice = nil
@@ -193,6 +241,7 @@ func (u *UpdatePriceRange) RemoveUnchangedFields(priceRange PriceRange) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == priceRange.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdatePriceRange) ToUpdateMap() map[string]any {
@@ -209,26 +258,18 @@ func (u *UpdatePriceRange) ToUpdateMap() map[string]any {
 	return updateMap
 }
 
-type UpdatePriceRanges []UpdatePriceRange
-
-type BranchCategoryRelation struct {
-	ID         string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID   string `gorm:"not null;type:uuid" comment:"Branch ID"`
-	CategoryID string `gorm:"not null;type:uuid" comment:"Category ID"`
-	CommonCQRSHistoryModel
-}
-
-type BranchCategoryRelations []BranchCategoryRelation
-
 type UpdateBranchCategoryRelation struct {
 	ID           string
 	CategoryID   *string
 	ActiveStatus *bool
 }
 
-func (u *UpdateBranchCategoryRelation) RemoveUnchangedFields(branchCategoryRelation BranchCategoryRelation) {
+func (u *UpdateBranchCategoryRelation) RemoveUnchangedFields(branchCategoryRelation BranchCategoryRelation) *UpdateBranchCategoryRelation {
+	if u == nil {
+		return nil
+	}
 	if u.ID != branchCategoryRelation.ID {
-		return
+		return nil
 	}
 	if u.CategoryID != nil && *u.CategoryID == branchCategoryRelation.CategoryID {
 		u.CategoryID = nil
@@ -236,6 +277,7 @@ func (u *UpdateBranchCategoryRelation) RemoveUnchangedFields(branchCategoryRelat
 	if u.ActiveStatus != nil && *u.ActiveStatus == branchCategoryRelation.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateBranchCategoryRelation) ToUpdateMap() map[string]any {
@@ -249,26 +291,38 @@ func (u *UpdateBranchCategoryRelation) ToUpdateMap() map[string]any {
 	return updateMap
 }
 
-type UpdateBranchCategoryRelations []UpdateBranchCategoryRelation
-
-type Category struct {
-	ID           string             `gorm:"primaryKey;type:uuid" comment:"ID"`
-	CategoryCode enums.CategoryCode `gorm:"not null;type:int" comment:"Category Code"`
-	CommonCQRSHistoryModel
+type UpdateTable struct {
+	ID           string
+	Capacity     *int
+	ActiveStatus *bool
 }
 
-type Categories []Category
-
-type Available struct {
-	ID        string       `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID  string       `gorm:"not null;type:uuid" comment:"Branch ID"`
-	Weekday   time.Weekday `gorm:"not null;type:int" comment:"Weekday"`
-	StartTime string       `gorm:"not null;type:varchar(5)" comment:"Start Time HH:MM"`
-	EndTime   string       `gorm:"not null;type:varchar(5)" comment:"End Time HH:MM"`
-	CommonCQRSHistoryModel
+func (u *UpdateTable) RemoveUnchangedFields(table Table) *UpdateTable {
+	if u == nil {
+		return nil
+	}
+	if u.ID != table.ID {
+		return nil
+	}
+	if u.Capacity != nil && *u.Capacity == table.Capacity {
+		u.Capacity = nil
+	}
+	if u.ActiveStatus != nil && *u.ActiveStatus == table.ActiveStatus {
+		u.ActiveStatus = nil
+	}
+	return u
 }
 
-type Availables []Available
+func (u *UpdateTable) ToUpdateMap() map[string]any {
+	updateMap := make(map[string]any)
+	if u.Capacity != nil {
+		updateMap["capacity"] = *u.Capacity
+	}
+	if u.ActiveStatus != nil {
+		updateMap["active_status"] = *u.ActiveStatus
+	}
+	return updateMap
+}
 
 type UpdateAvailable struct {
 	ID           string
@@ -278,9 +332,12 @@ type UpdateAvailable struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdateAvailable) RemoveUnchangedFields(available Available) {
+func (u *UpdateAvailable) RemoveUnchangedFields(available Available) *UpdateAvailable {
+	if u == nil {
+		return nil
+	}
 	if u.ID != available.ID {
-		return
+		return nil
 	}
 	if u.Weekday != nil && *u.Weekday == available.Weekday {
 		u.Weekday = nil
@@ -294,6 +351,7 @@ func (u *UpdateAvailable) RemoveUnchangedFields(available Available) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == available.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateAvailable) ToUpdateMap() map[string]any {
@@ -312,45 +370,3 @@ func (u *UpdateAvailable) ToUpdateMap() map[string]any {
 	}
 	return updateMap
 }
-
-type UpdateAvailables []UpdateAvailable
-
-type Table struct {
-	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
-	Capacity int    `gorm:"not null;type:int" comment:"Capacity"`
-	CommonCQRSHistoryModel
-}
-
-type Tables []Table
-
-type UpdateTable struct {
-	ID           string
-	Capacity     *int
-	ActiveStatus *bool
-}
-
-func (u *UpdateTable) RemoveUnchangedFields(table Table) {
-	if u.ID != table.ID {
-		return
-	}
-	if u.Capacity != nil && *u.Capacity == table.Capacity {
-		u.Capacity = nil
-	}
-	if u.ActiveStatus != nil && *u.ActiveStatus == table.ActiveStatus {
-		u.ActiveStatus = nil
-	}
-}
-
-func (u *UpdateTable) ToUpdateMap() map[string]any {
-	updateMap := make(map[string]any)
-	if u.Capacity != nil {
-		updateMap["capacity"] = *u.Capacity
-	}
-	if u.ActiveStatus != nil {
-		updateMap["active_status"] = *u.ActiveStatus
-	}
-	return updateMap
-}
-
-type UpdateTables []UpdateTable
