@@ -56,8 +56,9 @@ func (r *SearchRestaurantsFullInfoImpl) buildBaseQuery(ctx context.Context) *gor
 		Preload("Branches.Address").
 		Preload("Branches.PriceRange").
 		Preload("Branches.BranchCategoryRelations").
+		Preload("Branches.BranchCategoryRelations.Category").
 		Preload("Branches.Tables").
-		Preload("Branches.Tables.TableAvailables")
+		Preload("Branches.Availables")
 }
 
 func (r *SearchRestaurantsFullInfoImpl) applyNameFilter(name *string) func(*gorm.DB) *gorm.DB {
@@ -158,18 +159,17 @@ func (r *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(search dtos
 
 		query := db.Where(`EXISTS (
             SELECT 1 FROM branch
-            JOIN table ON branch.id = table.branch_id
-            JOIN table_available ON table.id = table_available.table_id
+            JOIN available ON branch.id = available.branch_id
             WHERE branch.restaurant_id = restaurant.id`)
 
 		if len(search.TableAvailableWeek) > 0 {
-			query = query.Where("table_available.weekday IN (?)", search.TableAvailableWeek)
+			query = query.Where("available.weekday IN (?)", search.TableAvailableWeek)
 		}
 		if search.TableAvailableStartTime != nil {
-			query = query.Where("table_available.start_time >= ?", *search.TableAvailableStartTime)
+			query = query.Where("available.start_time >= ?", *search.TableAvailableStartTime)
 		}
 		if search.TableAvailableEndTime != nil {
-			query = query.Where("table_available.end_time <= ?", *search.TableAvailableEndTime)
+			query = query.Where("available.end_time <= ?", *search.TableAvailableEndTime)
 		}
 
 		return query.Where(")")
@@ -232,8 +232,9 @@ func (r *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string)
 		Preload("Branches.Address").
 		Preload("Branches.PriceRange").
 		Preload("Branches.BranchCategoryRelations").
+		Preload("Branches.BranchCategoryRelations.Category").
 		Preload("Branches.Tables").
-		Preload("Branches.Tables.TableAvailables").
+		Preload("Branches.Availables").
 		Where("id = ?", id).Limit(1).Find(&restaurant).Error; err != nil {
 		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read restaurant full info", err)
 		return aggregates.Restaurant{}, err
@@ -508,50 +509,50 @@ func (r *TablesImpl) DeleteTables(ctx context.Context, ids []string) error {
 	return nil
 }
 
-// TableAvailables Impl
-func NewTableAvailablesRepository(
+// Availables Impl
+func NewAvailablesRepository(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
-) repositories.TableAvailables {
-	return &TableAvailablesImpl{
+) repositories.Availables {
+	return &AvailablesImpl{
 		db:            db,
 		contextLogger: contextLogger,
 	}
 }
 
-type TableAvailablesImpl struct {
+type AvailablesImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
 }
 
-func (r *TableAvailablesImpl) CreateTableAvailables(ctx context.Context, tableAvailables entities.TableAvailables) error {
-	if len(tableAvailables) == 0 {
+func (r *AvailablesImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+	if len(availables) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Create(&tableAvailables).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create table availables", err)
+	if err := r.db.WithContext(ctx).Create(&availables).Error; err != nil {
+		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create availables", err)
 		return err
 	}
 	return nil
 }
 
-func (r *TableAvailablesImpl) UpdateTableAvailable(ctx context.Context, updateTableAvailable entities.UpdateTableAvailable) error {
-	if updateTableAvailable.ID == "" {
+func (r *AvailablesImpl) UpdateAvailable(ctx context.Context, updateAvailable entities.UpdateAvailable) error {
+	if updateAvailable.ID == "" {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&entities.TableAvailable{}).Where("id = ?", updateTableAvailable.ID).Updates(updateTableAvailable.ToUpdateMap()).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update table available", err)
+	if err := r.db.WithContext(ctx).Model(&entities.Available{}).Where("id = ?", updateAvailable.ID).Updates(updateAvailable.ToUpdateMap()).Error; err != nil {
+		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update available", err)
 		return err
 	}
 	return nil
 }
 
-func (r *TableAvailablesImpl) DeleteTableAvailables(ctx context.Context, ids []string) error {
+func (r *AvailablesImpl) DeleteAvailables(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.TableAvailable{}).Error; err != nil {
-		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete table availables", err)
+	if err := r.db.WithContext(ctx).Where("id IN (?)", ids).Delete(&entities.Available{}).Error; err != nil {
+		r.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete availables", err)
 		return err
 	}
 	return nil

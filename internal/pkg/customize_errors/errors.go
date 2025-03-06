@@ -25,6 +25,9 @@ var (
 	InvalidDecimalError      = newErrorFromErrorCode(InvalidDecimal)
 	InvalidEmailError        = newErrorFromErrorCode(InvalidEmail)
 	InvalidNameError         = newErrorFromErrorCode(InvalidName)
+	InvalidCityError         = newErrorFromErrorCode(InvalidCity)
+	InvalidCountryError      = newErrorFromErrorCode(InvalidCountry)
+	InvalidCategoryError     = newErrorFromErrorCode(InvalidCategory)
 
 	// Account
 	AccountAlreadyExistsError   = newErrorFromErrorCode(AccountAlreadyExists)
@@ -114,7 +117,9 @@ const (
 	InvalidDecimal      ErrorCode = 21005
 	InvalidEmail        ErrorCode = 21006
 	InvalidName         ErrorCode = 21007
-
+	InvalidCity         ErrorCode = 21008
+	InvalidCountry      ErrorCode = 21009
+	InvalidCategory     ErrorCode = 21010
 	// Account
 	AccountAlreadyExists   ErrorCode = 30001
 	AccountNotFound        ErrorCode = 30002
@@ -198,6 +203,9 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	InvalidDecimal:      "decimal is invalid",
 	InvalidEmail:        "email is invalid",
 	InvalidName:         "name is invalid",
+	InvalidCity:         "city is invalid",
+	InvalidCountry:      "country is invalid",
+	InvalidCategory:     "category is invalid",
 
 	// Account
 	AccountAlreadyExists:   "account already exists",
@@ -282,7 +290,9 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	InvalidDecimal:      http.StatusBadRequest,
 	InvalidEmail:        http.StatusBadRequest,
 	InvalidName:         http.StatusBadRequest,
-
+	InvalidCity:         http.StatusBadRequest,
+	InvalidCountry:      http.StatusBadRequest,
+	InvalidCategory:     http.StatusBadRequest,
 	// Account
 	AccountAlreadyExists:   http.StatusConflict,
 	AccountNotFound:        http.StatusNotFound,

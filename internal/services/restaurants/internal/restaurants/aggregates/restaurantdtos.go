@@ -8,6 +8,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/validates/dtos"
 )
 
 type RestaurantDTOAggregate interface {
@@ -29,8 +30,8 @@ type RestaurantDTOAggregate interface {
 	// save table and related entities(table available) to the aggregate
 	SaveTable(branchID string, table *dtos.Table) error
 
-	// save table available to the aggregate
-	SaveTableAvailable(tableID string, tableAvailable *dtos.TableAvailable) error
+	// save available to the aggregate
+	SaveAvailable(branchID string, available *dtos.Available) error
 
 	// get restaurant aggregates
 	GetAggregates() []Restaurant
@@ -41,6 +42,7 @@ type RestaurantDTOAggregate interface {
 
 func NewRestaurantDTOAggregate(uuidGenerator uuid.UUIDGenerator) RestaurantDTOAggregate {
 	return &RestaurantDTOAggregateImpl{
+		restaurants:   make([]Restaurant, 0),
 		uuidGenerator: uuidGenerator,
 	}
 }
@@ -50,17 +52,6 @@ type RestaurantDTOAggregateImpl struct {
 
 	// dependencies
 	uuidGenerator uuid.UUIDGenerator
-}
-
-type RestaurantEntities struct {
-	Restaurants       entities.Restaurant
-	Branches          []entities.Branch
-	Addresses         map[string]entities.Address                  // branch id -> address
-	PriceRanges       map[string]entities.PriceRange               // branch id -> price range
-	CategoryRelations map[string][]entities.BranchCategoryRelation // branch id -> category relation
-	Category          []entities.Category
-	Tables            map[string][]entities.Table          // branch id -> table
-	TableAvailables   map[string][]entities.TableAvailable // table id -> table available
 }
 
 type RestaurantEditEntities struct {
@@ -84,7 +75,7 @@ type RestaurantCreateEntities struct {
 	PriceRanges       []entities.PriceRange
 	CategoryRelations []entities.BranchCategoryRelation
 	Tables            []entities.Table
-	TableAvailables   []entities.TableAvailable
+	Availables        []entities.Available
 }
 
 type RestaurantUpdateEntities struct {
@@ -94,7 +85,7 @@ type RestaurantUpdateEntities struct {
 	PriceRanges       []entities.PriceRange
 	CategoryRelations []entities.BranchCategoryRelation
 	Tables            []entities.Table
-	TableAvailables   []entities.TableAvailable
+	Availables        []entities.Available
 }
 
 type RestaurantDeleteEntities struct {
@@ -104,7 +95,7 @@ type RestaurantDeleteEntities struct {
 	PriceRanges       []entities.PriceRange
 	CategoryRelations []entities.BranchCategoryRelation
 	Tables            []entities.Table
-	TableAvailables   []entities.TableAvailable
+	Availables        []entities.Available
 }
 
 type Restaurant struct {
@@ -128,6 +119,7 @@ type Branch struct {
 	PriceRange              *PriceRange              `gorm:"foreignKey:BranchID;references:ID" comment:"Price Range"`
 	BranchCategoryRelations []BranchCategoryRelation `gorm:"foreignKey:BranchID;references:ID" comment:"Branch Category Relation"`
 	Tables                  []Table                  `gorm:"foreignKey:BranchID;references:ID" comment:"Tables"`
+	Availables              []Available              `gorm:"foreignKey:BranchID;references:ID" comment:"Availables"`
 }
 
 func (b *Branch) TableName() string {
@@ -161,27 +153,20 @@ type Category entities.Category
 type Table struct {
 	entities.Table
 	editTypeCode enums.EditTypeCode
-
-	// Relations
-	TableAvailables []TableAvailable `gorm:"foreignKey:TableID;references:ID" comment:"Table Availables"`
 }
 
-func (t *Table) TableName() string {
-	return "table"
-}
-
-type TableAvailable struct {
-	entities.TableAvailable
+type Available struct {
+	entities.Available
 	editTypeCode enums.EditTypeCode
 }
 
 // restaurant aggregate methods
 func (r *RestaurantDTOAggregateImpl) SaveRestaurant(restaurant *dtos.Restaurant) error {
+	if err := validatesdtos.ValidateRestaurant(restaurant); err != nil {
+		return err
+	}
 	if restaurant == nil {
 		return nil
-	}
-	if restaurant.Name == "" {
-		return customizeerrors.RestaurantNameEmptyError
 	}
 	for i := range r.restaurants {
 		if restaurant.ID != nil && r.restaurants[i].ID == *restaurant.ID {
@@ -259,6 +244,9 @@ func (r *RestaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, updat
 
 // branch aggregate methods
 func (r *RestaurantDTOAggregateImpl) SaveBranch(restaurantID string, branch *dtos.Branch) error {
+	if err := validatesdtos.ValidateBranch(branch); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		if r.restaurants[i].ID == restaurantID {
 			return r.saveBranch(&r.restaurants[i], branch)
@@ -270,9 +258,6 @@ func (r *RestaurantDTOAggregateImpl) SaveBranch(restaurantID string, branch *dto
 func (r *RestaurantDTOAggregateImpl) saveBranch(updated *Restaurant, update *dtos.Branch) error {
 	if updated == nil || update == nil {
 		return nil
-	}
-	if update.Name == "" {
-		return customizeerrors.BranchNameEmptyError
 	}
 	for i := range updated.Branches {
 		if update.ID != nil && updated.Branches[i].ID == *update.ID {
@@ -316,26 +301,28 @@ func (r *RestaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *d
 	if err != nil {
 		return err
 	}
-
 	err = r.addPriceRange(&restaurant.Branches[len(restaurant.Branches)-1], branch.PriceRange)
 	if err != nil {
 		return err
 	}
-
 	for i := range branch.Categories {
 		err := r.addCategoryRelation(&restaurant.Branches[len(restaurant.Branches)-1], &branch.Categories[i])
 		if err != nil {
 			return err
 		}
 	}
-
 	for i := range branch.Tables {
 		err := r.addTable(&restaurant.Branches[len(restaurant.Branches)-1], &branch.Tables[i])
 		if err != nil {
 			return err
 		}
 	}
-
+	for i := range branch.Availables {
+		err := r.addAvailable(&restaurant.Branches[len(restaurant.Branches)-1], &branch.Availables[i])
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -363,6 +350,12 @@ func (r *RestaurantDTOAggregateImpl) deleteBranch(branch *Branch) error {
 	}
 	for i := range branch.Tables {
 		err := r.deleteTable(&branch.Tables[i])
+		if err != nil {
+			return err
+		}
+	}
+	for i := range branch.Availables {
+		err := r.deleteAvailable(&branch.Availables[i])
 		if err != nil {
 			return err
 		}
@@ -419,11 +412,30 @@ func (r *RestaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 			}
 		}
 	}
+	deletedMap = make(map[string]struct{})
+	for i := range update.Availables {
+		err = r.saveAvailable(updated, &update.Availables[i])
+		if err != nil {
+			return err
+		}
+		deletedMap[*update.Availables[i].ID] = struct{}{}
+	}
+	for i := range updated.Availables {
+		if _, ok := deletedMap[updated.Availables[i].ID]; !ok {
+			err = r.deleteAvailable(&updated.Availables[i])
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
 // address aggregate methods
 func (r *RestaurantDTOAggregateImpl) SaveAddress(branchID string, address *dtos.Address) error {
+	if err := validatesdtos.ValidateAddress(address); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		for j := range r.restaurants[i].Branches {
 			if r.restaurants[i].Branches[j].ID == branchID {
@@ -437,9 +449,6 @@ func (r *RestaurantDTOAggregateImpl) SaveAddress(branchID string, address *dtos.
 func (r *RestaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.Address) error {
 	if updated == nil || update == nil {
 		return nil
-	}
-	if update.Country == "" || update.City == "" || update.PostalCode == "" || update.Street == "" {
-		return customizeerrors.AddressEmptyError
 	}
 	if updated.Address != nil {
 		updated.Address.Street = update.Street
@@ -495,6 +504,9 @@ func (r *RestaurantDTOAggregateImpl) deleteAddress(address *Address) error {
 
 // price range aggregate methods
 func (r *RestaurantDTOAggregateImpl) SavePriceRange(branchID string, priceRange *dtos.PriceRange) error {
+	if err := validatesdtos.ValidatePriceRange(priceRange); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		for j := range r.restaurants[i].Branches {
 			if r.restaurants[i].Branches[j].ID == branchID {
@@ -508,9 +520,6 @@ func (r *RestaurantDTOAggregateImpl) SavePriceRange(branchID string, priceRange 
 func (r *RestaurantDTOAggregateImpl) savePriceRange(updated *Branch, update *dtos.PriceRange) error {
 	if updated == nil || update == nil {
 		return nil
-	}
-	if update.MinPrice == 0 || update.MaxPrice <= update.MinPrice {
-		return customizeerrors.PriceRangeInvalidError
 	}
 	if updated.PriceRange != nil {
 		updated.PriceRange.MinPrice = update.MinPrice
@@ -561,6 +570,9 @@ func (r *RestaurantDTOAggregateImpl) deletePriceRange(priceRange *PriceRange) er
 
 // category aggregate methods
 func (r *RestaurantDTOAggregateImpl) SaveCategoryRelation(branchID string, category *dtos.Category) error {
+	if err := validatesdtos.ValidateCategory(category); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		for j := range r.restaurants[i].Branches {
 			if r.restaurants[i].Branches[j].ID == branchID {
@@ -574,9 +586,6 @@ func (r *RestaurantDTOAggregateImpl) SaveCategoryRelation(branchID string, categ
 func (r *RestaurantDTOAggregateImpl) saveCategoryRelation(updated *Branch, update *dtos.Category) error {
 	if updated == nil || update == nil {
 		return nil
-	}
-	if update.Category == "" {
-		return customizeerrors.CategoryNameEmptyError
 	}
 	if update.ID == "" {
 		return customizeerrors.CategoryIDEmptyError
@@ -633,6 +642,9 @@ func (r *RestaurantDTOAggregateImpl) deleteCategoryRelation(category *BranchCate
 
 // table aggregate methods
 func (r *RestaurantDTOAggregateImpl) SaveTable(branchID string, table *dtos.Table) error {
+	if err := validatesdtos.ValidateTable(table); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		for j := range r.restaurants[i].Branches {
 			if r.restaurants[i].Branches[j].ID == branchID {
@@ -646,9 +658,6 @@ func (r *RestaurantDTOAggregateImpl) SaveTable(branchID string, table *dtos.Tabl
 func (r *RestaurantDTOAggregateImpl) saveTable(updated *Branch, update *dtos.Table) error {
 	if updated == nil || update == nil {
 		return nil
-	}
-	if update.Capacity <= 0 {
-		return customizeerrors.TableCapacityInvalidError
 	}
 	for i := range updated.Tables {
 		if update.ID != nil && updated.Tables[i].ID == *update.ID {
@@ -682,13 +691,6 @@ func (r *RestaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table)
 		},
 		editTypeCode: enums.EditTypeCodeCreate,
 	})
-
-	for i := range table.TableAvailables {
-		err := r.addTableAvailable(&branch.Tables[len(branch.Tables)-1], &table.TableAvailables[i])
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
@@ -709,83 +711,55 @@ func (r *RestaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Ta
 	updated.Capacity = update.Capacity
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
 	updated.editTypeCode = enums.EditTypeCodeUpdate
-
-	deletedMap := make(map[string]struct{}) // id -> deleted
-	for i := range update.TableAvailables {
-		err := r.saveTableAvailable(updated, &update.TableAvailables[i])
-		if err != nil {
-			return err
-		}
-		deletedMap[*update.TableAvailables[i].ID] = struct{}{}
-	}
-	for i := range updated.TableAvailables {
-		if _, ok := deletedMap[updated.TableAvailables[i].ID]; !ok {
-			err := r.deleteTableAvailable(&updated.TableAvailables[i])
-			if err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
 // table available aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveTableAvailable(tableID string, tableAvailable *dtos.TableAvailable) error {
+func (r *RestaurantDTOAggregateImpl) SaveAvailable(branchID string, available *dtos.Available) error {
+	if err := validatesdtos.ValidateAvailable(available); err != nil {
+		return err
+	}
 	for i := range r.restaurants {
 		for j := range r.restaurants[i].Branches {
-			for k := range r.restaurants[i].Branches[j].Tables {
-				if r.restaurants[i].Branches[j].Tables[k].ID == tableID {
-					return r.saveTableAvailable(&r.restaurants[i].Branches[j].Tables[k], tableAvailable)
-				}
+			if r.restaurants[i].Branches[j].ID == branchID {
+				return r.saveAvailable(&r.restaurants[i].Branches[j], available)
 			}
 		}
 	}
-	return customizeerrors.TableNotFoundError
+	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveTableAvailable(updated *Table, update *dtos.TableAvailable) error {
+func (r *RestaurantDTOAggregateImpl) saveAvailable(updated *Branch, update *dtos.Available) error {
 	if updated == nil || update == nil {
 		return nil
 	}
-	if update.Weekday < 0 || update.Weekday > 6 {
-		return customizeerrors.TableAvailableTimeInvalidError
-	}
-	_, err := time.Parse(enums.TimeFormatClockOnly.ToString(), update.StartTime)
-	if err != nil {
-		return customizeerrors.TableAvailableTimeInvalidError
-	}
-	_, err = time.Parse(enums.TimeFormatClockOnly.ToString(), update.EndTime)
-	if err != nil {
-		return customizeerrors.TableAvailableTimeInvalidError
-	}
-	for i := range updated.TableAvailables {
-		if update.ID != nil && updated.TableAvailables[i].ID == *update.ID {
-			return r.updateTableAvailable(&updated.TableAvailables[i], update)
+	for i := range updated.Availables {
+		if update.ID != nil && updated.Availables[i].ID == *update.ID {
+			return r.updateAvailable(&updated.Availables[i], update)
 		}
 	}
-	return r.addTableAvailable(updated, update)
+	return r.addAvailable(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addTableAvailable(table *Table, tableAvailable *dtos.TableAvailable) error {
-	if tableAvailable == nil || table == nil {
+func (r *RestaurantDTOAggregateImpl) addAvailable(branch *Branch, available *dtos.Available) error {
+	if branch == nil || available == nil {
 		return nil
 	}
-	var tableAvailableID string
-	if tableAvailable.ID == nil {
-		tableAvailableID = r.uuidGenerator.GenerateUUID()
+	var availableID string
+	if available.ID == nil {
+		availableID = r.uuidGenerator.GenerateUUID()
 	} else {
-		tableAvailableID = *tableAvailable.ID
+		availableID = *available.ID
 	}
 
 	timeNow := time.Now()
-	table.TableAvailables = append(table.TableAvailables, TableAvailable{
-		TableAvailable: entities.TableAvailable{
-			ID:        tableAvailableID,
-			TableID:   table.ID,
-			Weekday:   tableAvailable.Weekday,
-			StartTime: tableAvailable.StartTime,
-			EndTime:   tableAvailable.EndTime,
-			Booked:    tableAvailable.Booked,
+	branch.Availables = append(branch.Availables, Available{
+		Available: entities.Available{
+			ID:        availableID,
+			BranchID:  branch.ID,
+			Weekday:   available.Weekday,
+			StartTime: available.StartTime,
+			EndTime:   available.EndTime,
 			CommonCQRSHistoryModel: entities.CommonCQRSHistoryModel{
 				ActiveStatus: true,
 				CreatedAt:    timeNow,
@@ -798,26 +772,25 @@ func (r *RestaurantDTOAggregateImpl) addTableAvailable(table *Table, tableAvaila
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) updateTableAvailable(updated *TableAvailable, update *dtos.TableAvailable) error {
+func (r *RestaurantDTOAggregateImpl) updateAvailable(updated *Available, update *dtos.Available) error {
 	if updated == nil || update == nil {
 		return nil
 	}
 	updated.Weekday = update.Weekday
 	updated.StartTime = update.StartTime
 	updated.EndTime = update.EndTime
-	updated.Booked = update.Booked
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
 	updated.editTypeCode = enums.EditTypeCodeUpdate
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteTableAvailable(tableAvailable *TableAvailable) error {
-	if tableAvailable == nil {
+func (r *RestaurantDTOAggregateImpl) deleteAvailable(Available *Available) error {
+	if Available == nil {
 		return nil
 	}
-	tableAvailable.ActiveStatus = false
-	tableAvailable.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	tableAvailable.editTypeCode = enums.EditTypeCodeDelete
+	Available.ActiveStatus = false
+	Available.CommonCQRSHistoryModel.UpdatedAt = time.Now()
+	Available.editTypeCode = enums.EditTypeCodeDelete
 	return nil
 }
 
@@ -854,14 +827,15 @@ func (r *RestaurantDTOAggregateImpl) GetEditEntities() []RestaurantEditEntities 
 				appendEntityByType(&createEntities.CategoryRelations, &updateEntities.CategoryRelations, &deleteEntities.CategoryRelations, relation.BranchCategoryRelation, relation.editTypeCode)
 			}
 
+			// Handle table
 			for _, table := range branch.Tables {
-				// Handle table
-				appendEntityByType(&createEntities.Tables, &updateEntities.Tables, &deleteEntities.Tables, table.Table, table.editTypeCode)
 
-				// Handle table availabilities
-				for _, available := range table.TableAvailables {
-					appendEntityByType(&createEntities.TableAvailables, &updateEntities.TableAvailables, &deleteEntities.TableAvailables, available.TableAvailable, available.editTypeCode)
-				}
+				appendEntityByType(&createEntities.Tables, &updateEntities.Tables, &deleteEntities.Tables, table.Table, table.editTypeCode)
+			}
+
+			// Handle availabilities
+			for _, available := range branch.Availables {
+				appendEntityByType(&createEntities.Availables, &updateEntities.Availables, &deleteEntities.Availables, available.Available, available.editTypeCode)
 			}
 		}
 	}

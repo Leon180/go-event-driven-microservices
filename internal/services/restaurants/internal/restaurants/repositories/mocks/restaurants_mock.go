@@ -469,68 +469,68 @@ func (mr *MockTablesMockRecorder) UpdateTable(ctx, updateTable any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTable", reflect.TypeOf((*MockTables)(nil).UpdateTable), ctx, updateTable)
 }
 
-// MockTableAvailables is a mock of TableAvailables interface.
-type MockTableAvailables struct {
+// MockAvailables is a mock of Availables interface.
+type MockAvailables struct {
 	ctrl     *gomock.Controller
-	recorder *MockTableAvailablesMockRecorder
+	recorder *MockAvailablesMockRecorder
 	isgomock struct{}
 }
 
-// MockTableAvailablesMockRecorder is the mock recorder for MockTableAvailables.
-type MockTableAvailablesMockRecorder struct {
-	mock *MockTableAvailables
+// MockAvailablesMockRecorder is the mock recorder for MockAvailables.
+type MockAvailablesMockRecorder struct {
+	mock *MockAvailables
 }
 
-// NewMockTableAvailables creates a new mock instance.
-func NewMockTableAvailables(ctrl *gomock.Controller) *MockTableAvailables {
-	mock := &MockTableAvailables{ctrl: ctrl}
-	mock.recorder = &MockTableAvailablesMockRecorder{mock}
+// NewMockAvailables creates a new mock instance.
+func NewMockAvailables(ctrl *gomock.Controller) *MockAvailables {
+	mock := &MockAvailables{ctrl: ctrl}
+	mock.recorder = &MockAvailablesMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTableAvailables) EXPECT() *MockTableAvailablesMockRecorder {
+func (m *MockAvailables) EXPECT() *MockAvailablesMockRecorder {
 	return m.recorder
 }
 
-// CreateTableAvailables mocks base method.
-func (m *MockTableAvailables) CreateTableAvailables(ctx context.Context, tableAvailables entities.TableAvailables) error {
+// CreateAvailables mocks base method.
+func (m *MockAvailables) CreateAvailables(ctx context.Context, availables entities.Availables) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTableAvailables", ctx, tableAvailables)
+	ret := m.ctrl.Call(m, "CreateAvailables", ctx, availables)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateTableAvailables indicates an expected call of CreateTableAvailables.
-func (mr *MockTableAvailablesMockRecorder) CreateTableAvailables(ctx, tableAvailables any) *gomock.Call {
+// CreateAvailables indicates an expected call of CreateAvailables.
+func (mr *MockAvailablesMockRecorder) CreateAvailables(ctx, availables any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTableAvailables", reflect.TypeOf((*MockTableAvailables)(nil).CreateTableAvailables), ctx, tableAvailables)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAvailables", reflect.TypeOf((*MockAvailables)(nil).CreateAvailables), ctx, availables)
 }
 
-// DeleteTableAvailables mocks base method.
-func (m *MockTableAvailables) DeleteTableAvailables(ctx context.Context, ids []string) error {
+// DeleteAvailables mocks base method.
+func (m *MockAvailables) DeleteAvailables(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteTableAvailables", ctx, ids)
+	ret := m.ctrl.Call(m, "DeleteAvailables", ctx, ids)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteTableAvailables indicates an expected call of DeleteTableAvailables.
-func (mr *MockTableAvailablesMockRecorder) DeleteTableAvailables(ctx, ids any) *gomock.Call {
+// DeleteAvailables indicates an expected call of DeleteAvailables.
+func (mr *MockAvailablesMockRecorder) DeleteAvailables(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTableAvailables", reflect.TypeOf((*MockTableAvailables)(nil).DeleteTableAvailables), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvailables", reflect.TypeOf((*MockAvailables)(nil).DeleteAvailables), ctx, ids)
 }
 
-// UpdateTableAvailable mocks base method.
-func (m *MockTableAvailables) UpdateTableAvailable(ctx context.Context, updateTableAvailable entities.UpdateTableAvailable) error {
+// UpdateAvailable mocks base method.
+func (m *MockAvailables) UpdateAvailable(ctx context.Context, updateAvailable entities.UpdateAvailable) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTableAvailable", ctx, updateTableAvailable)
+	ret := m.ctrl.Call(m, "UpdateAvailable", ctx, updateAvailable)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateTableAvailable indicates an expected call of UpdateTableAvailable.
-func (mr *MockTableAvailablesMockRecorder) UpdateTableAvailable(ctx, updateTableAvailable any) *gomock.Call {
+// UpdateAvailable indicates an expected call of UpdateAvailable.
+func (mr *MockAvailablesMockRecorder) UpdateAvailable(ctx, updateAvailable any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTableAvailable", reflect.TypeOf((*MockTableAvailables)(nil).UpdateTableAvailable), ctx, updateTableAvailable)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvailable", reflect.TypeOf((*MockAvailables)(nil).UpdateAvailable), ctx, updateAvailable)
 }

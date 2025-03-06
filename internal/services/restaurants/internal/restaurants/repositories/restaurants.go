@@ -49,8 +49,8 @@ type Tables interface {
 	DeleteTables(ctx context.Context, ids []string) error
 }
 
-type TableAvailables interface {
-	CreateTableAvailables(ctx context.Context, tableAvailables entities.TableAvailables) error
-	UpdateTableAvailable(ctx context.Context, updateTableAvailable entities.UpdateTableAvailable) error
-	DeleteTableAvailables(ctx context.Context, ids []string) error
+type Availables interface {
+	CreateAvailables(ctx context.Context, availables entities.Availables) error
+	UpdateAvailable(ctx context.Context, updateAvailable entities.UpdateAvailable) error
+	DeleteAvailables(ctx context.Context, ids []string) error
 }

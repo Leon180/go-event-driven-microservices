@@ -14,7 +14,7 @@ import (
 // - repositories.PriceRanges
 // - repositories.BranchCategoryRelations
 // - repositories.Tables
-// - repositories.TableAvailables
+// - repositories.Availables
 // dependencies:
 // - *gorm.DB
 // - contextloggers.ContextLogger
@@ -28,6 +28,6 @@ var ProvideModule = fx.Module(
 		repositoriespostgres.NewPriceRangesRepository,
 		repositoriespostgres.NewBranchCategoryRelationsRepository,
 		repositoriespostgres.NewTablesRepository,
-		repositoriespostgres.NewTableAvailablesRepository,
+		repositoriespostgres.NewAvailablesRepository,
 	),
 )

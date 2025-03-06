@@ -41,6 +41,14 @@ func (c City) ToCityCode() CityCode {
 	return code
 }
 
+func (c City) IsValid() bool {
+	if c == CityInvalid {
+		return false
+	}
+	_, ok := CityToCityCodeMap[c]
+	return ok
+}
+
 var CityToCityCodeMap = map[City]CityCode{
 	CityTaipei:    CityCodeTaipei,
 	CityNewTaipei: CityCodeNewTaipei,
@@ -143,6 +151,14 @@ func (c Country) ToCountryCode() CountryCode {
 		return CountryCodeInvalid
 	}
 	return code
+}
+
+func (c Country) IsValid() bool {
+	if c == CountryInvalid {
+		return false
+	}
+	_, ok := CountryToCountryCodeMap[c]
+	return ok
 }
 
 var Countries = []Country{

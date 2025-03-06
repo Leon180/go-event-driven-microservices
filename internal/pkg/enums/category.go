@@ -39,6 +39,14 @@ func (c Category) ToCategoryCode() CategoryCode {
 	return categoryCode
 }
 
+func (c Category) IsValid() bool {
+	if c == CategoryInvalid {
+		return false
+	}
+	_, ok := CategoryToCategoryCodeMap[c]
+	return ok
+}
+
 var Categories = []Category{
 	CategoryInvalid,
 	CategoryBreakfast,

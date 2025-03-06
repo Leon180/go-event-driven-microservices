@@ -3,8 +3,8 @@ package dtos
 import "fmt"
 
 type OrderBy struct {
-	Field     string `json:"field"`
-	Direction string `json:"direction"`
+	Field     string           `json:"field"`
+	Direction OrderByDirection `json:"direction"`
 }
 
 func (o *OrderBy) ToSort() string {
