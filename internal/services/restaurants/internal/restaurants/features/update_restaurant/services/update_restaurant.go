@@ -5,7 +5,7 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
+	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
@@ -22,14 +22,14 @@ type UpdateRestaurant interface {
 type updateRestaurantImpl struct {
 	uuidGenerator                              uuid.UUIDGenerator
 	readRestaurantsRepository                  repositories.ReadRestaurants
-	updateRestaurantsWithTransactionRepository postgres.Transactor[repositories.UpdateRestaurantsWithTransaction]
+	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
 	contextlogger                              contextloggers.ContextLogger
 }
 
 func NewUpdateRestaurant(
 	uuidGenerator uuid.UUIDGenerator,
 	readRestaurantsRepository repositories.ReadRestaurants,
-	updateRestaurantsWithTransactionRepository postgres.Transactor[repositories.UpdateRestaurantsWithTransaction],
+	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	contextlogger contextloggers.ContextLogger,
 ) UpdateRestaurant {
 	return &updateRestaurantImpl{

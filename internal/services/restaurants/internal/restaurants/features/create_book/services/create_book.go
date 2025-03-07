@@ -12,39 +12,39 @@ import (
 	"github.com/samber/lo"
 )
 
-type CreateRestaurant interface {
-	CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error
+type CreateBook interface {
+	CreateBook(ctx context.Context, req *dtos.Book) error
 }
 
-func NewCreateRestaurant(
+func NewCreateBook(
 	uuidGenerator uuid.UUIDGenerator,
-	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
-	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo,
-) CreateRestaurant {
-	return &createRestaurantImpl{
-		uuidGenerator: uuidGenerator,
-		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
-		searchRestaurantsFullInfoRepository:        searchRestaurantsFullInfoRepository,
+	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction],
+	searchBooksFullInfoRepository repositories.SearchBooksFullInfo,
+) CreateBook {
+	return &createBookImpl{
+		uuidGenerator:                        uuidGenerator,
+		updateBooksWithTransactionRepository: updateBooksWithTransactionRepository,
+		searchBooksFullInfoRepository:        searchBooksFullInfoRepository,
 	}
 }
 
-type createRestaurantImpl struct {
-	uuidGenerator                              uuid.UUIDGenerator
-	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
-	searchRestaurantsFullInfoRepository        repositories.SearchRestaurantsFullInfo
+type createBookImpl struct {
+	uuidGenerator                        uuid.UUIDGenerator
+	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction]
+	searchBooksFullInfoRepository        repositories.SearchBooksFullInfo
 }
 
-func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error {
+func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) error {
 	if req == nil {
 		return nil
 	}
 	// build restaurant create entities by aggregate
-	restaurantDTOAggregateBuilder := aggregates.NewRestaurantDTOAggregateBuilder(handle.uuidGenerator)
-	err := restaurantDTOAggregateBuilder.SaveRestaurant(req)
+	bookDTOAggregateBuilder := aggregates.NewBookDTOAggregateBuilder(handle.uuidGenerator)
+	err := bookDTOAggregateBuilder.SaveBook(req)
 	if err != nil {
 		return err
 	}
-	editEntities := restaurantDTOAggregateBuilder.GetEditEntities()
+	editEntities := bookDTOAggregateBuilder.GetEditEntities()
 	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
 		return nil
 	}

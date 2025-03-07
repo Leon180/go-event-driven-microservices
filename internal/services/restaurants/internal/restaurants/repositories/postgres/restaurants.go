@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
+	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
@@ -183,7 +183,7 @@ func (impl *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(availabl
 	}
 }
 
-func (impl *SearchRestaurantsFullInfoImpl) applyPagination(pagination *dtos.Pagination) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyPagination(pagination *customizegorm.Pagination) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if pagination != nil {
 			return db.Limit(pagination.PageSize).
@@ -193,7 +193,7 @@ func (impl *SearchRestaurantsFullInfoImpl) applyPagination(pagination *dtos.Pagi
 	}
 }
 
-func (impl *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []dtos.OrderBy) func(*gorm.DB) *gorm.DB {
+func (impl *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []customizegorm.OrderBy) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		for _, ob := range orderBy {
 			db = db.Order(ob.ToSort())
@@ -499,7 +499,7 @@ func (impl *UpdateRestaurantsImpl) DeleteAvailables(ctx context.Context, ids []s
 func NewUpdateRestaurantsWithTransaction(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
-) postgres.Transactor[repositories.UpdateRestaurantsWithTransaction] {
+) customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction] {
 	return &UpdateRestaurantsWithTransactionImpl{
 		TransactorImpl: TransactorImpl{
 			db:            db,

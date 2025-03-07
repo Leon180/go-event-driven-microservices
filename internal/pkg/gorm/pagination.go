@@ -1,4 +1,4 @@
-package dtos
+package postgresgorm
 
 type Pagination struct {
 	Page     int `json:"page"`

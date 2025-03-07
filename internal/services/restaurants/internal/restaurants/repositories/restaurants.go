@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
+	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
@@ -45,6 +45,6 @@ type UpdateRestaurants interface {
 }
 
 type UpdateRestaurantsWithTransaction interface {
-	postgres.Transaction
+	customizegorm.Transaction
 	UpdateRestaurants
 }

@@ -91,6 +91,11 @@ var (
 	TableAvailableTimeInvalidError = newErrorFromErrorCode(TableAvailableTimeInvalid)
 	TableAlreadyExistsError        = newErrorFromErrorCode(TableAlreadyExists)
 	TableNotFoundError             = newErrorFromErrorCode(TableNotFound)
+
+	// Book
+	BookAmountInvalidError = newErrorFromErrorCode(BookAmountInvalid)
+	BookAlreadyExistsError = newErrorFromErrorCode(BookAlreadyExists)
+	BookNotFoundError      = newErrorFromErrorCode(BookNotFound)
 )
 
 type CustomError interface {
@@ -192,6 +197,11 @@ const (
 	TableAvailableTimeInvalid ErrorCode = 45002
 	TableAlreadyExists        ErrorCode = 45003
 	TableNotFound             ErrorCode = 45004
+
+	// Book
+	BookAmountInvalid ErrorCode = 46001
+	BookAlreadyExists ErrorCode = 46002
+	BookNotFound      ErrorCode = 46003
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -284,6 +294,11 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	TableAvailableTimeInvalid: "table available time is invalid",
 	TableAlreadyExists:        "table already exists",
 	TableNotFound:             "table not found",
+
+	// Book
+	BookAmountInvalid: "book amount is invalid",
+	BookAlreadyExists: "book already exists",
+	BookNotFound:      "book not found",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -376,6 +391,11 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	TableAvailableTimeInvalid: http.StatusBadRequest,
 	TableAlreadyExists:        http.StatusConflict,
 	TableNotFound:             http.StatusNotFound,
+
+	// Book
+	BookAmountInvalid: http.StatusBadRequest,
+	BookAlreadyExists: http.StatusConflict,
+	BookNotFound:      http.StatusNotFound,
 }
 
 func (e ErrorCode) GetCode() int {
