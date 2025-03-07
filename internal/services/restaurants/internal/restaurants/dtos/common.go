@@ -3,6 +3,7 @@ package dtos
 import (
 	"time"
 
+	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
 	"gorm.io/gorm"
 )
 
@@ -25,4 +26,16 @@ type CommonCQRSHistoryModel struct {
 	CreatedBy    string    `json:"createdBy"`
 	UpdatedAt    time.Time `json:"updatedAt"`
 	UpdatedBy    string    `json:"updatedBy"`
+}
+
+type CommonCQRSHistoryModelEntity entities.CommonCQRSHistoryModel
+
+func (c *CommonCQRSHistoryModelEntity) ToDTO() *CommonCQRSHistoryModel {
+	return &CommonCQRSHistoryModel{
+		ActiveStatus: c.ActiveStatus,
+		CreatedAt:    c.CreatedAt,
+		CreatedBy:    c.CreatedBy,
+		UpdatedAt:    c.UpdatedAt,
+		UpdatedBy:    c.UpdatedBy,
+	}
 }

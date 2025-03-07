@@ -7,6 +7,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/samber/lo"
 )
 
 type RestoreRestaurant interface {
@@ -14,15 +15,18 @@ type RestoreRestaurant interface {
 }
 
 func NewRestoreRestaurant(
-	restaurantRepository repositories.Restaurants,
+	updateRestaurantsRepository repositories.UpdateRestaurants,
+	readRestaurantsRepository repositories.ReadRestaurants,
 ) RestoreRestaurant {
 	return &restoreRestaurantImpl{
-		restaurantRepository: restaurantRepository,
+		updateRestaurantsRepository: updateRestaurantsRepository,
+		readRestaurantsRepository:   readRestaurantsRepository,
 	}
 }
 
 type restoreRestaurantImpl struct {
-	restaurantRepository repositories.Restaurants
+	updateRestaurantsRepository repositories.UpdateRestaurants
+	readRestaurantsRepository   repositories.ReadRestaurants
 }
 
 func (handle *restoreRestaurantImpl) RestoreRestaurant(ctx context.Context, req *featuresdtos.RestoreRestaurantRequest) error {
@@ -32,7 +36,7 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(ctx context.Context, req 
 	if req.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
-	restaurant, err := handle.restaurantRepository.ReadRestaurant(ctx, req.ID)
+	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, req.ID)
 	if err != nil {
 		return err
 	}
@@ -42,10 +46,9 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(ctx context.Context, req 
 	if restaurant.IsActive() {
 		return customizeerrors.AlreadyActiveError
 	}
-	activeStatus := true
 	updateRestaurant := entities.UpdateRestaurant{
 		ID:           restaurant.ID,
-		ActiveStatus: &activeStatus,
+		ActiveStatus: lo.ToPtr(true),
 	}
-	return handle.restaurantRepository.UpdateRestaurant(ctx, &updateRestaurant)
+	return handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant)
 }

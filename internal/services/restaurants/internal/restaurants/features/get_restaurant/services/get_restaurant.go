@@ -17,13 +17,13 @@ type GetRestaurant interface {
 }
 
 func NewGetRestaurant(
-	restaurantsRepository repositories.Restaurants,
+	readRestaurantsRepository repositories.ReadRestaurants,
 ) GetRestaurant {
-	return &getRestaurantImpl{restaurantsRepository: restaurantsRepository}
+	return &getRestaurantImpl{readRestaurantsRepository: readRestaurantsRepository}
 }
 
 type getRestaurantImpl struct {
-	restaurantsRepository repositories.Restaurants
+	readRestaurantsRepository repositories.ReadRestaurants
 }
 
 func (handle *getRestaurantImpl) GetRestaurant(
@@ -36,7 +36,7 @@ func (handle *getRestaurantImpl) GetRestaurant(
 	if req.ID == "" {
 		return nil, customizeerrors.InvalidIDError
 	}
-	restaurant, err := handle.restaurantsRepository.ReadRestaurantFullInfo(ctx, req.ID)
+	restaurant, err := handle.readRestaurantsRepository.ReadRestaurantFullInfo(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}

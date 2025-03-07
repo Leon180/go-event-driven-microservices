@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
@@ -14,7 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewSearchRestaurantsFullInfoRepository(
+func NewSearchRestaurantsFullInfo(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.SearchRestaurantsFullInfo {
@@ -201,34 +202,22 @@ func (impl *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []dtos.OrderBy)
 	}
 }
 
-// Restaurants Impl
-func NewRestaurantsRepository(
+func NewReadRestaurants(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
-) repositories.Restaurants {
-	return &RestaurantsImpl{
+) repositories.ReadRestaurants {
+	return &ReadRestaurantsImpl{
 		db:            db,
 		contextLogger: contextLogger,
 	}
 }
 
-type RestaurantsImpl struct {
+type ReadRestaurantsImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *RestaurantsImpl) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
-	if len(restaurants) == 0 {
-		return nil
-	}
-	if err := impl.db.WithContext(ctx).Create(&restaurants).Error; err != nil {
-		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
-		return err
-	}
-	return nil
-}
-
-func (impl *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
+func (impl *ReadRestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
 	if id == "" {
 		return nil, nil
 	}
@@ -248,7 +237,7 @@ func (impl *RestaurantsImpl) ReadRestaurantFullInfo(ctx context.Context, id stri
 	return &restaurant, nil
 }
 
-func (impl *RestaurantsImpl) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
+func (impl *ReadRestaurantsImpl) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
 	if id == "" {
 		return nil, nil
 	}
@@ -260,7 +249,34 @@ func (impl *RestaurantsImpl) ReadRestaurant(ctx context.Context, id string) (*en
 	return &restaurant, nil
 }
 
-func (impl *RestaurantsImpl) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
+// Update Restaurants Impl
+func NewUpdateRestaurants(
+	db *gorm.DB,
+	contextLogger contextloggers.ContextLogger,
+) repositories.UpdateRestaurants {
+	return &UpdateRestaurantsImpl{
+		db:            db,
+		contextLogger: contextLogger,
+	}
+}
+
+type UpdateRestaurantsImpl struct {
+	db            *gorm.DB
+	contextLogger contextloggers.ContextLogger
+}
+
+func (impl *UpdateRestaurantsImpl) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
+	if len(restaurants) == 0 {
+		return nil
+	}
+	if err := impl.db.WithContext(ctx).Create(&restaurants).Error; err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
+		return err
+	}
+	return nil
+}
+
+func (impl *UpdateRestaurantsImpl) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
 	if updateRestaurant == nil || updateRestaurant.ID == "" {
 		return nil
 	}
@@ -271,7 +287,7 @@ func (impl *RestaurantsImpl) UpdateRestaurant(ctx context.Context, updateRestaur
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteRestaurants(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteRestaurants(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -282,7 +298,7 @@ func (impl *RestaurantsImpl) DeleteRestaurants(ctx context.Context, ids []string
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreateBranches(ctx context.Context, branches entities.Branches) error {
+func (impl *UpdateRestaurantsImpl) CreateBranches(ctx context.Context, branches entities.Branches) error {
 	if len(branches) == 0 {
 		return nil
 	}
@@ -293,7 +309,7 @@ func (impl *RestaurantsImpl) CreateBranches(ctx context.Context, branches entiti
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
+func (impl *UpdateRestaurantsImpl) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
 	if updateBranch == nil || updateBranch.ID == "" {
 		return nil
 	}
@@ -304,7 +320,7 @@ func (impl *RestaurantsImpl) UpdateBranch(ctx context.Context, updateBranch *ent
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteBranches(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteBranches(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -315,7 +331,7 @@ func (impl *RestaurantsImpl) DeleteBranches(ctx context.Context, ids []string) e
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
+func (impl *UpdateRestaurantsImpl) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
 	if len(addresses) == 0 {
 		return nil
 	}
@@ -326,7 +342,7 @@ func (impl *RestaurantsImpl) CreateAddresses(ctx context.Context, addresses enti
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
+func (impl *UpdateRestaurantsImpl) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
 	if updateAddress == nil || updateAddress.ID == "" {
 		return nil
 	}
@@ -337,7 +353,7 @@ func (impl *RestaurantsImpl) UpdateAddress(ctx context.Context, updateAddress *e
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteAddresses(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteAddresses(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -348,7 +364,7 @@ func (impl *RestaurantsImpl) DeleteAddresses(ctx context.Context, ids []string) 
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
+func (impl *UpdateRestaurantsImpl) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
 	if len(priceRanges) == 0 {
 		return nil
 	}
@@ -359,7 +375,7 @@ func (impl *RestaurantsImpl) CreatePriceRanges(ctx context.Context, priceRanges 
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
+func (impl *UpdateRestaurantsImpl) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
 	if updatePriceRange == nil || updatePriceRange.ID == "" {
 		return nil
 	}
@@ -370,7 +386,7 @@ func (impl *RestaurantsImpl) UpdatePriceRange(ctx context.Context, updatePriceRa
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeletePriceRanges(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeletePriceRanges(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -381,7 +397,7 @@ func (impl *RestaurantsImpl) DeletePriceRanges(ctx context.Context, ids []string
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
+func (impl *UpdateRestaurantsImpl) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
 	if len(branchCategoryRelations) == 0 {
 		return nil
 	}
@@ -392,7 +408,7 @@ func (impl *RestaurantsImpl) CreateBranchCategoryRelations(ctx context.Context, 
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
+func (impl *UpdateRestaurantsImpl) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
 	if updateBranchCategoryRelation == nil || updateBranchCategoryRelation.ID == "" {
 		return nil
 	}
@@ -403,7 +419,7 @@ func (impl *RestaurantsImpl) UpdateBranchCategoryRelation(ctx context.Context, u
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -414,7 +430,7 @@ func (impl *RestaurantsImpl) DeleteBranchCategoryRelations(ctx context.Context, 
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreateTables(ctx context.Context, tables entities.Tables) error {
+func (impl *UpdateRestaurantsImpl) CreateTables(ctx context.Context, tables entities.Tables) error {
 	if len(tables) == 0 {
 		return nil
 	}
@@ -425,7 +441,7 @@ func (impl *RestaurantsImpl) CreateTables(ctx context.Context, tables entities.T
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
+func (impl *UpdateRestaurantsImpl) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
 	if updateTable == nil || updateTable.ID == "" {
 		return nil
 	}
@@ -436,7 +452,7 @@ func (impl *RestaurantsImpl) UpdateTable(ctx context.Context, updateTable *entit
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteTables(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteTables(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -447,7 +463,7 @@ func (impl *RestaurantsImpl) DeleteTables(ctx context.Context, ids []string) err
 	return nil
 }
 
-func (impl *RestaurantsImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+func (impl *UpdateRestaurantsImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
 	if len(availables) == 0 {
 		return nil
 	}
@@ -458,7 +474,7 @@ func (impl *RestaurantsImpl) CreateAvailables(ctx context.Context, availables en
 	return nil
 }
 
-func (impl *RestaurantsImpl) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
+func (impl *UpdateRestaurantsImpl) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
 	if updateAvailable == nil || updateAvailable.ID == "" {
 		return nil
 	}
@@ -469,7 +485,7 @@ func (impl *RestaurantsImpl) UpdateAvailable(ctx context.Context, updateAvailabl
 	return nil
 }
 
-func (impl *RestaurantsImpl) DeleteAvailables(ctx context.Context, ids []string) error {
+func (impl *UpdateRestaurantsImpl) DeleteAvailables(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}
@@ -478,4 +494,118 @@ func (impl *RestaurantsImpl) DeleteAvailables(ctx context.Context, ids []string)
 		return err
 	}
 	return nil
+}
+
+func NewUpdateRestaurantsWithTransaction(
+	db *gorm.DB,
+	contextLogger contextloggers.ContextLogger,
+) postgres.Transactor[repositories.UpdateRestaurantsWithTransaction] {
+	return &UpdateRestaurantsWithTransactionImpl{
+		TransactorImpl: TransactorImpl{
+			db:            db,
+			contextLogger: contextLogger,
+		},
+	}
+}
+
+type UpdateRestaurantsWithTransactionImpl struct {
+	TransactorImpl
+}
+
+func (impl *UpdateRestaurantsWithTransactionImpl) BeginTx(ctx context.Context) (repositories.UpdateRestaurantsWithTransaction, error) {
+	tx := impl.db.WithContext(ctx).Begin()
+	return &UpdateRestaurantsTransactionImpl{
+		TransactionImpl: TransactionImpl{
+			Db:            tx,
+			ContextLogger: impl.contextLogger,
+		},
+	}, nil
+}
+
+type UpdateRestaurantsTransactionImpl struct {
+	TransactionImpl
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateRestaurants(ctx, restaurants)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateRestaurant(ctx, updateRestaurant)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteRestaurants(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteRestaurants(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateBranches(ctx context.Context, branches entities.Branches) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateBranches(ctx, branches)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateBranch(ctx, updateBranch)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteBranches(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteBranches(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateAddresses(ctx, addresses)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateAddress(ctx, updateAddress)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteAddresses(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteAddresses(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreatePriceRanges(ctx, priceRanges)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdatePriceRange(ctx, updatePriceRange)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeletePriceRanges(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeletePriceRanges(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateBranchCategoryRelations(ctx, branchCategoryRelations)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteBranchCategoryRelations(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateTables(ctx context.Context, tables entities.Tables) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateTables(ctx, tables)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateTable(ctx, updateTable)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteTables(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteTables(ctx, ids)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).CreateAvailables(ctx, availables)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).UpdateAvailable(ctx, updateAvailable)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteAvailables(ctx context.Context, ids []string) error {
+	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteAvailables(ctx, ids)
 }

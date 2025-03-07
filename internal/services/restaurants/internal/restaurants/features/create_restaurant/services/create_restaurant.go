@@ -4,6 +4,7 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
+	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
@@ -17,20 +18,20 @@ type CreateRestaurant interface {
 
 func NewCreateRestaurant(
 	uuidGenerator uuid.UUIDGenerator,
-	restaurantsRepository repositories.Restaurants,
+	updateRestaurantsWithTransactionRepository postgres.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo,
 ) CreateRestaurant {
 	return &createRestaurantImpl{
-		uuidGenerator:                       uuidGenerator,
-		restaurantsRepository:               restaurantsRepository,
-		searchRestaurantsFullInfoRepository: searchRestaurantsFullInfoRepository,
+		uuidGenerator: uuidGenerator,
+		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
+		searchRestaurantsFullInfoRepository:        searchRestaurantsFullInfoRepository,
 	}
 }
 
 type createRestaurantImpl struct {
-	uuidGenerator                       uuid.UUIDGenerator
-	restaurantsRepository               repositories.Restaurants
-	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo
+	uuidGenerator                              uuid.UUIDGenerator
+	updateRestaurantsWithTransactionRepository postgres.Transactor[repositories.UpdateRestaurantsWithTransaction]
+	searchRestaurantsFullInfoRepository        repositories.SearchRestaurantsFullInfo
 }
 
 func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error {
@@ -64,25 +65,35 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 	}
 
 	// create
-	if err := handle.restaurantsRepository.CreateRestaurants(ctx, createEntities.Restaurants); err != nil {
+	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
+	if err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreateBranches(ctx, createEntities.Branches); err != nil {
+	defer tx.Rollback()
+
+	if err := tx.CreateRestaurants(ctx, createEntities.Restaurants); err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreateAddresses(ctx, createEntities.Addresses); err != nil {
+	if err := tx.CreateBranches(ctx, createEntities.Branches); err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreatePriceRanges(ctx, createEntities.PriceRanges); err != nil {
+	if err := tx.CreateAddresses(ctx, createEntities.Addresses); err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreateBranchCategoryRelations(ctx, createEntities.BranchCategoryRelations); err != nil {
+	if err := tx.CreatePriceRanges(ctx, createEntities.PriceRanges); err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreateTables(ctx, createEntities.Tables); err != nil {
+	if err := tx.CreateBranchCategoryRelations(ctx, createEntities.BranchCategoryRelations); err != nil {
 		return err
 	}
-	if err := handle.restaurantsRepository.CreateAvailables(ctx, createEntities.Availables); err != nil {
+	if err := tx.CreateTables(ctx, createEntities.Tables); err != nil {
+		return err
+	}
+	if err := tx.CreateAvailables(ctx, createEntities.Availables); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 

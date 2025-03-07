@@ -8,20 +8,18 @@ import (
 // ProvideModule is the module for the repositories
 // It provides the repositories:
 // - repositories.SearchRestaurantsFullInfo
-// - repositories.Restaurants
-// - repositories.Branches
-// - repositories.Addresses
-// - repositories.PriceRanges
-// - repositories.BranchCategoryRelations
-// - repositories.Tables
-// - repositories.Availables
+// - repositories.ReadRestaurants
+// - repositories.UpdateRestaurants
+// - repositories.UpdateRestaurantsWithTransaction
 // dependencies:
 // - *gorm.DB
 // - contextloggers.ContextLogger
 var ProvideModule = fx.Module(
 	"restaurantsRepositoriesProvideFx",
 	fx.Provide(
-		repositoriespostgres.NewSearchRestaurantsFullInfoRepository,
-		repositoriespostgres.NewRestaurantsRepository,
+		repositoriespostgres.NewSearchRestaurantsFullInfo,
+		repositoriespostgres.NewReadRestaurants,
+		repositoriespostgres.NewUpdateRestaurants,
+		repositoriespostgres.NewUpdateRestaurantsWithTransaction,
 	),
 )

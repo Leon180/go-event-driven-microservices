@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 
+	postgres "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgres"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
@@ -13,10 +14,14 @@ import (
 type SearchRestaurantsFullInfo interface {
 	SearchRestaurantsFullInfo(ctx context.Context, searchRestaurants *dtos.SearchRestaurants) (aggregates.Restaurants, error)
 }
-type Restaurants interface {
-	CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error
+
+type ReadRestaurants interface {
 	ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error)
 	ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error)
+}
+
+type UpdateRestaurants interface {
+	CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error
 	UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error
 	DeleteRestaurants(ctx context.Context, ids []string) error
 	CreateBranches(ctx context.Context, branches entities.Branches) error
@@ -37,4 +42,9 @@ type Restaurants interface {
 	CreateAvailables(ctx context.Context, availables entities.Availables) error
 	UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error
 	DeleteAvailables(ctx context.Context, ids []string) error
+}
+
+type UpdateRestaurantsWithTransaction interface {
+	postgres.Transaction
+	UpdateRestaurants
 }

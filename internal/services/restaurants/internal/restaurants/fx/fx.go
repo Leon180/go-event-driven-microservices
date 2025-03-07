@@ -6,11 +6,11 @@ import (
 	loggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx"
 	contextloggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers/fx"
 	uuidfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid/fx"
-	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/configs/fx"
-	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/features/fx"
-	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/postgresdb/fx"
 	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/fx"
 	accountnumberutilitiesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number/fx"
+	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/configs/fx"
+	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/fx"
+	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/postgresdb/fx"
 	"go.uber.org/fx"
 )
 

@@ -32,6 +32,7 @@ var (
 	// action
 	AlreadyDeletedError = newErrorFromErrorCode(AlreadyDeleted)
 	AlreadyActiveError  = newErrorFromErrorCode(AlreadyActive)
+	NoChangesError      = newErrorFromErrorCode(NoChanges)
 
 	// Account
 	AccountAlreadyExistsError   = newErrorFromErrorCode(AccountAlreadyExists)
@@ -128,6 +129,8 @@ const (
 	// action
 	AlreadyDeleted ErrorCode = 22001
 	AlreadyActive  ErrorCode = 22002
+	NoChanges      ErrorCode = 22003
+
 	// Account
 	AccountAlreadyExists   ErrorCode = 30001
 	AccountNotFound        ErrorCode = 30002
@@ -218,6 +221,8 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	// action
 	AlreadyDeleted: "already deleted",
 	AlreadyActive:  "already active",
+	NoChanges:      "no changes",
+
 	// Account
 	AccountAlreadyExists:   "account already exists",
 	AccountNotFound:        "account not found",
@@ -308,6 +313,8 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	// action
 	AlreadyDeleted: http.StatusOK,
 	AlreadyActive:  http.StatusOK,
+	NoChanges:      http.StatusOK,
+
 	// Account
 	AccountAlreadyExists:   http.StatusConflict,
 	AccountNotFound:        http.StatusNotFound,
