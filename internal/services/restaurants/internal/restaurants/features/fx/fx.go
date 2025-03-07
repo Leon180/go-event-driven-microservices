@@ -5,14 +5,20 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	createBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_book/gin_endpoints"
+	createBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_book/services"
 	createRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_restaurant/gin_endpoints"
 	createRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_restaurant/services"
+	deleteBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_book/gin_endpoints"
+	deleteBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_book/services"
 	deleteRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/gin_endpoints"
 	deleteRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/services"
 	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
 	getRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/services"
 	restoreRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/gin_endpoints"
 	restoreRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/services"
+	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_books/gin_endpoints"
+	searchBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_books/services"
 	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
 	searchRestaurantsServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_restaurants/services"
 	updateRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/update_restaurant/gin_endpoints"
@@ -33,11 +39,18 @@ import (
 // - customizeginendpoints.Endpoint(restoreRestaurantGinEndpoints.NewRestoreRestaurant)
 // - customizeginendpoints.Endpoint(searchRestaurantsGinEndpoints.NewSearchRestaurants)
 // - customizeginendpoints.Endpoint(updateRestaurantGinEndpoints.NewUpdateRestaurant)
+// - customizeginendpoints.Endpoint(createBookGinEndpoints.NewCreateBook)
+// - customizeginendpoints.Endpoint(deleteBookGinEndpoints.NewDeleteBook)
+// - customizeginendpoints.Endpoint(searchBooksGinEndpoints.NewSearchBooks)
 // dependencies:
 // - uuid.UUIDGenerator
 // - repositories.SearchRestaurantsFullInfo
 // - repositories.ReadRestaurant
+// - repositories.UpdateRestaurantsWithTransaction
+// - repositories.SearchBooksFullInfo
+// - repositories.ReadBooks
 // - postgres.Transactor[repositories.UpdateRestaurantsWithTransaction]
+// - postgres.Transactor[repositories.UpdateBooksWithTransaction]
 // - contextloggers.ContextLogger
 var ProvideModule = fx.Module(
 	"restaurantsFeaturesProvideFx",
@@ -50,6 +63,9 @@ var ProvideModule = fx.Module(
 		restoreRestaurantServices.NewRestoreRestaurant,
 		searchRestaurantsServices.NewSearchRestaurants,
 		updateRestaurantServices.NewUpdateRestaurant,
+		createBookServices.NewCreateBook,
+		deleteBookServices.NewDeleteBook,
+		searchBooksServices.NewSearchBooks,
 	),
 
 	// endpoints
@@ -61,6 +77,9 @@ var ProvideModule = fx.Module(
 			restoreRestaurantGinEndpoints.NewRestoreRestaurant,
 			searchRestaurantsGinEndpoints.NewSearchRestaurants,
 			updateRestaurantGinEndpoints.NewUpdateRestaurant,
+			createBookGinEndpoints.NewCreateBook,
+			deleteBookGinEndpoints.NewDeleteBook,
+			searchBooksGinEndpoints.NewSearchBooks,
 		)...,
 	),
 )

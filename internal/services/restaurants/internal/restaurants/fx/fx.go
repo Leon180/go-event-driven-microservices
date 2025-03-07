@@ -6,29 +6,25 @@ import (
 	loggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx"
 	contextloggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers/fx"
 	uuidfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid/fx"
-	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/repositories/fx"
-	accountnumberutilitiesfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/utilities/account_number/fx"
 	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/configs/fx"
 	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/fx"
 	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/postgresdb/fx"
+	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories/fx"
 	"go.uber.org/fx"
 )
 
-var AccountsConfiguratorModule = fx.Module(
-	"accountsConfiguratorFx",
+var RestaurantsConfiguratorModule = fx.Module(
+	"restaurantsConfiguratorFx",
 
 	ProvideModule,
 	InvokeModule,
 )
 
 var ProvideModule = fx.Module(
-	"accountsProvideFx",
+	"restaurantsProvideFx",
 
 	// environments
 	environmentsfx.ProvideModule,
-
-	// account number generator
-	accountnumberutilitiesfx.ProvideModule,
 
 	// uuid generators
 	uuidfx.ProvideModule,
@@ -54,7 +50,7 @@ var ProvideModule = fx.Module(
 )
 
 var InvokeModule = fx.Module(
-	"accountsInvokeFx",
+	"restaurantsInvokeFx",
 
 	// migrations
 	postgresdbfx.InvokeModule,

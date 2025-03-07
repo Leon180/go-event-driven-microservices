@@ -38,9 +38,30 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) er
 	if req == nil {
 		return nil
 	}
-	// build restaurant create entities by aggregate
+
+	// check if book already exists
+	books, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, &dtos.SearchBooks{
+		TableID:     &req.TableID,
+		AvailableID: &req.AvailableID,
+	})
+	if err != nil {
+		return err
+	}
+	if lo.ContainsBy(books, func(book aggregates.Book) bool {
+		return book.ActiveStatus
+	}) {
+		return customizeerrors.BookAlreadyExistsError
+	}
+
+	if lo.ContainsBy(books, func(book aggregates.Book) bool {
+		return !book.ActiveStatus
+	}) {
+		return customizeerrors.BookAlreadyExistsButInactiveError
+	}
+
+	// build book create entities by aggregate
 	bookDTOAggregateBuilder := aggregates.NewBookDTOAggregateBuilder(handle.uuidGenerator)
-	err := bookDTOAggregateBuilder.SaveBook(req)
+	err = bookDTOAggregateBuilder.SaveBook(req)
 	if err != nil {
 		return err
 	}
@@ -50,46 +71,14 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) er
 	}
 	createEntities := *editEntities[0].CreateEntities
 
-	// check if restaurant already exists
-	restaurants, err := handle.searchRestaurantsFullInfoRepository.SearchRestaurantsFullInfo(ctx, &dtos.SearchRestaurants{
-		NameFilter:        &req.Name,
-		NamePreciseSearch: true,
-	})
-	if err != nil {
-		return err
-	}
-	if lo.ContainsBy(restaurants, func(restaurant aggregates.Restaurant) bool {
-		return restaurant.ActiveStatus
-	}) {
-		return customizeerrors.RestaurantAlreadyExistsError
-	}
-
 	// create
-	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
+	tx, err := handle.updateBooksWithTransactionRepository.BeginTx(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	if err := tx.CreateRestaurants(ctx, createEntities.Restaurants); err != nil {
-		return err
-	}
-	if err := tx.CreateBranches(ctx, createEntities.Branches); err != nil {
-		return err
-	}
-	if err := tx.CreateAddresses(ctx, createEntities.Addresses); err != nil {
-		return err
-	}
-	if err := tx.CreatePriceRanges(ctx, createEntities.PriceRanges); err != nil {
-		return err
-	}
-	if err := tx.CreateBranchCategoryRelations(ctx, createEntities.BranchCategoryRelations); err != nil {
-		return err
-	}
-	if err := tx.CreateTables(ctx, createEntities.Tables); err != nil {
-		return err
-	}
-	if err := tx.CreateAvailables(ctx, createEntities.Availables); err != nil {
+	if err := tx.CreateBooks(ctx, createEntities.Books); err != nil {
 		return err
 	}
 

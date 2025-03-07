@@ -2,18 +2,18 @@ package app
 
 import (
 	fxapp "github.com/Leon180/go-event-driven-microservices/internal/pkg/fxapp"
-	accountsfx "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/fx"
+	restaurantsfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/fx"
 )
 
-type AccountFxApp struct{}
+type RestaurantsFxApp struct{}
 
-func NewAccountFxApp() *AccountFxApp {
-	return &AccountFxApp{}
+func NewRestaurantsFxApp() *RestaurantsFxApp {
+	return &RestaurantsFxApp{}
 }
 
-func (a *AccountFxApp) Run() {
+func (a *RestaurantsFxApp) Run() {
 	app := fxapp.NewFxApp()
-	app.AppendFxOptions(accountsfx.AccountsConfiguratorModule)
-	app.GetLogger().Info("Starting accounts service")
+	app.AppendFxOptions(restaurantsfx.RestaurantsConfiguratorModule)
+	app.GetLogger().Info("Starting restaurants service")
 	app.Run()
 }

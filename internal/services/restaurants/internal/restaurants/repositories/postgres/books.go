@@ -36,6 +36,8 @@ func (impl *SearchBooksFullInfoImpl) SearchBooksFullInfo(ctx context.Context, se
 	sql := impl.buildBaseQuery(ctx).
 		Scopes(
 			impl.applyMobileNumberFilter(searchBooks.MobileNumber),
+			impl.applyTableIDFilter(searchBooks.TableID),
+			impl.applyAvailableIDFilter(searchBooks.AvailableID),
 			impl.applyTableAvailabilityFilter(searchBooks.TableAvailableWeek, searchBooks.TableAvailableStartTime, searchBooks.TableAvailableEndTime),
 			customizegorm.ApplyPagination(searchBooks.Pagination),
 			customizegorm.ApplyOrdering(searchBooks.OrderBy),
@@ -62,6 +64,25 @@ func (impl *SearchBooksFullInfoImpl) applyMobileNumberFilter(mobileNumber *strin
 		return db
 	}
 }
+
+func (impl *SearchBooksFullInfoImpl) applyTableIDFilter(tableID *string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if tableID != nil {
+			return db.Where("table_id = ?", *tableID)
+		}
+		return db
+	}
+}
+
+func (impl *SearchBooksFullInfoImpl) applyAvailableIDFilter(availableID *string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if availableID != nil {
+			return db.Where("available_id = ?", *availableID)
+		}
+		return db
+	}
+}
+
 func (impl *SearchBooksFullInfoImpl) applyTableAvailabilityFilter(availableWeek []time.Weekday, availableStartTime *string, availableEndTime *string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if len(availableWeek) == 0 && availableStartTime == nil && availableEndTime == nil {

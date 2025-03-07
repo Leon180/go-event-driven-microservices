@@ -20,9 +20,9 @@ type UpdateBook struct {
 	ActiveStatus *bool
 }
 
-func (u *UpdateBook) RemoveUnchangedFields(book Book) {
+func (u *UpdateBook) RemoveUnchangedFields(book Book) *UpdateBook {
 	if u.ID != book.ID {
-		return
+		return nil
 	}
 	if u.Amount != nil && *u.Amount == book.Amount {
 		u.Amount = nil
@@ -33,6 +33,7 @@ func (u *UpdateBook) RemoveUnchangedFields(book Book) {
 	if u.ActiveStatus != nil && *u.ActiveStatus == book.ActiveStatus {
 		u.ActiveStatus = nil
 	}
+	return u
 }
 
 func (u *UpdateBook) ToUpdateMap() map[string]any {

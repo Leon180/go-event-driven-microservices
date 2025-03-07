@@ -38,17 +38,6 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 	if req == nil {
 		return nil
 	}
-	// build restaurant create entities by aggregate
-	restaurantDTOAggregateBuilder := aggregates.NewRestaurantDTOAggregateBuilder(handle.uuidGenerator)
-	err := restaurantDTOAggregateBuilder.SaveRestaurant(req)
-	if err != nil {
-		return err
-	}
-	editEntities := restaurantDTOAggregateBuilder.GetEditEntities()
-	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
-		return nil
-	}
-	createEntities := *editEntities[0].CreateEntities
 
 	// check if restaurant already exists
 	restaurants, err := handle.searchRestaurantsFullInfoRepository.SearchRestaurantsFullInfo(ctx, &dtos.SearchRestaurants{
@@ -63,6 +52,24 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 	}) {
 		return customizeerrors.RestaurantAlreadyExistsError
 	}
+
+	if lo.ContainsBy(restaurants, func(restaurant aggregates.Restaurant) bool {
+		return !restaurant.ActiveStatus
+	}) {
+		return customizeerrors.RestaurantAlreadyExistsButInactiveError
+	}
+
+	// build restaurant create entities by aggregate
+	restaurantDTOAggregateBuilder := aggregates.NewRestaurantDTOAggregateBuilder(handle.uuidGenerator)
+	err = restaurantDTOAggregateBuilder.SaveRestaurant(req)
+	if err != nil {
+		return err
+	}
+	editEntities := restaurantDTOAggregateBuilder.GetEditEntities()
+	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
+		return nil
+	}
+	createEntities := *editEntities[0].CreateEntities
 
 	// create
 	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)

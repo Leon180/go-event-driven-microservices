@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/Leon180/go-event-driven-microservices/internal/services/accounts/internal/accounts/app"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/app"
 
-	_ "github.com/Leon180/go-event-driven-microservices/internal/services/accounts/docs" // swagger docs
+	_ "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/docs" // swagger docs
 )
 
 //go:generate swag init -pdl 3 -o ../../docs
 
-// @Title           Accounts Service API
+// @Title           Restaurants Service API
 // @Version         1.0
-// @Description     Simple service for accounts resources
+// @Description     Simple service for restaurants resources
 // @Host           localhost:7001
-// @BasePath       /v1/accounts
+// @BasePath       /v1/restaurants
 func main() {
-	app.NewAccountFxApp().Run()
+	app.NewRestaurantsFxApp().Run()
 }

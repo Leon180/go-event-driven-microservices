@@ -64,9 +64,10 @@ var (
 	InvalidLoanTypeError    = newErrorFromErrorCode(InvalidLoanType)
 
 	// Restaurant
-	RestaurantNameEmptyError     = newErrorFromErrorCode(RestaurantNameEmpty)
-	RestaurantAlreadyExistsError = newErrorFromErrorCode(RestaurantAlreadyExists)
-	RestaurantNotFoundError      = newErrorFromErrorCode(RestaurantNotFound)
+	RestaurantNameEmptyError                = newErrorFromErrorCode(RestaurantNameEmpty)
+	RestaurantAlreadyExistsError            = newErrorFromErrorCode(RestaurantAlreadyExists)
+	RestaurantNotFoundError                 = newErrorFromErrorCode(RestaurantNotFound)
+	RestaurantAlreadyExistsButInactiveError = newErrorFromErrorCode(RestaurantAlreadyExistsButInactive)
 
 	// Branch
 	BranchNameEmptyError     = newErrorFromErrorCode(BranchNameEmpty)
@@ -93,9 +94,11 @@ var (
 	TableNotFoundError             = newErrorFromErrorCode(TableNotFound)
 
 	// Book
-	BookAmountInvalidError = newErrorFromErrorCode(BookAmountInvalid)
-	BookAlreadyExistsError = newErrorFromErrorCode(BookAlreadyExists)
-	BookNotFoundError      = newErrorFromErrorCode(BookNotFound)
+	BookAmountInvalidError             = newErrorFromErrorCode(BookAmountInvalid)
+	BookAlreadyExistsError             = newErrorFromErrorCode(BookAlreadyExists)
+	BookNotFoundError                  = newErrorFromErrorCode(BookNotFound)
+	BookTableAndAvailableNotMatchError = newErrorFromErrorCode(BookTableAndAvailableNotMatch)
+	BookAlreadyExistsButInactiveError  = newErrorFromErrorCode(BookAlreadyExistsButInactive)
 )
 
 type CustomError interface {
@@ -166,9 +169,10 @@ const (
 	InvalidLoanType    ErrorCode = 33006
 
 	// Restaurant
-	RestaurantNameEmpty     ErrorCode = 40001
-	RestaurantAlreadyExists ErrorCode = 40002
-	RestaurantNotFound      ErrorCode = 40003
+	RestaurantNameEmpty                ErrorCode = 40001
+	RestaurantAlreadyExists            ErrorCode = 40002
+	RestaurantNotFound                 ErrorCode = 40003
+	RestaurantAlreadyExistsButInactive ErrorCode = 40004
 
 	// Branch
 	BranchNameEmpty     ErrorCode = 41001
@@ -199,9 +203,11 @@ const (
 	TableNotFound             ErrorCode = 45004
 
 	// Book
-	BookAmountInvalid ErrorCode = 46001
-	BookAlreadyExists ErrorCode = 46002
-	BookNotFound      ErrorCode = 46003
+	BookAmountInvalid             ErrorCode = 46001
+	BookAlreadyExists             ErrorCode = 46002
+	BookNotFound                  ErrorCode = 46003
+	BookTableAndAvailableNotMatch ErrorCode = 46004
+	BookAlreadyExistsButInactive  ErrorCode = 46005
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -263,9 +269,10 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	InvalidLoanType:    "loan type is invalid",
 
 	// Restaurant
-	RestaurantNameEmpty:     "restaurant name is empty",
-	RestaurantAlreadyExists: "restaurant already exists",
-	RestaurantNotFound:      "restaurant not found",
+	RestaurantNameEmpty:                "restaurant name is empty",
+	RestaurantAlreadyExists:            "restaurant already exists",
+	RestaurantNotFound:                 "restaurant not found",
+	RestaurantAlreadyExistsButInactive: "restaurant already exists but is inactive",
 
 	// Branch
 	BranchNameEmpty:     "branch name is empty",
@@ -296,9 +303,11 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	TableNotFound:             "table not found",
 
 	// Book
-	BookAmountInvalid: "book amount is invalid",
-	BookAlreadyExists: "book already exists",
-	BookNotFound:      "book not found",
+	BookAmountInvalid:             "book amount is invalid",
+	BookAlreadyExists:             "book already exists",
+	BookNotFound:                  "book not found",
+	BookTableAndAvailableNotMatch: "book table and available not match",
+	BookAlreadyExistsButInactive:  "book already exists but is inactive",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -360,9 +369,10 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	InvalidLoanType:    http.StatusBadRequest,
 
 	// Restaurant
-	RestaurantNameEmpty:     http.StatusBadRequest,
-	RestaurantAlreadyExists: http.StatusConflict,
-	RestaurantNotFound:      http.StatusNotFound,
+	RestaurantNameEmpty:                http.StatusBadRequest,
+	RestaurantAlreadyExists:            http.StatusConflict,
+	RestaurantNotFound:                 http.StatusNotFound,
+	RestaurantAlreadyExistsButInactive: http.StatusConflict,
 
 	// Branch
 	BranchNameEmpty:     http.StatusBadRequest,
@@ -393,9 +403,11 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	TableNotFound:             http.StatusNotFound,
 
 	// Book
-	BookAmountInvalid: http.StatusBadRequest,
-	BookAlreadyExists: http.StatusConflict,
-	BookNotFound:      http.StatusNotFound,
+	BookAmountInvalid:             http.StatusBadRequest,
+	BookAlreadyExists:             http.StatusConflict,
+	BookNotFound:                  http.StatusNotFound,
+	BookTableAndAvailableNotMatch: http.StatusConflict,
+	BookAlreadyExistsButInactive:  http.StatusConflict,
 }
 
 func (e ErrorCode) GetCode() int {

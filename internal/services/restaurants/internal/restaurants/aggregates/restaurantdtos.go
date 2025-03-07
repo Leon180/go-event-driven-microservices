@@ -42,13 +42,13 @@ type RestaurantDTOAggregateBuilder interface {
 }
 
 func NewRestaurantDTOAggregateBuilder(uuidGenerator uuid.UUIDGenerator) RestaurantDTOAggregateBuilder {
-	return &RestaurantDTOAggregateImpl{
+	return &restaurantDTOAggregateImpl{
 		restaurants:   make([]Restaurant, 0),
 		uuidGenerator: uuidGenerator,
 	}
 }
 
-type RestaurantDTOAggregateImpl struct {
+type restaurantDTOAggregateImpl struct {
 	restaurants []Restaurant
 
 	// dependencies
@@ -252,12 +252,12 @@ func (a *Available) ToDTO() *dtos.Available {
 }
 
 // restaurant aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveRestaurant(restaurant *dtos.Restaurant) error {
-	if err := validatesdtos.ValidateRestaurant(restaurant); err != nil {
-		return err
-	}
+func (r *restaurantDTOAggregateImpl) SaveRestaurant(restaurant *dtos.Restaurant) error {
 	if restaurant == nil {
 		return nil
+	}
+	if err := validatesdtos.ValidateRestaurant(restaurant); err != nil {
+		return err
 	}
 	for i := range r.restaurants {
 		if restaurant.ID != nil && r.restaurants[i].ID == *restaurant.ID {
@@ -271,7 +271,7 @@ func (r *RestaurantDTOAggregateImpl) SaveRestaurant(restaurant *dtos.Restaurant)
 	return r.addRestaurant(restaurant)
 }
 
-func (r *RestaurantDTOAggregateImpl) addRestaurant(restaurant *dtos.Restaurant) error {
+func (r *restaurantDTOAggregateImpl) addRestaurant(restaurant *dtos.Restaurant) error {
 	if restaurant == nil {
 		return nil
 	}
@@ -304,7 +304,7 @@ func (r *RestaurantDTOAggregateImpl) addRestaurant(restaurant *dtos.Restaurant) 
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, update *dtos.Restaurant) error {
+func (r *restaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, update *dtos.Restaurant) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -337,7 +337,7 @@ func (r *RestaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, updat
 }
 
 // branch aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveBranch(restaurantID string, branch *dtos.Branch) error {
+func (r *restaurantDTOAggregateImpl) SaveBranch(restaurantID string, branch *dtos.Branch) error {
 	if err := validatesdtos.ValidateBranch(branch); err != nil {
 		return err
 	}
@@ -349,7 +349,7 @@ func (r *RestaurantDTOAggregateImpl) SaveBranch(restaurantID string, branch *dto
 	return customizeerrors.RestaurantNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveBranch(updated *Restaurant, update *dtos.Branch) error {
+func (r *restaurantDTOAggregateImpl) saveBranch(updated *Restaurant, update *dtos.Branch) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -365,7 +365,7 @@ func (r *RestaurantDTOAggregateImpl) saveBranch(updated *Restaurant, update *dto
 	return r.addBranch(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *dtos.Branch) error {
+func (r *restaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *dtos.Branch) error {
 	if restaurant == nil || branch == nil {
 		return nil
 	}
@@ -420,7 +420,7 @@ func (r *RestaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *d
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteBranch(branch *Branch) error {
+func (r *restaurantDTOAggregateImpl) deleteBranch(branch *Branch) error {
 	if branch == nil {
 		return nil
 	}
@@ -457,7 +457,7 @@ func (r *RestaurantDTOAggregateImpl) deleteBranch(branch *Branch) error {
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.Branch) error {
+func (r *restaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.Branch) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -529,7 +529,7 @@ func (r *RestaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 }
 
 // address aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveAddress(branchID string, address *dtos.Address) error {
+func (r *restaurantDTOAggregateImpl) SaveAddress(branchID string, address *dtos.Address) error {
 	if err := validatesdtos.ValidateAddress(address); err != nil {
 		return err
 	}
@@ -543,7 +543,7 @@ func (r *RestaurantDTOAggregateImpl) SaveAddress(branchID string, address *dtos.
 	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.Address) error {
+func (r *restaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.Address) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -562,7 +562,7 @@ func (r *RestaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.A
 	return r.addAddress(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addAddress(updated *Branch, update *dtos.Address) error {
+func (r *restaurantDTOAggregateImpl) addAddress(updated *Branch, update *dtos.Address) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -592,7 +592,7 @@ func (r *RestaurantDTOAggregateImpl) addAddress(updated *Branch, update *dtos.Ad
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteAddress(address *Address) error {
+func (r *restaurantDTOAggregateImpl) deleteAddress(address *Address) error {
 	if address == nil {
 		return nil
 	}
@@ -603,7 +603,7 @@ func (r *RestaurantDTOAggregateImpl) deleteAddress(address *Address) error {
 }
 
 // price range aggregate methods
-func (r *RestaurantDTOAggregateImpl) SavePriceRange(branchID string, priceRange *dtos.PriceRange) error {
+func (r *restaurantDTOAggregateImpl) SavePriceRange(branchID string, priceRange *dtos.PriceRange) error {
 	if err := validatesdtos.ValidatePriceRange(priceRange); err != nil {
 		return err
 	}
@@ -617,7 +617,7 @@ func (r *RestaurantDTOAggregateImpl) SavePriceRange(branchID string, priceRange 
 	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) savePriceRange(updated *Branch, update *dtos.PriceRange) error {
+func (r *restaurantDTOAggregateImpl) savePriceRange(updated *Branch, update *dtos.PriceRange) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -630,7 +630,7 @@ func (r *RestaurantDTOAggregateImpl) savePriceRange(updated *Branch, update *dto
 	return r.addPriceRange(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addPriceRange(updated *Branch, update *dtos.PriceRange) error {
+func (r *restaurantDTOAggregateImpl) addPriceRange(updated *Branch, update *dtos.PriceRange) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -658,7 +658,7 @@ func (r *RestaurantDTOAggregateImpl) addPriceRange(updated *Branch, update *dtos
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deletePriceRange(priceRange *PriceRange) error {
+func (r *restaurantDTOAggregateImpl) deletePriceRange(priceRange *PriceRange) error {
 	if priceRange == nil {
 		return nil
 	}
@@ -669,7 +669,7 @@ func (r *RestaurantDTOAggregateImpl) deletePriceRange(priceRange *PriceRange) er
 }
 
 // category aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveCategoryRelation(branchID string, category *dtos.Category) error {
+func (r *restaurantDTOAggregateImpl) SaveCategoryRelation(branchID string, category *dtos.Category) error {
 	if err := validatesdtos.ValidateCategory(category); err != nil {
 		return err
 	}
@@ -683,7 +683,7 @@ func (r *RestaurantDTOAggregateImpl) SaveCategoryRelation(branchID string, categ
 	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveCategoryRelation(updated *Branch, update *dtos.Category) error {
+func (r *restaurantDTOAggregateImpl) saveCategoryRelation(updated *Branch, update *dtos.Category) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -699,7 +699,7 @@ func (r *RestaurantDTOAggregateImpl) saveCategoryRelation(updated *Branch, updat
 	return r.addCategoryRelation(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addCategoryRelation(branch *Branch, category *dtos.Category) error {
+func (r *restaurantDTOAggregateImpl) addCategoryRelation(branch *Branch, category *dtos.Category) error {
 	if branch == nil || category == nil {
 		return nil
 	}
@@ -730,7 +730,7 @@ func (r *RestaurantDTOAggregateImpl) addCategoryRelation(branch *Branch, categor
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteCategoryRelation(category *BranchCategoryRelation) error {
+func (r *restaurantDTOAggregateImpl) deleteCategoryRelation(category *BranchCategoryRelation) error {
 	if category == nil {
 		return nil
 	}
@@ -741,7 +741,7 @@ func (r *RestaurantDTOAggregateImpl) deleteCategoryRelation(category *BranchCate
 }
 
 // table aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveTable(branchID string, table *dtos.Table) error {
+func (r *restaurantDTOAggregateImpl) SaveTable(branchID string, table *dtos.Table) error {
 	if err := validatesdtos.ValidateTable(table); err != nil {
 		return err
 	}
@@ -755,7 +755,7 @@ func (r *RestaurantDTOAggregateImpl) SaveTable(branchID string, table *dtos.Tabl
 	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveTable(updated *Branch, update *dtos.Table) error {
+func (r *restaurantDTOAggregateImpl) saveTable(updated *Branch, update *dtos.Table) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -767,7 +767,7 @@ func (r *RestaurantDTOAggregateImpl) saveTable(updated *Branch, update *dtos.Tab
 	return r.addTable(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table) error {
+func (r *restaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table) error {
 	if branch == nil || table == nil {
 		return nil
 	}
@@ -794,7 +794,7 @@ func (r *RestaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table)
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteTable(table *Table) error {
+func (r *restaurantDTOAggregateImpl) deleteTable(table *Table) error {
 	if table == nil {
 		return nil
 	}
@@ -804,7 +804,7 @@ func (r *RestaurantDTOAggregateImpl) deleteTable(table *Table) error {
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Table) error {
+func (r *restaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Table) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -818,7 +818,7 @@ func (r *RestaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Ta
 }
 
 // table available aggregate methods
-func (r *RestaurantDTOAggregateImpl) SaveAvailable(branchID string, available *dtos.Available) error {
+func (r *restaurantDTOAggregateImpl) SaveAvailable(branchID string, available *dtos.Available) error {
 	if err := validatesdtos.ValidateAvailable(available); err != nil {
 		return err
 	}
@@ -832,7 +832,7 @@ func (r *RestaurantDTOAggregateImpl) SaveAvailable(branchID string, available *d
 	return customizeerrors.BranchNotFoundError
 }
 
-func (r *RestaurantDTOAggregateImpl) saveAvailable(updated *Branch, update *dtos.Available) error {
+func (r *restaurantDTOAggregateImpl) saveAvailable(updated *Branch, update *dtos.Available) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -844,7 +844,7 @@ func (r *RestaurantDTOAggregateImpl) saveAvailable(updated *Branch, update *dtos
 	return r.addAvailable(updated, update)
 }
 
-func (r *RestaurantDTOAggregateImpl) addAvailable(branch *Branch, available *dtos.Available) error {
+func (r *restaurantDTOAggregateImpl) addAvailable(branch *Branch, available *dtos.Available) error {
 	if branch == nil || available == nil {
 		return nil
 	}
@@ -875,7 +875,7 @@ func (r *RestaurantDTOAggregateImpl) addAvailable(branch *Branch, available *dto
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) updateAvailable(updated *Available, update *dtos.Available) error {
+func (r *restaurantDTOAggregateImpl) updateAvailable(updated *Available, update *dtos.Available) error {
 	if updated == nil || update == nil {
 		return nil
 	}
@@ -890,7 +890,7 @@ func (r *RestaurantDTOAggregateImpl) updateAvailable(updated *Available, update 
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) deleteAvailable(Available *Available) error {
+func (r *restaurantDTOAggregateImpl) deleteAvailable(Available *Available) error {
 	if Available == nil {
 		return nil
 	}
@@ -900,11 +900,11 @@ func (r *RestaurantDTOAggregateImpl) deleteAvailable(Available *Available) error
 	return nil
 }
 
-func (r *RestaurantDTOAggregateImpl) GetAggregates() []Restaurant {
+func (r *restaurantDTOAggregateImpl) GetAggregates() []Restaurant {
 	return r.restaurants
 }
 
-func (r *RestaurantDTOAggregateImpl) GetEditEntities() []RestaurantEditEntities {
+func (r *restaurantDTOAggregateImpl) GetEditEntities() []RestaurantEditEntities {
 	res := make([]RestaurantEditEntities, len(r.restaurants))
 	for i, restaurant := range r.restaurants {
 		// Initialize container
@@ -945,25 +945,4 @@ func (r *RestaurantDTOAggregateImpl) GetEditEntities() []RestaurantEditEntities 
 		}
 	}
 	return res
-}
-
-func appendEntityByType[T any, U any](create *[]T, update *[]U, delete *[]T, entity T, updateEntity *U, editTypeCode enums.EditTypeCode) {
-	switch editTypeCode {
-	case enums.EditTypeCodeCreate, enums.EditTypeCodeDelete:
-		appendEntityByTypeCD(create, delete, entity, editTypeCode)
-	case enums.EditTypeCodeUpdate:
-		appendEntityByTypeU(update, updateEntity)
-	}
-}
-func appendEntityByTypeCD[T any](create *[]T, delete *[]T, entity T, editTypeCode enums.EditTypeCode) {
-	switch editTypeCode {
-	case enums.EditTypeCodeCreate:
-		*create = append(*create, entity)
-	case enums.EditTypeCodeDelete:
-		*delete = append(*delete, entity)
-	}
-}
-
-func appendEntityByTypeU[U any](update *[]U, updateEntity *U) {
-	*update = append(*update, *updateEntity)
 }
