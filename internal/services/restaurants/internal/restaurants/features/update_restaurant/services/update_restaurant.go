@@ -59,6 +59,7 @@ func (handle *updateRestaurantImpl) UpdateRestaurant(ctx context.Context, req *d
 	if err != nil {
 		return err
 	}
+	restaurantDTOAggregateBuilder.SetAllEditTypeCodeToNone()
 	err = restaurantDTOAggregateBuilder.SaveRestaurant(req)
 	if err != nil {
 		return err

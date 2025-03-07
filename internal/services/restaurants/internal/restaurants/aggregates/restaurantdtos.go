@@ -34,6 +34,9 @@ type RestaurantDTOAggregateBuilder interface {
 	// save available to the aggregate
 	SaveAvailable(branchID string, available *dtos.Available) error
 
+	// set all edit type code to none
+	SetAllEditTypeCodeToNone()
+
 	// get restaurant aggregates
 	GetAggregates() []Restaurant
 
@@ -109,11 +112,13 @@ func (r Restaurants) ToDTO() []dtos.Restaurant {
 
 type Restaurant struct {
 	entities.Restaurant
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateRestaurant
+	editTypeCode enums.EditTypeCode         `gorm:"-"`
+	update       *entities.UpdateRestaurant `gorm:"-"`
+	Branches     []Branch                   `gorm:"foreignKey:RestaurantID;references:ID" comment:"Branches"`
+}
 
-	// Relations
-	Branches []Branch `gorm:"foreignKey:RestaurantID;references:ID" comment:"Branches"`
+func (r *Restaurant) TableName() string {
+	return "restaurant"
 }
 
 func (r *Restaurant) ToDTO() *dtos.Restaurant {
@@ -127,15 +132,10 @@ func (r *Restaurant) ToDTO() *dtos.Restaurant {
 	}
 }
 
-func (r *Restaurant) TableName() string {
-	return "restaurant"
-}
-
 type Branch struct {
 	entities.Branch
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateBranch
-	// Relations
+	editTypeCode            enums.EditTypeCode       `gorm:"-"`
+	update                  *entities.UpdateBranch   `gorm:"-"`
 	Address                 *Address                 `gorm:"foreignKey:BranchID;references:ID" comment:"Address"`
 	PriceRange              *PriceRange              `gorm:"foreignKey:BranchID;references:ID" comment:"Price Range"`
 	BranchCategoryRelations []BranchCategoryRelation `gorm:"foreignKey:BranchID;references:ID" comment:"Branch Category Relation"`
@@ -168,8 +168,12 @@ func (b *Branch) ToDTO() *dtos.Branch {
 
 type Address struct {
 	entities.Address
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateAddress
+	editTypeCode enums.EditTypeCode      `gorm:"-"`
+	update       *entities.UpdateAddress `gorm:"-"`
+}
+
+func (a *Address) TableName() string {
+	return "address"
 }
 
 func (a *Address) ToDTO() *dtos.Address {
@@ -184,8 +188,12 @@ func (a *Address) ToDTO() *dtos.Address {
 
 type PriceRange struct {
 	entities.PriceRange
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdatePriceRange
+	editTypeCode enums.EditTypeCode         `gorm:"-"`
+	update       *entities.UpdatePriceRange `gorm:"-"`
+}
+
+func (p *PriceRange) TableName() string {
+	return "price_range"
 }
 
 func (p *PriceRange) ToDTO() *dtos.PriceRange {
@@ -198,11 +206,9 @@ func (p *PriceRange) ToDTO() *dtos.PriceRange {
 
 type BranchCategoryRelation struct {
 	entities.BranchCategoryRelation
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateBranchCategoryRelation
-
-	// Relations
-	Category Category `gorm:"foreignKey:ID;references:CategoryID" comment:"Category"`
+	editTypeCode enums.EditTypeCode                     `gorm:"-"`
+	update       *entities.UpdateBranchCategoryRelation `gorm:"-"`
+	Category     Category                               `gorm:"foreignKey:ID;references:CategoryID" comment:"Category"`
 }
 
 func (bcr *BranchCategoryRelation) TableName() string {
@@ -210,6 +216,10 @@ func (bcr *BranchCategoryRelation) TableName() string {
 }
 
 type Category entities.Category
+
+func (c *Category) TableName() string {
+	return "category"
+}
 
 func (c *Category) ToDTO() *dtos.Category {
 	return &dtos.Category{
@@ -225,8 +235,12 @@ func (c *Category) ToDTO() *dtos.Category {
 
 type Table struct {
 	entities.Table
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateTable
+	editTypeCode enums.EditTypeCode    `gorm:"-"`
+	update       *entities.UpdateTable `gorm:"-"`
+}
+
+func (t *Table) TableName() string {
+	return "table"
 }
 
 func (t *Table) ToDTO() *dtos.Table {
@@ -238,8 +252,12 @@ func (t *Table) ToDTO() *dtos.Table {
 
 type Available struct {
 	entities.Available
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateAvailable
+	editTypeCode enums.EditTypeCode        `gorm:"-"`
+	update       *entities.UpdateAvailable `gorm:"-"`
+}
+
+func (a *Available) TableName() string {
+	return "available"
 }
 
 func (a *Available) ToDTO() *dtos.Available {
@@ -278,6 +296,7 @@ func (r *restaurantDTOAggregateImpl) addRestaurant(restaurant *dtos.Restaurant) 
 	var restaurantID string
 	if restaurant.ID == nil {
 		restaurantID = r.uuidGenerator.GenerateUUID()
+		restaurant.ID = &restaurantID
 	} else {
 		restaurantID = *restaurant.ID
 	}
@@ -308,10 +327,11 @@ func (r *restaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, updat
 	if updated == nil || update == nil {
 		return nil
 	}
+	ori := updated.Restaurant
 	updated.Name = update.Name
 	updated.Description = update.Description
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.update = update.ToUpdateRestaurant().RemoveUnchangedFields(updated.Restaurant)
+	updated.update = update.ToUpdateRestaurant().RemoveUnchangedFields(ori)
 	if updated.update != nil {
 		updated.editTypeCode = enums.EditTypeCodeUpdate
 	}
@@ -322,7 +342,9 @@ func (r *restaurantDTOAggregateImpl) updateRestaurant(updated *Restaurant, updat
 		if err != nil {
 			return err
 		}
-		deletedMap[*update.Branches[i].ID] = struct{}{}
+		if update.Branches[i].ID != nil {
+			deletedMap[*update.Branches[i].ID] = struct{}{}
+		}
 	}
 	for i := range updated.Branches {
 		if _, ok := deletedMap[updated.Branches[i].ID]; !ok {
@@ -372,6 +394,7 @@ func (r *restaurantDTOAggregateImpl) addBranch(restaurant *Restaurant, branch *d
 	var branchID string
 	if branch.ID == nil {
 		branchID = r.uuidGenerator.GenerateUUID()
+		branch.ID = &branchID
 	} else {
 		branchID = *branch.ID
 	}
@@ -461,10 +484,11 @@ func (r *restaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 	if updated == nil || update == nil {
 		return nil
 	}
+	ori := updated.Branch
 	updated.Name = update.Name
 	updated.Description = update.Description
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.update = update.ToUpdateBranch().RemoveUnchangedFields(updated.Branch)
+	updated.update = update.ToUpdateBranch().RemoveUnchangedFields(ori)
 	if updated.update != nil {
 		updated.editTypeCode = enums.EditTypeCodeUpdate
 	}
@@ -499,7 +523,9 @@ func (r *restaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 		if err != nil {
 			return err
 		}
-		deletedMap[*update.Tables[i].ID] = struct{}{}
+		if update.Tables[i].ID != nil {
+			deletedMap[*update.Tables[i].ID] = struct{}{}
+		}
 	}
 	for i := range updated.Tables {
 		if _, ok := deletedMap[updated.Tables[i].ID]; !ok {
@@ -515,7 +541,9 @@ func (r *restaurantDTOAggregateImpl) updateBranch(updated *Branch, update *dtos.
 		if err != nil {
 			return err
 		}
-		deletedMap[*update.Availables[i].ID] = struct{}{}
+		if update.Availables[i].ID != nil {
+			deletedMap[*update.Availables[i].ID] = struct{}{}
+		}
 	}
 	for i := range updated.Availables {
 		if _, ok := deletedMap[updated.Availables[i].ID]; !ok {
@@ -548,12 +576,13 @@ func (r *restaurantDTOAggregateImpl) saveAddress(updated *Branch, update *dtos.A
 		return nil
 	}
 	if updated.Address != nil {
+		ori := updated.Address.Address
 		updated.Address.Street = update.Street
 		updated.Address.CityCode = update.City.ToCityCode()
 		updated.Address.PostalCode = update.PostalCode
 		updated.Address.CountryCode = update.Country.ToCountryCode()
 		updated.Address.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-		updated.Address.update = update.ToUpdateAddress().RemoveUnchangedFields(updated.Address.Address)
+		updated.Address.update = update.ToUpdateAddress().RemoveUnchangedFields(ori)
 		if updated.Address.update != nil {
 			updated.Address.editTypeCode = enums.EditTypeCodeUpdate
 		}
@@ -569,6 +598,7 @@ func (r *restaurantDTOAggregateImpl) addAddress(updated *Branch, update *dtos.Ad
 	var addressID string
 	if update.ID == nil {
 		addressID = r.uuidGenerator.GenerateUUID()
+		update.ID = &addressID
 	} else {
 		addressID = *update.ID
 	}
@@ -622,9 +652,14 @@ func (r *restaurantDTOAggregateImpl) savePriceRange(updated *Branch, update *dto
 		return nil
 	}
 	if updated.PriceRange != nil {
+		ori := updated.PriceRange.PriceRange
 		updated.PriceRange.MinPrice = update.MinPrice
 		updated.PriceRange.MaxPrice = update.MaxPrice
 		updated.PriceRange.CommonCQRSHistoryModel.UpdatedAt = time.Now()
+		updated.PriceRange.update = update.ToUpdatePriceRange().RemoveUnchangedFields(ori)
+		if updated.PriceRange.update != nil {
+			updated.PriceRange.editTypeCode = enums.EditTypeCodeUpdate
+		}
 		return nil
 	}
 	return r.addPriceRange(updated, update)
@@ -637,6 +672,7 @@ func (r *restaurantDTOAggregateImpl) addPriceRange(updated *Branch, update *dtos
 	var priceRangeID string
 	if update.ID == nil {
 		priceRangeID = r.uuidGenerator.GenerateUUID()
+		update.ID = &priceRangeID
 	} else {
 		priceRangeID = *update.ID
 	}
@@ -774,6 +810,7 @@ func (r *restaurantDTOAggregateImpl) addTable(branch *Branch, table *dtos.Table)
 	var tableID string
 	if table.ID == nil {
 		tableID = r.uuidGenerator.GenerateUUID()
+		table.ID = &tableID
 	} else {
 		tableID = *table.ID
 	}
@@ -808,9 +845,10 @@ func (r *restaurantDTOAggregateImpl) updateTable(updated *Table, update *dtos.Ta
 	if updated == nil || update == nil {
 		return nil
 	}
+	ori := updated.Table
 	updated.Capacity = update.Capacity
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.update = update.ToUpdateTable().RemoveUnchangedFields(updated.Table)
+	updated.update = update.ToUpdateTable().RemoveUnchangedFields(ori)
 	if updated.update != nil {
 		updated.editTypeCode = enums.EditTypeCodeUpdate
 	}
@@ -851,6 +889,7 @@ func (r *restaurantDTOAggregateImpl) addAvailable(branch *Branch, available *dto
 	var availableID string
 	if available.ID == nil {
 		availableID = r.uuidGenerator.GenerateUUID()
+		available.ID = &availableID
 	} else {
 		availableID = *available.ID
 	}
@@ -879,11 +918,12 @@ func (r *restaurantDTOAggregateImpl) updateAvailable(updated *Available, update 
 	if updated == nil || update == nil {
 		return nil
 	}
+	ori := updated.Available
 	updated.Weekday = update.Weekday
 	updated.StartTime = update.StartTime
 	updated.EndTime = update.EndTime
 	updated.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	updated.update = update.ToUpdateAvailable().RemoveUnchangedFields(updated.Available)
+	updated.update = update.ToUpdateAvailable().RemoveUnchangedFields(ori)
 	if updated.update != nil {
 		updated.editTypeCode = enums.EditTypeCodeUpdate
 	}
@@ -898,6 +938,30 @@ func (r *restaurantDTOAggregateImpl) deleteAvailable(Available *Available) error
 	Available.CommonCQRSHistoryModel.UpdatedAt = time.Now()
 	Available.editTypeCode = enums.EditTypeCodeDelete
 	return nil
+}
+
+func (r *restaurantDTOAggregateImpl) SetAllEditTypeCodeToNone() {
+	for i := range r.restaurants {
+		r.restaurants[i].editTypeCode = enums.EditTypeCodeNone
+		for j := range r.restaurants[i].Branches {
+			r.restaurants[i].Branches[j].editTypeCode = enums.EditTypeCodeNone
+			if r.restaurants[i].Branches[j].Address != nil {
+				r.restaurants[i].Branches[j].Address.editTypeCode = enums.EditTypeCodeNone
+			}
+			if r.restaurants[i].Branches[j].PriceRange != nil {
+				r.restaurants[i].Branches[j].PriceRange.editTypeCode = enums.EditTypeCodeNone
+			}
+			for k := range r.restaurants[i].Branches[j].BranchCategoryRelations {
+				r.restaurants[i].Branches[j].BranchCategoryRelations[k].editTypeCode = enums.EditTypeCodeNone
+			}
+			for k := range r.restaurants[i].Branches[j].Tables {
+				r.restaurants[i].Branches[j].Tables[k].editTypeCode = enums.EditTypeCodeNone
+			}
+			for k := range r.restaurants[i].Branches[j].Availables {
+				r.restaurants[i].Branches[j].Availables[k].editTypeCode = enums.EditTypeCodeNone
+			}
+		}
+	}
 }
 
 func (r *restaurantDTOAggregateImpl) GetAggregates() []Restaurant {

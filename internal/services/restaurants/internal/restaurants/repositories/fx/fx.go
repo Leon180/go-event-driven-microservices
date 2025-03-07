@@ -11,6 +11,7 @@ import (
 // - repositories.ReadRestaurants
 // - repositories.UpdateRestaurants
 // - repositories.UpdateRestaurantsWithTransaction
+// - repositories.ListCategories
 // dependencies:
 // - *gorm.DB
 // - contextloggers.ContextLogger
@@ -25,5 +26,6 @@ var ProvideModule = fx.Module(
 		repositoriespostgres.NewReadBooks,
 		repositoriespostgres.NewUpdateBooks,
 		repositoriespostgres.NewUpdateBooksWithTransaction,
+		repositoriespostgres.NewListCategories,
 	),
 )

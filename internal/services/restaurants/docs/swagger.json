@@ -1,17 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Simple service for accounts resources",
-        "title": "Accounts Service API",
+        "description": "Simple service for restaurants resources",
+        "title": "Restaurants Service API",
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:7001",
-    "basePath": "/v1/accounts",
+    "host": "localhost:8001",
+    "basePath": "/v1/restaurants",
     "paths": {
-        "/account/create": {
+        "/book/create": {
             "post": {
-                "description": "Create a new account",
+                "description": "Create a new book",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,23 +19,23 @@
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "books"
                 ],
-                "summary": "Create a new account",
+                "summary": "Create a new book",
                 "parameters": [
                     {
-                        "description": "Account",
-                        "name": "account",
+                        "description": "Book",
+                        "name": "book",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/featuresdtos.CreateAccountRequest"
+                            "$ref": "#/definitions/dtos.Book"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Account created successfully",
+                        "description": "Book created successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -43,30 +43,30 @@
                 }
             }
         },
-        "/account/delete": {
+        "/book/delete": {
             "post": {
-                "description": "Delete an account",
+                "description": "Delete a book",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "books"
                 ],
-                "summary": "Delete an account",
+                "summary": "Delete a book",
                 "parameters": [
                     {
-                        "description": "Account",
-                        "name": "account",
+                        "description": "Book",
+                        "name": "book",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/featuresdtos.DeleteAccountRequest"
+                            "$ref": "#/definitions/featuresdtos.DeleteBookRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "account deleted successfully",
+                        "description": "book deleted successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -74,30 +74,65 @@
                 }
             }
         },
-        "/account/restore": {
+        "/books/search": {
             "post": {
-                "description": "Restore an account",
+                "description": "Search books",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "books"
                 ],
-                "summary": "Restore an account",
+                "summary": "Search books",
                 "parameters": [
                     {
-                        "description": "Account",
-                        "name": "account",
+                        "description": "Book",
+                        "name": "book",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/featuresdtos.RestoreAccountRequest"
+                            "$ref": "#/definitions/dtos.SearchBooks"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "account restored successfully",
+                        "description": "book retrieved successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/customizegin.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dtos.Book"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "description": "Get all categories",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all categories",
+                "responses": {
+                    "200": {
+                        "description": "categories retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -105,9 +140,136 @@
                 }
             }
         },
-        "/account/update": {
+        "/restaurant/create": {
+            "post": {
+                "description": "Create a new restaurant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Create a new restaurant",
+                "parameters": [
+                    {
+                        "description": "Restaurant",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.Restaurant"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Restaurant created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/delete": {
+            "post": {
+                "description": "Delete a restaurant",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Delete a restaurant",
+                "parameters": [
+                    {
+                        "description": "Restaurant",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.DeleteRestaurantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "restaurant deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/get": {
+            "post": {
+                "description": "Get restaurant by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Get restaurant by id",
+                "parameters": [
+                    {
+                        "description": "Restaurant",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.GetRestaurantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "restaurant retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/restore": {
+            "post": {
+                "description": "Restore a restaurant",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Restore a restaurant",
+                "parameters": [
+                    {
+                        "description": "Restaurant",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.RestoreRestaurantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "restaurant restored successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/update": {
             "put": {
-                "description": "Update an account",
+                "description": "Update a restaurant",
                 "consumes": [
                     "application/json"
                 ],
@@ -115,23 +277,23 @@
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "restaurants"
                 ],
-                "summary": "Update an account",
+                "summary": "Update a restaurant",
                 "parameters": [
                     {
-                        "description": "Account",
-                        "name": "account",
+                        "description": "Restaurant",
+                        "name": "restaurant",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/featuresdtos.UpdateAccountRequest"
+                            "$ref": "#/definitions/dtos.Restaurant"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "account updated successfully",
+                        "description": "restaurant updated successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -139,32 +301,47 @@
                 }
             }
         },
-        "/accounts/get": {
+        "/restaurants/search": {
             "post": {
-                "description": "Get accounts by mobile number",
+                "description": "Search restaurants",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "restaurants"
                 ],
-                "summary": "Get accounts by mobile number",
+                "summary": "Search restaurants",
                 "parameters": [
                     {
-                        "description": "Account",
-                        "name": "account",
+                        "description": "Restaurant",
+                        "name": "restaurant",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/featuresdtos.GetAccountsByMobileNumberRequest"
+                            "$ref": "#/definitions/dtos.SearchRestaurants"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "accounts retrieved successfully",
+                        "description": "restaurant retrieved successfully",
                         "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/customizegin.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dtos.Restaurant"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -201,29 +378,438 @@
                 }
             }
         },
-        "featuresdtos.CreateAccountRequest": {
+        "dtos.Address": {
             "type": "object",
-            "required": [
-                "account_type",
-                "branch",
-                "mobile_number"
-            ],
             "properties": {
-                "account_type": {
-                    "description": "@enum \"checking\", \"savings\", \"currency\", \"salary\", \"business\"",
+                "city": {
+                    "$ref": "#/definitions/enums.City"
+                },
+                "country": {
+                    "$ref": "#/definitions/enums.Country"
+                },
+                "id": {
                     "type": "string"
                 },
-                "branch": {
-                    "description": "@enum \"台北市中山區\", \"台北市松山區\", \"台北市信義區\", \"台北市文山區\", \"台北市北投區\", \"台北市南港區\", \"台北市萬華區\"",
+                "postal_code": {
                     "type": "string"
                 },
-                "mobile_number": {
-                    "description": "@example 0958308280",
+                "street": {
                     "type": "string"
                 }
             }
         },
-        "featuresdtos.DeleteAccountRequest": {
+        "dtos.Available": {
+            "type": "object",
+            "properties": {
+                "end_time": {
+                    "description": "HH:MM",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "HH:MM",
+                    "type": "string"
+                },
+                "weekday": {
+                    "$ref": "#/definitions/time.Weekday"
+                }
+            }
+        },
+        "dtos.Book": {
+            "type": "object",
+            "properties": {
+                "activeStatus": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "integer"
+                },
+                "available": {
+                    "$ref": "#/definitions/dtos.Available"
+                },
+                "available_id": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mobile_number": {
+                    "type": "string"
+                },
+                "table": {
+                    "$ref": "#/definitions/dtos.Table"
+                },
+                "table_id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.Branch": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "$ref": "#/definitions/dtos.Address"
+                },
+                "availables": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.Available"
+                    }
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.Category"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_range": {
+                    "$ref": "#/definitions/dtos.PriceRange"
+                },
+                "tables": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.Table"
+                    }
+                }
+            }
+        },
+        "dtos.Category": {
+            "type": "object",
+            "properties": {
+                "activeStatus": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "$ref": "#/definitions/enums.Category"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.PriceRange": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "max_price": {
+                    "type": "integer"
+                },
+                "min_price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dtos.Restaurant": {
+            "type": "object",
+            "properties": {
+                "branches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.Branch"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.SearchBooks": {
+            "type": "object",
+            "properties": {
+                "availableID": {
+                    "type": "string"
+                },
+                "mobileNumber": {
+                    "type": "string"
+                },
+                "nameFilter": {
+                    "type": "string"
+                },
+                "namePreciseSearch": {
+                    "type": "boolean"
+                },
+                "orderBy": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/postgresgorm.Pagination"
+                },
+                "tableAvailableEndTime": {
+                    "type": "string"
+                },
+                "tableAvailableStartTime": {
+                    "type": "string"
+                },
+                "tableAvailableWeek": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/time.Weekday"
+                    }
+                },
+                "tableID": {
+                    "type": "string"
+                }
+            }
+        },
+        "dtos.SearchRestaurants": {
+            "type": "object",
+            "properties": {
+                "categoryFilter": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/enums.Category"
+                    }
+                },
+                "cityFilter": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/enums.City"
+                    }
+                },
+                "countryFilter": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/enums.Country"
+                    }
+                },
+                "descriptionFilter": {
+                    "type": "string"
+                },
+                "maxPriceFilter": {
+                    "type": "integer"
+                },
+                "minPriceFilter": {
+                    "type": "integer"
+                },
+                "nameFilter": {
+                    "type": "string"
+                },
+                "namePreciseSearch": {
+                    "type": "boolean"
+                },
+                "orderBy": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/postgresgorm.Pagination"
+                },
+                "tableAvailableEndTime": {
+                    "type": "string"
+                },
+                "tableAvailableStartTime": {
+                    "type": "string"
+                },
+                "tableAvailableWeek": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/time.Weekday"
+                    }
+                }
+            }
+        },
+        "dtos.Table": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "enums.Category": {
+            "type": "string",
+            "enum": [
+                "invalid",
+                "breakfast",
+                "lunch",
+                "dinner",
+                "snack",
+                "dessert",
+                "drink",
+                "other",
+                "italian",
+                "japanese",
+                "korean",
+                "chinese",
+                "american",
+                "mexican",
+                "thai",
+                "vietnamese",
+                "indian",
+                "french",
+                "german",
+                "spanish",
+                "brazilian",
+                "taiwanese"
+            ],
+            "x-enum-varnames": [
+                "CategoryInvalid",
+                "CategoryBreakfast",
+                "CategoryLunch",
+                "CategoryDinner",
+                "CategorySnack",
+                "CategoryDessert",
+                "CategoryDrink",
+                "CategoryOther",
+                "CategoryItalian",
+                "CategoryJapanese",
+                "CategoryKorean",
+                "CategoryChinese",
+                "CategoryAmerican",
+                "CategoryMexican",
+                "CategoryThai",
+                "CategoryVietnamese",
+                "CategoryIndian",
+                "CategoryFrench",
+                "CategoryGerman",
+                "CategorySpanish",
+                "CategoryBrazilian",
+                "CategoryTaiwanese"
+            ]
+        },
+        "enums.City": {
+            "type": "string",
+            "enum": [
+                "invalid",
+                "taipei",
+                "new_taipei",
+                "taoyuan",
+                "taichung",
+                "tainan",
+                "kaohsiung",
+                "hsinchu",
+                "keelung",
+                "chiayi",
+                "miaoli",
+                "changhua",
+                "nantou",
+                "douliu",
+                "pingtung",
+                "yilan",
+                "hualien",
+                "taitung",
+                "magong",
+                "puzi",
+                "taibao",
+                "toufen",
+                "yuanlin",
+                "zhubei"
+            ],
+            "x-enum-comments": {
+                "CityChanghua": "彰化市 Zhānghuà Shì",
+                "CityChiayi": "嘉義市 Jiāyì Shì",
+                "CityDouliu": "斗六市 Dǒuliù Shì",
+                "CityHsinchu": "新竹市 Xīnzhú Shì",
+                "CityHualien": "花蓮市 Huālián Shì",
+                "CityKaohsiung": "高雄市 Gāoxióng Shì",
+                "CityKeelung": "基隆市 Jīlóng Shì",
+                "CityMagong": "馬公市 Mǎgōng Shì",
+                "CityMiaoli": "苗栗市 Miáolì Shì",
+                "CityNantou": "南投市 Nántóu Shì",
+                "CityNewTaipei": "新北市 Xīnběi Shì",
+                "CityPingtung": "屏東市 Píngdōng Shì",
+                "CityPuzi": "朴子市 Púzǐ Shì",
+                "CityTaibao": "太保市 Tàibǎo Shì",
+                "CityTaichung": "臺中市 Táizhōng Shì",
+                "CityTainan": "臺南市 Táinán Shì",
+                "CityTaipei": "臺北市 Táiběi Shì",
+                "CityTaitung": "臺東市 Táidōng Shì",
+                "CityTaoyuan": "桃園市 Táoyuán Shì",
+                "CityToufen": "頭份市 Tóufèn Shì",
+                "CityYilan": "宜蘭市 Yílán Shì",
+                "CityYuanlin": "員林市 Yuánlín Shì",
+                "CityZhubei": "竹北市 Zhúběi Shì"
+            },
+            "x-enum-varnames": [
+                "CityInvalid",
+                "CityTaipei",
+                "CityNewTaipei",
+                "CityTaoyuan",
+                "CityTaichung",
+                "CityTainan",
+                "CityKaohsiung",
+                "CityHsinchu",
+                "CityKeelung",
+                "CityChiayi",
+                "CityMiaoli",
+                "CityChanghua",
+                "CityNantou",
+                "CityDouliu",
+                "CityPingtung",
+                "CityYilan",
+                "CityHualien",
+                "CityTaitung",
+                "CityMagong",
+                "CityPuzi",
+                "CityTaibao",
+                "CityToufen",
+                "CityYuanlin",
+                "CityZhubei"
+            ]
+        },
+        "enums.Country": {
+            "type": "string",
+            "enum": [
+                "invalid",
+                "taiwan"
+            ],
+            "x-enum-varnames": [
+                "CountryInvalid",
+                "CountryTaiwan"
+            ]
+        },
+        "featuresdtos.DeleteBookRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -234,18 +820,7 @@
                 }
             }
         },
-        "featuresdtos.GetAccountsByMobileNumberRequest": {
-            "type": "object",
-            "required": [
-                "mobile_number"
-            ],
-            "properties": {
-                "mobile_number": {
-                    "type": "string"
-                }
-            }
-        },
-        "featuresdtos.RestoreAccountRequest": {
+        "featuresdtos.DeleteRestaurantRequest": {
             "type": "object",
             "required": [
                 "id"
@@ -256,25 +831,81 @@
                 }
             }
         },
-        "featuresdtos.UpdateAccountRequest": {
+        "featuresdtos.GetRestaurantRequest": {
             "type": "object",
             "required": [
                 "id"
             ],
             "properties": {
-                "account_number": {
-                    "type": "string"
-                },
-                "branch_address": {
-                    "type": "string"
-                },
                 "id": {
-                    "type": "string"
-                },
-                "mobile_number": {
                     "type": "string"
                 }
             }
+        },
+        "featuresdtos.RestoreRestaurantRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "postgresgorm.OrderBy": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/definitions/postgresgorm.OrderByDirection"
+                },
+                "field": {
+                    "type": "string"
+                }
+            }
+        },
+        "postgresgorm.OrderByDirection": {
+            "type": "string",
+            "enum": [
+                "asc",
+                "desc"
+            ],
+            "x-enum-varnames": [
+                "OrderByDirectionAsc",
+                "OrderByDirectionDesc"
+            ]
+        },
+        "postgresgorm.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                }
+            }
+        },
+        "time.Weekday": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-varnames": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ]
         }
     }
 }

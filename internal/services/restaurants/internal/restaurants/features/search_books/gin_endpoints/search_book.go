@@ -27,7 +27,7 @@ func (endpoint *searchBooksImpl) MapEndpoint(routerGroup *gin.RouterGroup) {
 // @Description Search books
 // @Tags books
 // @Produce json
-// @Param book body dtos.SearchBooksRequest true "Book"
+// @Param book body dtos.SearchBooks true "Book"
 // @Success 200 {object} customizegin.JSONResponse{data=[]dtos.Book} "book retrieved successfully"
 // @Router /books/search [post]
 func (handle *searchBooksImpl) Handle(c *gin.Context) {

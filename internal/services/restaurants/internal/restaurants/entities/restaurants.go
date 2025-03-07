@@ -7,7 +7,7 @@ import (
 )
 
 type Restaurant struct {
-	ID          string `gorm:"primaryKey;type:uuid" comment:"ID"`
+	ID          string `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
 	Name        string `gorm:"not null;type:varchar(255)" comment:"Name"`
 	Description string `gorm:"not null;type:text" comment:"Description"`
 	CommonCQRSHistoryModel
@@ -16,8 +16,8 @@ type Restaurant struct {
 type Restaurants []Restaurant
 
 type Branch struct {
-	ID           string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	RestaurantID string `gorm:"not null;type:uuid" comment:"Restaurant ID"`
+	ID           string `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	RestaurantID string `gorm:"not null;type:varchar(255)" comment:"Restaurant ID"`
 	Name         string `gorm:"not null;type:varchar(255)" comment:"Name"`
 	Description  string `gorm:"not null;type:text" comment:"Description"`
 	CommonCQRSHistoryModel
@@ -26,20 +26,20 @@ type Branch struct {
 type Branches []Branch
 
 type Address struct {
-	ID          string            `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID    string            `gorm:"not null;type:uuid" comment:"Branch ID"`
+	ID          string            `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	BranchID    string            `gorm:"not null;type:varchar(255)" comment:"Branch ID"`
 	Street      string            `gorm:"not null;type:varchar(255)" comment:"Street"`
 	CityCode    enums.CityCode    `gorm:"not null;type:int" comment:"City Code"`
 	PostalCode  string            `gorm:"not null;type:varchar(255)" comment:"Postal Code"`
-	CountryCode enums.CountryCode `gorm:"not null;type:varchar(255)" comment:"Country"`
+	CountryCode enums.CountryCode `gorm:"not null;type:int" comment:"Country"`
 	CommonCQRSHistoryModel
 }
 
 type Addresses []Address
 
 type PriceRange struct {
-	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
+	ID       string `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	BranchID string `gorm:"not null;type:varchar(255)" comment:"Branch ID"`
 	MinPrice int    `gorm:"not null;type:int" comment:"Min Price"`
 	MaxPrice int    `gorm:"not null;type:int" comment:"Max Price"`
 	CommonCQRSHistoryModel
@@ -48,25 +48,17 @@ type PriceRange struct {
 type PriceRanges []PriceRange
 
 type BranchCategoryRelation struct {
-	ID         string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID   string `gorm:"not null;type:uuid" comment:"Branch ID"`
-	CategoryID string `gorm:"not null;type:uuid" comment:"Category ID"`
+	ID         string `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	BranchID   string `gorm:"not null;type:varchar(255)" comment:"Branch ID"`
+	CategoryID string `gorm:"not null;type:varchar(255)" comment:"Category ID"`
 	CommonCQRSHistoryModel
 }
 
 type BranchCategoryRelations []BranchCategoryRelation
 
-type Category struct {
-	ID           string             `gorm:"primaryKey;type:uuid" comment:"ID"`
-	CategoryCode enums.CategoryCode `gorm:"not null;type:int" comment:"Category Code"`
-	CommonCQRSHistoryModel
-}
-
-type Categories []Category
-
 type Available struct {
-	ID        string       `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID  string       `gorm:"not null;type:uuid" comment:"Branch ID"`
+	ID        string       `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	BranchID  string       `gorm:"not null;type:varchar(255)" comment:"Branch ID"`
 	Weekday   time.Weekday `gorm:"not null;type:int" comment:"Weekday"`
 	StartTime string       `gorm:"not null;type:varchar(5)" comment:"Start Time HH:MM"`
 	EndTime   string       `gorm:"not null;type:varchar(5)" comment:"End Time HH:MM"`
@@ -76,8 +68,8 @@ type Available struct {
 type Availables []Available
 
 type Table struct {
-	ID       string `gorm:"primaryKey;type:uuid" comment:"ID"`
-	BranchID string `gorm:"not null;type:uuid" comment:"Branch ID"`
+	ID       string `gorm:"primaryKey;type:varchar(255)" comment:"ID"`
+	BranchID string `gorm:"not null;type:varchar(255)" comment:"Branch ID"`
 	Capacity int    `gorm:"not null;type:int" comment:"Capacity"`
 	CommonCQRSHistoryModel
 }

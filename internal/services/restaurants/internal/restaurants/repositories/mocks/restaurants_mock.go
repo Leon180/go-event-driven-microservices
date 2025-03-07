@@ -58,228 +58,32 @@ func (mr *MockSearchRestaurantsFullInfoMockRecorder) SearchRestaurantsFullInfo(c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchRestaurantsFullInfo", reflect.TypeOf((*MockSearchRestaurantsFullInfo)(nil).SearchRestaurantsFullInfo), ctx, searchRestaurants)
 }
 
-// MockRestaurants is a mock of Restaurants interface.
-type MockRestaurants struct {
+// MockReadRestaurants is a mock of ReadRestaurants interface.
+type MockReadRestaurants struct {
 	ctrl     *gomock.Controller
-	recorder *MockRestaurantsMockRecorder
+	recorder *MockReadRestaurantsMockRecorder
 	isgomock struct{}
 }
 
-// MockRestaurantsMockRecorder is the mock recorder for MockRestaurants.
-type MockRestaurantsMockRecorder struct {
-	mock *MockRestaurants
+// MockReadRestaurantsMockRecorder is the mock recorder for MockReadRestaurants.
+type MockReadRestaurantsMockRecorder struct {
+	mock *MockReadRestaurants
 }
 
-// NewMockRestaurants creates a new mock instance.
-func NewMockRestaurants(ctrl *gomock.Controller) *MockRestaurants {
-	mock := &MockRestaurants{ctrl: ctrl}
-	mock.recorder = &MockRestaurantsMockRecorder{mock}
+// NewMockReadRestaurants creates a new mock instance.
+func NewMockReadRestaurants(ctrl *gomock.Controller) *MockReadRestaurants {
+	mock := &MockReadRestaurants{ctrl: ctrl}
+	mock.recorder = &MockReadRestaurantsMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRestaurants) EXPECT() *MockRestaurantsMockRecorder {
+func (m *MockReadRestaurants) EXPECT() *MockReadRestaurantsMockRecorder {
 	return m.recorder
 }
 
-// CreateAddresses mocks base method.
-func (m *MockRestaurants) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateAddresses", ctx, addresses)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateAddresses indicates an expected call of CreateAddresses.
-func (mr *MockRestaurantsMockRecorder) CreateAddresses(ctx, addresses any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAddresses", reflect.TypeOf((*MockRestaurants)(nil).CreateAddresses), ctx, addresses)
-}
-
-// CreateAvailables mocks base method.
-func (m *MockRestaurants) CreateAvailables(ctx context.Context, availables entities.Availables) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateAvailables", ctx, availables)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateAvailables indicates an expected call of CreateAvailables.
-func (mr *MockRestaurantsMockRecorder) CreateAvailables(ctx, availables any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAvailables", reflect.TypeOf((*MockRestaurants)(nil).CreateAvailables), ctx, availables)
-}
-
-// CreateBranchCategoryRelations mocks base method.
-func (m *MockRestaurants) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateBranchCategoryRelations", ctx, branchCategoryRelations)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateBranchCategoryRelations indicates an expected call of CreateBranchCategoryRelations.
-func (mr *MockRestaurantsMockRecorder) CreateBranchCategoryRelations(ctx, branchCategoryRelations any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranchCategoryRelations", reflect.TypeOf((*MockRestaurants)(nil).CreateBranchCategoryRelations), ctx, branchCategoryRelations)
-}
-
-// CreateBranches mocks base method.
-func (m *MockRestaurants) CreateBranches(ctx context.Context, branches entities.Branches) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateBranches", ctx, branches)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateBranches indicates an expected call of CreateBranches.
-func (mr *MockRestaurantsMockRecorder) CreateBranches(ctx, branches any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranches", reflect.TypeOf((*MockRestaurants)(nil).CreateBranches), ctx, branches)
-}
-
-// CreatePriceRanges mocks base method.
-func (m *MockRestaurants) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePriceRanges", ctx, priceRanges)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreatePriceRanges indicates an expected call of CreatePriceRanges.
-func (mr *MockRestaurantsMockRecorder) CreatePriceRanges(ctx, priceRanges any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePriceRanges", reflect.TypeOf((*MockRestaurants)(nil).CreatePriceRanges), ctx, priceRanges)
-}
-
-// CreateRestaurants mocks base method.
-func (m *MockRestaurants) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateRestaurants", ctx, restaurants)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateRestaurants indicates an expected call of CreateRestaurants.
-func (mr *MockRestaurantsMockRecorder) CreateRestaurants(ctx, restaurants any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRestaurants", reflect.TypeOf((*MockRestaurants)(nil).CreateRestaurants), ctx, restaurants)
-}
-
-// CreateTables mocks base method.
-func (m *MockRestaurants) CreateTables(ctx context.Context, tables entities.Tables) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTables", ctx, tables)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateTables indicates an expected call of CreateTables.
-func (mr *MockRestaurantsMockRecorder) CreateTables(ctx, tables any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTables", reflect.TypeOf((*MockRestaurants)(nil).CreateTables), ctx, tables)
-}
-
-// DeleteAddresses mocks base method.
-func (m *MockRestaurants) DeleteAddresses(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteAddresses", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteAddresses indicates an expected call of DeleteAddresses.
-func (mr *MockRestaurantsMockRecorder) DeleteAddresses(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddresses", reflect.TypeOf((*MockRestaurants)(nil).DeleteAddresses), ctx, ids)
-}
-
-// DeleteAvailables mocks base method.
-func (m *MockRestaurants) DeleteAvailables(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteAvailables", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteAvailables indicates an expected call of DeleteAvailables.
-func (mr *MockRestaurantsMockRecorder) DeleteAvailables(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvailables", reflect.TypeOf((*MockRestaurants)(nil).DeleteAvailables), ctx, ids)
-}
-
-// DeleteBranchCategoryRelations mocks base method.
-func (m *MockRestaurants) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteBranchCategoryRelations", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteBranchCategoryRelations indicates an expected call of DeleteBranchCategoryRelations.
-func (mr *MockRestaurantsMockRecorder) DeleteBranchCategoryRelations(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranchCategoryRelations", reflect.TypeOf((*MockRestaurants)(nil).DeleteBranchCategoryRelations), ctx, ids)
-}
-
-// DeleteBranches mocks base method.
-func (m *MockRestaurants) DeleteBranches(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteBranches", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteBranches indicates an expected call of DeleteBranches.
-func (mr *MockRestaurantsMockRecorder) DeleteBranches(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranches", reflect.TypeOf((*MockRestaurants)(nil).DeleteBranches), ctx, ids)
-}
-
-// DeletePriceRanges mocks base method.
-func (m *MockRestaurants) DeletePriceRanges(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePriceRanges", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeletePriceRanges indicates an expected call of DeletePriceRanges.
-func (mr *MockRestaurantsMockRecorder) DeletePriceRanges(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePriceRanges", reflect.TypeOf((*MockRestaurants)(nil).DeletePriceRanges), ctx, ids)
-}
-
-// DeleteRestaurants mocks base method.
-func (m *MockRestaurants) DeleteRestaurants(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteRestaurants", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteRestaurants indicates an expected call of DeleteRestaurants.
-func (mr *MockRestaurantsMockRecorder) DeleteRestaurants(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRestaurants", reflect.TypeOf((*MockRestaurants)(nil).DeleteRestaurants), ctx, ids)
-}
-
-// DeleteTables mocks base method.
-func (m *MockRestaurants) DeleteTables(ctx context.Context, ids []string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteTables", ctx, ids)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteTables indicates an expected call of DeleteTables.
-func (mr *MockRestaurantsMockRecorder) DeleteTables(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTables", reflect.TypeOf((*MockRestaurants)(nil).DeleteTables), ctx, ids)
-}
-
 // ReadRestaurant mocks base method.
-func (m *MockRestaurants) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
+func (m *MockReadRestaurants) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRestaurant", ctx, id)
 	ret0, _ := ret[0].(*entities.Restaurant)
@@ -288,13 +92,13 @@ func (m *MockRestaurants) ReadRestaurant(ctx context.Context, id string) (*entit
 }
 
 // ReadRestaurant indicates an expected call of ReadRestaurant.
-func (mr *MockRestaurantsMockRecorder) ReadRestaurant(ctx, id any) *gomock.Call {
+func (mr *MockReadRestaurantsMockRecorder) ReadRestaurant(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurant", reflect.TypeOf((*MockRestaurants)(nil).ReadRestaurant), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurant", reflect.TypeOf((*MockReadRestaurants)(nil).ReadRestaurant), ctx, id)
 }
 
 // ReadRestaurantFullInfo mocks base method.
-func (m *MockRestaurants) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
+func (m *MockReadRestaurants) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRestaurantFullInfo", ctx, id)
 	ret0, _ := ret[0].(*aggregates.Restaurant)
@@ -303,13 +107,233 @@ func (m *MockRestaurants) ReadRestaurantFullInfo(ctx context.Context, id string)
 }
 
 // ReadRestaurantFullInfo indicates an expected call of ReadRestaurantFullInfo.
-func (mr *MockRestaurantsMockRecorder) ReadRestaurantFullInfo(ctx, id any) *gomock.Call {
+func (mr *MockReadRestaurantsMockRecorder) ReadRestaurantFullInfo(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurantFullInfo", reflect.TypeOf((*MockRestaurants)(nil).ReadRestaurantFullInfo), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurantFullInfo", reflect.TypeOf((*MockReadRestaurants)(nil).ReadRestaurantFullInfo), ctx, id)
+}
+
+// MockUpdateRestaurants is a mock of UpdateRestaurants interface.
+type MockUpdateRestaurants struct {
+	ctrl     *gomock.Controller
+	recorder *MockUpdateRestaurantsMockRecorder
+	isgomock struct{}
+}
+
+// MockUpdateRestaurantsMockRecorder is the mock recorder for MockUpdateRestaurants.
+type MockUpdateRestaurantsMockRecorder struct {
+	mock *MockUpdateRestaurants
+}
+
+// NewMockUpdateRestaurants creates a new mock instance.
+func NewMockUpdateRestaurants(ctrl *gomock.Controller) *MockUpdateRestaurants {
+	mock := &MockUpdateRestaurants{ctrl: ctrl}
+	mock.recorder = &MockUpdateRestaurantsMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUpdateRestaurants) EXPECT() *MockUpdateRestaurantsMockRecorder {
+	return m.recorder
+}
+
+// CreateAddresses mocks base method.
+func (m *MockUpdateRestaurants) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAddresses", ctx, addresses)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateAddresses indicates an expected call of CreateAddresses.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateAddresses(ctx, addresses any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAddresses", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateAddresses), ctx, addresses)
+}
+
+// CreateAvailables mocks base method.
+func (m *MockUpdateRestaurants) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAvailables", ctx, availables)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateAvailables indicates an expected call of CreateAvailables.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateAvailables(ctx, availables any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAvailables", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateAvailables), ctx, availables)
+}
+
+// CreateBranchCategoryRelations mocks base method.
+func (m *MockUpdateRestaurants) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateBranchCategoryRelations", ctx, branchCategoryRelations)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateBranchCategoryRelations indicates an expected call of CreateBranchCategoryRelations.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateBranchCategoryRelations(ctx, branchCategoryRelations any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranchCategoryRelations", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateBranchCategoryRelations), ctx, branchCategoryRelations)
+}
+
+// CreateBranches mocks base method.
+func (m *MockUpdateRestaurants) CreateBranches(ctx context.Context, branches entities.Branches) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateBranches", ctx, branches)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateBranches indicates an expected call of CreateBranches.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateBranches(ctx, branches any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranches", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateBranches), ctx, branches)
+}
+
+// CreatePriceRanges mocks base method.
+func (m *MockUpdateRestaurants) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePriceRanges", ctx, priceRanges)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreatePriceRanges indicates an expected call of CreatePriceRanges.
+func (mr *MockUpdateRestaurantsMockRecorder) CreatePriceRanges(ctx, priceRanges any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePriceRanges", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreatePriceRanges), ctx, priceRanges)
+}
+
+// CreateRestaurants mocks base method.
+func (m *MockUpdateRestaurants) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateRestaurants", ctx, restaurants)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateRestaurants indicates an expected call of CreateRestaurants.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateRestaurants(ctx, restaurants any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRestaurants", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateRestaurants), ctx, restaurants)
+}
+
+// CreateTables mocks base method.
+func (m *MockUpdateRestaurants) CreateTables(ctx context.Context, tables entities.Tables) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTables", ctx, tables)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateTables indicates an expected call of CreateTables.
+func (mr *MockUpdateRestaurantsMockRecorder) CreateTables(ctx, tables any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTables", reflect.TypeOf((*MockUpdateRestaurants)(nil).CreateTables), ctx, tables)
+}
+
+// DeleteAddresses mocks base method.
+func (m *MockUpdateRestaurants) DeleteAddresses(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAddresses", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteAddresses indicates an expected call of DeleteAddresses.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteAddresses(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddresses", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteAddresses), ctx, ids)
+}
+
+// DeleteAvailables mocks base method.
+func (m *MockUpdateRestaurants) DeleteAvailables(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAvailables", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteAvailables indicates an expected call of DeleteAvailables.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteAvailables(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvailables", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteAvailables), ctx, ids)
+}
+
+// DeleteBranchCategoryRelations mocks base method.
+func (m *MockUpdateRestaurants) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteBranchCategoryRelations", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteBranchCategoryRelations indicates an expected call of DeleteBranchCategoryRelations.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteBranchCategoryRelations(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranchCategoryRelations", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteBranchCategoryRelations), ctx, ids)
+}
+
+// DeleteBranches mocks base method.
+func (m *MockUpdateRestaurants) DeleteBranches(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteBranches", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteBranches indicates an expected call of DeleteBranches.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteBranches(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranches", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteBranches), ctx, ids)
+}
+
+// DeletePriceRanges mocks base method.
+func (m *MockUpdateRestaurants) DeletePriceRanges(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePriceRanges", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePriceRanges indicates an expected call of DeletePriceRanges.
+func (mr *MockUpdateRestaurantsMockRecorder) DeletePriceRanges(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePriceRanges", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeletePriceRanges), ctx, ids)
+}
+
+// DeleteRestaurants mocks base method.
+func (m *MockUpdateRestaurants) DeleteRestaurants(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRestaurants", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRestaurants indicates an expected call of DeleteRestaurants.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteRestaurants(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRestaurants", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteRestaurants), ctx, ids)
+}
+
+// DeleteTables mocks base method.
+func (m *MockUpdateRestaurants) DeleteTables(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTables", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTables indicates an expected call of DeleteTables.
+func (mr *MockUpdateRestaurantsMockRecorder) DeleteTables(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTables", reflect.TypeOf((*MockUpdateRestaurants)(nil).DeleteTables), ctx, ids)
 }
 
 // UpdateAddress mocks base method.
-func (m *MockRestaurants) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
+func (m *MockUpdateRestaurants) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateAddress", ctx, updateAddress)
 	ret0, _ := ret[0].(error)
@@ -317,13 +341,13 @@ func (m *MockRestaurants) UpdateAddress(ctx context.Context, updateAddress *enti
 }
 
 // UpdateAddress indicates an expected call of UpdateAddress.
-func (mr *MockRestaurantsMockRecorder) UpdateAddress(ctx, updateAddress any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateAddress(ctx, updateAddress any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockRestaurants)(nil).UpdateAddress), ctx, updateAddress)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateAddress), ctx, updateAddress)
 }
 
 // UpdateAvailable mocks base method.
-func (m *MockRestaurants) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
+func (m *MockUpdateRestaurants) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateAvailable", ctx, updateAvailable)
 	ret0, _ := ret[0].(error)
@@ -331,13 +355,13 @@ func (m *MockRestaurants) UpdateAvailable(ctx context.Context, updateAvailable *
 }
 
 // UpdateAvailable indicates an expected call of UpdateAvailable.
-func (mr *MockRestaurantsMockRecorder) UpdateAvailable(ctx, updateAvailable any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateAvailable(ctx, updateAvailable any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvailable", reflect.TypeOf((*MockRestaurants)(nil).UpdateAvailable), ctx, updateAvailable)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvailable", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateAvailable), ctx, updateAvailable)
 }
 
 // UpdateBranch mocks base method.
-func (m *MockRestaurants) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
+func (m *MockUpdateRestaurants) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateBranch", ctx, updateBranch)
 	ret0, _ := ret[0].(error)
@@ -345,13 +369,13 @@ func (m *MockRestaurants) UpdateBranch(ctx context.Context, updateBranch *entiti
 }
 
 // UpdateBranch indicates an expected call of UpdateBranch.
-func (mr *MockRestaurantsMockRecorder) UpdateBranch(ctx, updateBranch any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateBranch(ctx, updateBranch any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranch", reflect.TypeOf((*MockRestaurants)(nil).UpdateBranch), ctx, updateBranch)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranch", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateBranch), ctx, updateBranch)
 }
 
 // UpdateBranchCategoryRelation mocks base method.
-func (m *MockRestaurants) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
+func (m *MockUpdateRestaurants) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateBranchCategoryRelation", ctx, updateBranchCategoryRelation)
 	ret0, _ := ret[0].(error)
@@ -359,13 +383,13 @@ func (m *MockRestaurants) UpdateBranchCategoryRelation(ctx context.Context, upda
 }
 
 // UpdateBranchCategoryRelation indicates an expected call of UpdateBranchCategoryRelation.
-func (mr *MockRestaurantsMockRecorder) UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranchCategoryRelation", reflect.TypeOf((*MockRestaurants)(nil).UpdateBranchCategoryRelation), ctx, updateBranchCategoryRelation)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranchCategoryRelation", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateBranchCategoryRelation), ctx, updateBranchCategoryRelation)
 }
 
 // UpdatePriceRange mocks base method.
-func (m *MockRestaurants) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
+func (m *MockUpdateRestaurants) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdatePriceRange", ctx, updatePriceRange)
 	ret0, _ := ret[0].(error)
@@ -373,13 +397,13 @@ func (m *MockRestaurants) UpdatePriceRange(ctx context.Context, updatePriceRange
 }
 
 // UpdatePriceRange indicates an expected call of UpdatePriceRange.
-func (mr *MockRestaurantsMockRecorder) UpdatePriceRange(ctx, updatePriceRange any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdatePriceRange(ctx, updatePriceRange any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePriceRange", reflect.TypeOf((*MockRestaurants)(nil).UpdatePriceRange), ctx, updatePriceRange)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePriceRange", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdatePriceRange), ctx, updatePriceRange)
 }
 
 // UpdateRestaurant mocks base method.
-func (m *MockRestaurants) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
+func (m *MockUpdateRestaurants) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateRestaurant", ctx, updateRestaurant)
 	ret0, _ := ret[0].(error)
@@ -387,13 +411,13 @@ func (m *MockRestaurants) UpdateRestaurant(ctx context.Context, updateRestaurant
 }
 
 // UpdateRestaurant indicates an expected call of UpdateRestaurant.
-func (mr *MockRestaurantsMockRecorder) UpdateRestaurant(ctx, updateRestaurant any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateRestaurant(ctx, updateRestaurant any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRestaurant", reflect.TypeOf((*MockRestaurants)(nil).UpdateRestaurant), ctx, updateRestaurant)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRestaurant", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateRestaurant), ctx, updateRestaurant)
 }
 
 // UpdateTable mocks base method.
-func (m *MockRestaurants) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
+func (m *MockUpdateRestaurants) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTable", ctx, updateTable)
 	ret0, _ := ret[0].(error)
@@ -401,37 +425,37 @@ func (m *MockRestaurants) UpdateTable(ctx context.Context, updateTable *entities
 }
 
 // UpdateTable indicates an expected call of UpdateTable.
-func (mr *MockRestaurantsMockRecorder) UpdateTable(ctx, updateTable any) *gomock.Call {
+func (mr *MockUpdateRestaurantsMockRecorder) UpdateTable(ctx, updateTable any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTable", reflect.TypeOf((*MockRestaurants)(nil).UpdateTable), ctx, updateTable)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTable", reflect.TypeOf((*MockUpdateRestaurants)(nil).UpdateTable), ctx, updateTable)
 }
 
-// MockRestaurantsWithTransaction is a mock of RestaurantsWithTransaction interface.
-type MockRestaurantsWithTransaction struct {
+// MockUpdateRestaurantsWithTransaction is a mock of UpdateRestaurantsWithTransaction interface.
+type MockUpdateRestaurantsWithTransaction struct {
 	ctrl     *gomock.Controller
-	recorder *MockRestaurantsWithTransactionMockRecorder
+	recorder *MockUpdateRestaurantsWithTransactionMockRecorder
 	isgomock struct{}
 }
 
-// MockRestaurantsWithTransactionMockRecorder is the mock recorder for MockRestaurantsWithTransaction.
-type MockRestaurantsWithTransactionMockRecorder struct {
-	mock *MockRestaurantsWithTransaction
+// MockUpdateRestaurantsWithTransactionMockRecorder is the mock recorder for MockUpdateRestaurantsWithTransaction.
+type MockUpdateRestaurantsWithTransactionMockRecorder struct {
+	mock *MockUpdateRestaurantsWithTransaction
 }
 
-// NewMockRestaurantsWithTransaction creates a new mock instance.
-func NewMockRestaurantsWithTransaction(ctrl *gomock.Controller) *MockRestaurantsWithTransaction {
-	mock := &MockRestaurantsWithTransaction{ctrl: ctrl}
-	mock.recorder = &MockRestaurantsWithTransactionMockRecorder{mock}
+// NewMockUpdateRestaurantsWithTransaction creates a new mock instance.
+func NewMockUpdateRestaurantsWithTransaction(ctrl *gomock.Controller) *MockUpdateRestaurantsWithTransaction {
+	mock := &MockUpdateRestaurantsWithTransaction{ctrl: ctrl}
+	mock.recorder = &MockUpdateRestaurantsWithTransactionMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRestaurantsWithTransaction) EXPECT() *MockRestaurantsWithTransactionMockRecorder {
+func (m *MockUpdateRestaurantsWithTransaction) EXPECT() *MockUpdateRestaurantsWithTransactionMockRecorder {
 	return m.recorder
 }
 
 // Commit mocks base method.
-func (m *MockRestaurantsWithTransaction) Commit() error {
+func (m *MockUpdateRestaurantsWithTransaction) Commit() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Commit")
 	ret0, _ := ret[0].(error)
@@ -439,13 +463,13 @@ func (m *MockRestaurantsWithTransaction) Commit() error {
 }
 
 // Commit indicates an expected call of Commit.
-func (mr *MockRestaurantsWithTransactionMockRecorder) Commit() *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) Commit() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Commit", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).Commit))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Commit", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).Commit))
 }
 
 // CreateAddresses mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateAddresses(ctx context.Context, addresses entities.Addresses) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAddresses", ctx, addresses)
 	ret0, _ := ret[0].(error)
@@ -453,13 +477,13 @@ func (m *MockRestaurantsWithTransaction) CreateAddresses(ctx context.Context, ad
 }
 
 // CreateAddresses indicates an expected call of CreateAddresses.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateAddresses(ctx, addresses any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateAddresses(ctx, addresses any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAddresses", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateAddresses), ctx, addresses)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAddresses", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateAddresses), ctx, addresses)
 }
 
 // CreateAvailables mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateAvailables(ctx context.Context, availables entities.Availables) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateAvailables(ctx context.Context, availables entities.Availables) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAvailables", ctx, availables)
 	ret0, _ := ret[0].(error)
@@ -467,13 +491,13 @@ func (m *MockRestaurantsWithTransaction) CreateAvailables(ctx context.Context, a
 }
 
 // CreateAvailables indicates an expected call of CreateAvailables.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateAvailables(ctx, availables any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateAvailables(ctx, availables any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAvailables", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateAvailables), ctx, availables)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAvailables", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateAvailables), ctx, availables)
 }
 
 // CreateBranchCategoryRelations mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateBranchCategoryRelations(ctx context.Context, branchCategoryRelations entities.BranchCategoryRelations) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateBranchCategoryRelations", ctx, branchCategoryRelations)
 	ret0, _ := ret[0].(error)
@@ -481,13 +505,13 @@ func (m *MockRestaurantsWithTransaction) CreateBranchCategoryRelations(ctx conte
 }
 
 // CreateBranchCategoryRelations indicates an expected call of CreateBranchCategoryRelations.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateBranchCategoryRelations(ctx, branchCategoryRelations any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateBranchCategoryRelations(ctx, branchCategoryRelations any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranchCategoryRelations", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateBranchCategoryRelations), ctx, branchCategoryRelations)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranchCategoryRelations", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateBranchCategoryRelations), ctx, branchCategoryRelations)
 }
 
 // CreateBranches mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateBranches(ctx context.Context, branches entities.Branches) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateBranches(ctx context.Context, branches entities.Branches) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateBranches", ctx, branches)
 	ret0, _ := ret[0].(error)
@@ -495,13 +519,13 @@ func (m *MockRestaurantsWithTransaction) CreateBranches(ctx context.Context, bra
 }
 
 // CreateBranches indicates an expected call of CreateBranches.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateBranches(ctx, branches any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateBranches(ctx, branches any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranches", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateBranches), ctx, branches)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranches", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateBranches), ctx, branches)
 }
 
 // CreatePriceRanges mocks base method.
-func (m *MockRestaurantsWithTransaction) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreatePriceRanges", ctx, priceRanges)
 	ret0, _ := ret[0].(error)
@@ -509,13 +533,13 @@ func (m *MockRestaurantsWithTransaction) CreatePriceRanges(ctx context.Context, 
 }
 
 // CreatePriceRanges indicates an expected call of CreatePriceRanges.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreatePriceRanges(ctx, priceRanges any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreatePriceRanges(ctx, priceRanges any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePriceRanges", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreatePriceRanges), ctx, priceRanges)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePriceRanges", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreatePriceRanges), ctx, priceRanges)
 }
 
 // CreateRestaurants mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateRestaurants(ctx context.Context, restaurants entities.Restaurants) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateRestaurants", ctx, restaurants)
 	ret0, _ := ret[0].(error)
@@ -523,13 +547,13 @@ func (m *MockRestaurantsWithTransaction) CreateRestaurants(ctx context.Context, 
 }
 
 // CreateRestaurants indicates an expected call of CreateRestaurants.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateRestaurants(ctx, restaurants any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateRestaurants(ctx, restaurants any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRestaurants", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateRestaurants), ctx, restaurants)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRestaurants", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateRestaurants), ctx, restaurants)
 }
 
 // CreateTables mocks base method.
-func (m *MockRestaurantsWithTransaction) CreateTables(ctx context.Context, tables entities.Tables) error {
+func (m *MockUpdateRestaurantsWithTransaction) CreateTables(ctx context.Context, tables entities.Tables) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTables", ctx, tables)
 	ret0, _ := ret[0].(error)
@@ -537,13 +561,13 @@ func (m *MockRestaurantsWithTransaction) CreateTables(ctx context.Context, table
 }
 
 // CreateTables indicates an expected call of CreateTables.
-func (mr *MockRestaurantsWithTransactionMockRecorder) CreateTables(ctx, tables any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateTables(ctx, tables any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTables", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).CreateTables), ctx, tables)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTables", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateTables), ctx, tables)
 }
 
 // DeleteAddresses mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteAddresses(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteAddresses(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteAddresses", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -551,13 +575,13 @@ func (m *MockRestaurantsWithTransaction) DeleteAddresses(ctx context.Context, id
 }
 
 // DeleteAddresses indicates an expected call of DeleteAddresses.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteAddresses(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteAddresses(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddresses", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteAddresses), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddresses", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteAddresses), ctx, ids)
 }
 
 // DeleteAvailables mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteAvailables(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteAvailables(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteAvailables", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -565,13 +589,13 @@ func (m *MockRestaurantsWithTransaction) DeleteAvailables(ctx context.Context, i
 }
 
 // DeleteAvailables indicates an expected call of DeleteAvailables.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteAvailables(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteAvailables(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvailables", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteAvailables), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAvailables", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteAvailables), ctx, ids)
 }
 
 // DeleteBranchCategoryRelations mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteBranchCategoryRelations(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteBranchCategoryRelations", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -579,13 +603,13 @@ func (m *MockRestaurantsWithTransaction) DeleteBranchCategoryRelations(ctx conte
 }
 
 // DeleteBranchCategoryRelations indicates an expected call of DeleteBranchCategoryRelations.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteBranchCategoryRelations(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteBranchCategoryRelations(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranchCategoryRelations", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteBranchCategoryRelations), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranchCategoryRelations", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteBranchCategoryRelations), ctx, ids)
 }
 
 // DeleteBranches mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteBranches(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteBranches(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteBranches", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -593,13 +617,13 @@ func (m *MockRestaurantsWithTransaction) DeleteBranches(ctx context.Context, ids
 }
 
 // DeleteBranches indicates an expected call of DeleteBranches.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteBranches(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteBranches(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranches", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteBranches), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranches", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteBranches), ctx, ids)
 }
 
 // DeletePriceRanges mocks base method.
-func (m *MockRestaurantsWithTransaction) DeletePriceRanges(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeletePriceRanges(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeletePriceRanges", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -607,13 +631,13 @@ func (m *MockRestaurantsWithTransaction) DeletePriceRanges(ctx context.Context, 
 }
 
 // DeletePriceRanges indicates an expected call of DeletePriceRanges.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeletePriceRanges(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeletePriceRanges(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePriceRanges", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeletePriceRanges), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePriceRanges", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeletePriceRanges), ctx, ids)
 }
 
 // DeleteRestaurants mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteRestaurants(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteRestaurants(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteRestaurants", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -621,13 +645,13 @@ func (m *MockRestaurantsWithTransaction) DeleteRestaurants(ctx context.Context, 
 }
 
 // DeleteRestaurants indicates an expected call of DeleteRestaurants.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteRestaurants(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteRestaurants(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRestaurants", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteRestaurants), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRestaurants", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteRestaurants), ctx, ids)
 }
 
 // DeleteTables mocks base method.
-func (m *MockRestaurantsWithTransaction) DeleteTables(ctx context.Context, ids []string) error {
+func (m *MockUpdateRestaurantsWithTransaction) DeleteTables(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTables", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -635,43 +659,13 @@ func (m *MockRestaurantsWithTransaction) DeleteTables(ctx context.Context, ids [
 }
 
 // DeleteTables indicates an expected call of DeleteTables.
-func (mr *MockRestaurantsWithTransactionMockRecorder) DeleteTables(ctx, ids any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteTables(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTables", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).DeleteTables), ctx, ids)
-}
-
-// ReadRestaurant mocks base method.
-func (m *MockRestaurantsWithTransaction) ReadRestaurant(ctx context.Context, id string) (*entities.Restaurant, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRestaurant", ctx, id)
-	ret0, _ := ret[0].(*entities.Restaurant)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadRestaurant indicates an expected call of ReadRestaurant.
-func (mr *MockRestaurantsWithTransactionMockRecorder) ReadRestaurant(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurant", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).ReadRestaurant), ctx, id)
-}
-
-// ReadRestaurantFullInfo mocks base method.
-func (m *MockRestaurantsWithTransaction) ReadRestaurantFullInfo(ctx context.Context, id string) (*aggregates.Restaurant, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRestaurantFullInfo", ctx, id)
-	ret0, _ := ret[0].(*aggregates.Restaurant)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadRestaurantFullInfo indicates an expected call of ReadRestaurantFullInfo.
-func (mr *MockRestaurantsWithTransactionMockRecorder) ReadRestaurantFullInfo(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurantFullInfo", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).ReadRestaurantFullInfo), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTables", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteTables), ctx, ids)
 }
 
 // Rollback mocks base method.
-func (m *MockRestaurantsWithTransaction) Rollback() error {
+func (m *MockUpdateRestaurantsWithTransaction) Rollback() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Rollback")
 	ret0, _ := ret[0].(error)
@@ -679,13 +673,13 @@ func (m *MockRestaurantsWithTransaction) Rollback() error {
 }
 
 // Rollback indicates an expected call of Rollback.
-func (mr *MockRestaurantsWithTransactionMockRecorder) Rollback() *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) Rollback() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).Rollback))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Rollback", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).Rollback))
 }
 
 // UpdateAddress mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateAddress(ctx context.Context, updateAddress *entities.UpdateAddress) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateAddress", ctx, updateAddress)
 	ret0, _ := ret[0].(error)
@@ -693,13 +687,13 @@ func (m *MockRestaurantsWithTransaction) UpdateAddress(ctx context.Context, upda
 }
 
 // UpdateAddress indicates an expected call of UpdateAddress.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateAddress(ctx, updateAddress any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateAddress(ctx, updateAddress any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateAddress), ctx, updateAddress)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateAddress), ctx, updateAddress)
 }
 
 // UpdateAvailable mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateAvailable(ctx context.Context, updateAvailable *entities.UpdateAvailable) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateAvailable", ctx, updateAvailable)
 	ret0, _ := ret[0].(error)
@@ -707,13 +701,13 @@ func (m *MockRestaurantsWithTransaction) UpdateAvailable(ctx context.Context, up
 }
 
 // UpdateAvailable indicates an expected call of UpdateAvailable.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateAvailable(ctx, updateAvailable any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateAvailable(ctx, updateAvailable any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvailable", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateAvailable), ctx, updateAvailable)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvailable", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateAvailable), ctx, updateAvailable)
 }
 
 // UpdateBranch mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateBranch(ctx context.Context, updateBranch *entities.UpdateBranch) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateBranch", ctx, updateBranch)
 	ret0, _ := ret[0].(error)
@@ -721,13 +715,13 @@ func (m *MockRestaurantsWithTransaction) UpdateBranch(ctx context.Context, updat
 }
 
 // UpdateBranch indicates an expected call of UpdateBranch.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateBranch(ctx, updateBranch any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateBranch(ctx, updateBranch any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranch", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateBranch), ctx, updateBranch)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranch", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateBranch), ctx, updateBranch)
 }
 
 // UpdateBranchCategoryRelation mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateBranchCategoryRelation(ctx context.Context, updateBranchCategoryRelation *entities.UpdateBranchCategoryRelation) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateBranchCategoryRelation", ctx, updateBranchCategoryRelation)
 	ret0, _ := ret[0].(error)
@@ -735,13 +729,13 @@ func (m *MockRestaurantsWithTransaction) UpdateBranchCategoryRelation(ctx contex
 }
 
 // UpdateBranchCategoryRelation indicates an expected call of UpdateBranchCategoryRelation.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranchCategoryRelation", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateBranchCategoryRelation), ctx, updateBranchCategoryRelation)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranchCategoryRelation", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateBranchCategoryRelation), ctx, updateBranchCategoryRelation)
 }
 
 // UpdatePriceRange mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdatePriceRange(ctx context.Context, updatePriceRange *entities.UpdatePriceRange) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdatePriceRange", ctx, updatePriceRange)
 	ret0, _ := ret[0].(error)
@@ -749,13 +743,13 @@ func (m *MockRestaurantsWithTransaction) UpdatePriceRange(ctx context.Context, u
 }
 
 // UpdatePriceRange indicates an expected call of UpdatePriceRange.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdatePriceRange(ctx, updatePriceRange any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdatePriceRange(ctx, updatePriceRange any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePriceRange", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdatePriceRange), ctx, updatePriceRange)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePriceRange", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdatePriceRange), ctx, updatePriceRange)
 }
 
 // UpdateRestaurant mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateRestaurant(ctx context.Context, updateRestaurant *entities.UpdateRestaurant) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateRestaurant", ctx, updateRestaurant)
 	ret0, _ := ret[0].(error)
@@ -763,13 +757,13 @@ func (m *MockRestaurantsWithTransaction) UpdateRestaurant(ctx context.Context, u
 }
 
 // UpdateRestaurant indicates an expected call of UpdateRestaurant.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateRestaurant(ctx, updateRestaurant any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateRestaurant(ctx, updateRestaurant any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRestaurant", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateRestaurant), ctx, updateRestaurant)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRestaurant", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateRestaurant), ctx, updateRestaurant)
 }
 
 // UpdateTable mocks base method.
-func (m *MockRestaurantsWithTransaction) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
+func (m *MockUpdateRestaurantsWithTransaction) UpdateTable(ctx context.Context, updateTable *entities.UpdateTable) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTable", ctx, updateTable)
 	ret0, _ := ret[0].(error)
@@ -777,7 +771,7 @@ func (m *MockRestaurantsWithTransaction) UpdateTable(ctx context.Context, update
 }
 
 // UpdateTable indicates an expected call of UpdateTable.
-func (mr *MockRestaurantsWithTransactionMockRecorder) UpdateTable(ctx, updateTable any) *gomock.Call {
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateTable(ctx, updateTable any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTable", reflect.TypeOf((*MockRestaurantsWithTransaction)(nil).UpdateTable), ctx, updateTable)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTable", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateTable), ctx, updateTable)
 }

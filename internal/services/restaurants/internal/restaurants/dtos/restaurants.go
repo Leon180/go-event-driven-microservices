@@ -89,12 +89,6 @@ func (p *PriceRange) ToUpdatePriceRange() *entities.UpdatePriceRange {
 	}
 }
 
-type Category struct {
-	ID       string         `json:"id"`
-	Category enums.Category `json:"category"`
-	CommonCQRSHistoryModel
-}
-
 type Available struct {
 	ID        *string      `json:"id,omitempty"`
 	Weekday   time.Weekday `json:"weekday"`

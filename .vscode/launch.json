@@ -52,6 +52,15 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/internal/services/loans/cmd/app/main.go",
+        },
+        {
+            "name": "Debug Restaurants",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/internal/services/restaurants/cmd/app/main.go",
+            "args": [],
+            "preLaunchTask": "berforeInitRestaurantsServer" // 更新swagger文件, mod參考
         }
     ],
 }

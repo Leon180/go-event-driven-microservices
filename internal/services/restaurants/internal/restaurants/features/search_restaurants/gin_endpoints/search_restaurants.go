@@ -27,7 +27,7 @@ func (endpoint *searchRestaurantsImpl) MapEndpoint(routerGroup *gin.RouterGroup)
 // @Description Search restaurants
 // @Tags restaurants
 // @Produce json
-// @Param restaurant body dtos.SearchRestaurantsRequest true "Restaurant"
+// @Param restaurant body dtos.SearchRestaurants true "Restaurant"
 // @Success 200 {object} customizegin.JSONResponse{data=[]dtos.Restaurant} "restaurant retrieved successfully"
 // @Router /restaurants/search [post]
 func (handle *searchRestaurantsImpl) Handle(c *gin.Context) {

@@ -122,19 +122,29 @@ func (impl *SearchRestaurantsFullInfoImpl) applyCountryFilter(countries []enums.
 
 func (impl *SearchRestaurantsFullInfoImpl) applyPriceRangeFilter(min, max *int) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if min != nil || max != nil {
-			query := db.Where(`EXISTS (
+		if min != nil && max != nil {
+			return db.Where(`EXISTS (
                 SELECT 1 FROM branch
                 JOIN price_range ON branch.id = price_range.branch_id
-                WHERE branch.restaurant_id = restaurant.id`)
-
-			if min != nil {
-				query = query.Where("price_range.min_price >= ?", *min)
-			}
-			if max != nil {
-				query = query.Where("price_range.max_price <= ?", *max)
-			}
-			return query.Where(")")
+                WHERE branch.restaurant_id = restaurant.id AND
+				price_range.min_price >= ? AND price_range.max_price <= ?
+            )`, *min, *max)
+		}
+		if min != nil {
+			return db.Where(`EXISTS (
+                SELECT 1 FROM branch
+                JOIN price_range ON branch.id = price_range.branch_id
+                WHERE branch.restaurant_id = restaurant.id AND
+				price_range.min_price >= ?
+            )`, *min)
+		}
+		if max != nil {
+			return db.Where(`EXISTS (
+                SELECT 1 FROM branch
+                JOIN price_range ON branch.id = price_range.branch_id
+                WHERE branch.restaurant_id = restaurant.id AND
+				price_range.max_price <= ?
+            )`, *max)
 		}
 		return db
 	}
@@ -164,22 +174,66 @@ func (impl *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(availabl
 			return db
 		}
 
-		query := db.Where(`EXISTS (
-            SELECT 1 FROM branch
-            JOIN available ON branch.id = available.branch_id
-            WHERE branch.restaurant_id = restaurant.id`)
+		// Convert weekdays to integers
+		weekdayInts := make([]int, len(availableWeek))
+		for i, day := range availableWeek {
+			weekdayInts[i] = int(day)
+		}
 
 		if len(availableWeek) > 0 {
-			query = query.Where("available.weekday IN (?)", availableWeek)
+			if availableStartTime != nil && availableEndTime != nil {
+				return db.Where(`EXISTS (
+					SELECT 1 FROM branch
+					JOIN available ON branch.id = available.branch_id
+					WHERE branch.restaurant_id = restaurant.id AND
+					available.start_time >= ? AND available.end_time <= ? AND
+					available.weekday IN (?)
+				)`, *availableStartTime, *availableEndTime, weekdayInts)
+			}
+			if availableStartTime != nil {
+				return db.Where(`EXISTS (
+					SELECT 1 FROM branch
+					JOIN available ON branch.id = available.branch_id
+					WHERE branch.restaurant_id = restaurant.id AND
+					available.start_time >= ? AND
+					available.weekday IN (?)
+				)`, *availableStartTime, weekdayInts)
+			}
+			if availableEndTime != nil {
+				return db.Where(`EXISTS (
+					SELECT 1 FROM branch
+					JOIN available ON branch.id = available.branch_id
+					WHERE branch.restaurant_id = restaurant.id AND
+					available.end_time <= ? AND
+					available.weekday IN (?)
+				)`, *availableEndTime, weekdayInts)
+			}
+		}
+		if availableStartTime != nil && availableEndTime != nil {
+			return db.Where(`EXISTS (
+				SELECT 1 FROM branch
+				JOIN available ON branch.id = available.branch_id
+				WHERE branch.restaurant_id = restaurant.id AND
+				available.start_time >= ? AND available.end_time <= ?
+			)`, *availableStartTime, *availableEndTime)
 		}
 		if availableStartTime != nil {
-			query = query.Where("available.start_time >= ?", *availableStartTime)
+			return db.Where(`EXISTS (
+				SELECT 1 FROM branch
+				JOIN available ON branch.id = available.branch_id
+				WHERE branch.restaurant_id = restaurant.id AND
+				available.start_time >= ?
+			)`, *availableStartTime)
 		}
 		if availableEndTime != nil {
-			query = query.Where("available.end_time <= ?", *availableEndTime)
+			return db.Where(`EXISTS (
+				SELECT 1 FROM branch
+				JOIN available ON branch.id = available.branch_id
+				WHERE branch.restaurant_id = restaurant.id AND
+				available.end_time <= ?
+			)`, *availableEndTime)
 		}
-
-		return query.Where(")")
+		return db
 	}
 }
 

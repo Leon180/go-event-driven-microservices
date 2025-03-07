@@ -16,6 +16,9 @@ type BookDTOAggregateBuilder interface {
 	// save book and related entities(table, available) to the aggregate
 	SaveBook(book *dtos.Book) error
 
+	// set all edit type code to none
+	SetAllEditTypeCodeToNone()
+
 	// get book aggregates
 	GetAggregates() []Book
 
@@ -73,12 +76,10 @@ func (b Books) ToDTO() []dtos.Book {
 
 type Book struct {
 	entities.Book
-	editTypeCode enums.EditTypeCode
-	update       *entities.UpdateBook
-
-	// Relations
-	Table     *Table     `gorm:"foreignKey:ID;references:TableID" comment:"Table"`
-	Available *Available `gorm:"foreignKey:ID;references:AvailableID" comment:"Available"`
+	editTypeCode enums.EditTypeCode   `gorm:"-"`
+	update       *entities.UpdateBook `gorm:"-"`
+	Table        *Table               `gorm:"foreignKey:ID;references:TableID" comment:"Table"`
+	Available    *Available           `gorm:"foreignKey:ID;references:AvailableID" comment:"Available"`
 }
 
 func (b *Book) TableName() string {
@@ -177,6 +178,12 @@ func (b *bookDTOAggregateImpl) updateBook(book *Book, update *dtos.Book) error {
 		book.editTypeCode = enums.EditTypeCodeUpdate
 	}
 	return nil
+}
+
+func (b *bookDTOAggregateImpl) SetAllEditTypeCodeToNone() {
+	for i := range b.books {
+		b.books[i].editTypeCode = enums.EditTypeCodeNone
+	}
 }
 
 func (impl *bookDTOAggregateImpl) GetAggregates() []Book {

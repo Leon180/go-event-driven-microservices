@@ -15,6 +15,8 @@ import (
 	deleteRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/services"
 	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
 	getRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/get_restaurant/services"
+	listCategoriesGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/list_categories/gin_endpoints"
+	listCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/list_categories/services"
 	restoreRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/gin_endpoints"
 	restoreRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/services"
 	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/search_books/gin_endpoints"
@@ -66,6 +68,7 @@ var ProvideModule = fx.Module(
 		createBookServices.NewCreateBook,
 		deleteBookServices.NewDeleteBook,
 		searchBooksServices.NewSearchBooks,
+		listCategoriesServices.NewListCategories,
 	),
 
 	// endpoints
@@ -80,6 +83,7 @@ var ProvideModule = fx.Module(
 			createBookGinEndpoints.NewCreateBook,
 			deleteBookGinEndpoints.NewDeleteBook,
 			searchBooksGinEndpoints.NewSearchBooks,
+			listCategoriesGinEndpoints.NewListCategories,
 		)...,
 	),
 )

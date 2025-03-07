@@ -1,4 +1,4 @@
-basePath: /v1/accounts
+basePath: /v1/restaurants
 definitions:
   customizegin.APIError:
     properties:
@@ -19,166 +19,614 @@ definitions:
       success:
         type: boolean
     type: object
-  featuresdtos.CreateAccountRequest:
+  dtos.Address:
     properties:
-      account_type:
-        description: '@enum "checking", "savings", "currency", "salary", "business"'
+      city:
+        $ref: '#/definitions/enums.City'
+      country:
+        $ref: '#/definitions/enums.Country'
+      id:
         type: string
-      branch:
-        description: '@enum "台北市中山區", "台北市松山區", "台北市信義區", "台北市文山區", "台北市北投區", "台北市南港區",
-          "台北市萬華區"'
+      postal_code:
+        type: string
+      street:
+        type: string
+    type: object
+  dtos.Available:
+    properties:
+      end_time:
+        description: HH:MM
+        type: string
+      id:
+        type: string
+      start_time:
+        description: HH:MM
+        type: string
+      weekday:
+        $ref: '#/definitions/time.Weekday'
+    type: object
+  dtos.Book:
+    properties:
+      activeStatus:
+        type: boolean
+      amount:
+        type: integer
+      available:
+        $ref: '#/definitions/dtos.Available'
+      available_id:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      id:
         type: string
       mobile_number:
-        description: '@example 0958308280'
         type: string
-    required:
-    - account_type
-    - branch
-    - mobile_number
+      table:
+        $ref: '#/definitions/dtos.Table'
+      table_id:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
     type: object
-  featuresdtos.DeleteAccountRequest:
+  dtos.Branch:
+    properties:
+      address:
+        $ref: '#/definitions/dtos.Address'
+      availables:
+        items:
+          $ref: '#/definitions/dtos.Available'
+        type: array
+      categories:
+        items:
+          $ref: '#/definitions/dtos.Category'
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price_range:
+        $ref: '#/definitions/dtos.PriceRange'
+      tables:
+        items:
+          $ref: '#/definitions/dtos.Table'
+        type: array
+    type: object
+  dtos.Category:
+    properties:
+      activeStatus:
+        type: boolean
+      category:
+        $ref: '#/definitions/enums.Category'
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      id:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+    type: object
+  dtos.PriceRange:
+    properties:
+      id:
+        type: string
+      max_price:
+        type: integer
+      min_price:
+        type: integer
+    type: object
+  dtos.Restaurant:
+    properties:
+      branches:
+        items:
+          $ref: '#/definitions/dtos.Branch'
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dtos.SearchBooks:
+    properties:
+      availableID:
+        type: string
+      mobileNumber:
+        type: string
+      nameFilter:
+        type: string
+      namePreciseSearch:
+        type: boolean
+      orderBy:
+        items:
+          $ref: '#/definitions/postgresgorm.OrderBy'
+        type: array
+      pagination:
+        $ref: '#/definitions/postgresgorm.Pagination'
+      tableAvailableEndTime:
+        type: string
+      tableAvailableStartTime:
+        type: string
+      tableAvailableWeek:
+        items:
+          $ref: '#/definitions/time.Weekday'
+        type: array
+      tableID:
+        type: string
+    type: object
+  dtos.SearchRestaurants:
+    properties:
+      categoryFilter:
+        items:
+          $ref: '#/definitions/enums.Category'
+        type: array
+      cityFilter:
+        items:
+          $ref: '#/definitions/enums.City'
+        type: array
+      countryFilter:
+        items:
+          $ref: '#/definitions/enums.Country'
+        type: array
+      descriptionFilter:
+        type: string
+      maxPriceFilter:
+        type: integer
+      minPriceFilter:
+        type: integer
+      nameFilter:
+        type: string
+      namePreciseSearch:
+        type: boolean
+      orderBy:
+        items:
+          $ref: '#/definitions/postgresgorm.OrderBy'
+        type: array
+      pagination:
+        $ref: '#/definitions/postgresgorm.Pagination'
+      tableAvailableEndTime:
+        type: string
+      tableAvailableStartTime:
+        type: string
+      tableAvailableWeek:
+        items:
+          $ref: '#/definitions/time.Weekday'
+        type: array
+    type: object
+  dtos.Table:
+    properties:
+      capacity:
+        type: integer
+      id:
+        type: string
+    type: object
+  enums.Category:
+    enum:
+    - invalid
+    - breakfast
+    - lunch
+    - dinner
+    - snack
+    - dessert
+    - drink
+    - other
+    - italian
+    - japanese
+    - korean
+    - chinese
+    - american
+    - mexican
+    - thai
+    - vietnamese
+    - indian
+    - french
+    - german
+    - spanish
+    - brazilian
+    - taiwanese
+    type: string
+    x-enum-varnames:
+    - CategoryInvalid
+    - CategoryBreakfast
+    - CategoryLunch
+    - CategoryDinner
+    - CategorySnack
+    - CategoryDessert
+    - CategoryDrink
+    - CategoryOther
+    - CategoryItalian
+    - CategoryJapanese
+    - CategoryKorean
+    - CategoryChinese
+    - CategoryAmerican
+    - CategoryMexican
+    - CategoryThai
+    - CategoryVietnamese
+    - CategoryIndian
+    - CategoryFrench
+    - CategoryGerman
+    - CategorySpanish
+    - CategoryBrazilian
+    - CategoryTaiwanese
+  enums.City:
+    enum:
+    - invalid
+    - taipei
+    - new_taipei
+    - taoyuan
+    - taichung
+    - tainan
+    - kaohsiung
+    - hsinchu
+    - keelung
+    - chiayi
+    - miaoli
+    - changhua
+    - nantou
+    - douliu
+    - pingtung
+    - yilan
+    - hualien
+    - taitung
+    - magong
+    - puzi
+    - taibao
+    - toufen
+    - yuanlin
+    - zhubei
+    type: string
+    x-enum-comments:
+      CityChanghua: 彰化市 Zhānghuà Shì
+      CityChiayi: 嘉義市 Jiāyì Shì
+      CityDouliu: 斗六市 Dǒuliù Shì
+      CityHsinchu: 新竹市 Xīnzhú Shì
+      CityHualien: 花蓮市 Huālián Shì
+      CityKaohsiung: 高雄市 Gāoxióng Shì
+      CityKeelung: 基隆市 Jīlóng Shì
+      CityMagong: 馬公市 Mǎgōng Shì
+      CityMiaoli: 苗栗市 Miáolì Shì
+      CityNantou: 南投市 Nántóu Shì
+      CityNewTaipei: 新北市 Xīnběi Shì
+      CityPingtung: 屏東市 Píngdōng Shì
+      CityPuzi: 朴子市 Púzǐ Shì
+      CityTaibao: 太保市 Tàibǎo Shì
+      CityTaichung: 臺中市 Táizhōng Shì
+      CityTainan: 臺南市 Táinán Shì
+      CityTaipei: 臺北市 Táiběi Shì
+      CityTaitung: 臺東市 Táidōng Shì
+      CityTaoyuan: 桃園市 Táoyuán Shì
+      CityToufen: 頭份市 Tóufèn Shì
+      CityYilan: 宜蘭市 Yílán Shì
+      CityYuanlin: 員林市 Yuánlín Shì
+      CityZhubei: 竹北市 Zhúběi Shì
+    x-enum-varnames:
+    - CityInvalid
+    - CityTaipei
+    - CityNewTaipei
+    - CityTaoyuan
+    - CityTaichung
+    - CityTainan
+    - CityKaohsiung
+    - CityHsinchu
+    - CityKeelung
+    - CityChiayi
+    - CityMiaoli
+    - CityChanghua
+    - CityNantou
+    - CityDouliu
+    - CityPingtung
+    - CityYilan
+    - CityHualien
+    - CityTaitung
+    - CityMagong
+    - CityPuzi
+    - CityTaibao
+    - CityToufen
+    - CityYuanlin
+    - CityZhubei
+  enums.Country:
+    enum:
+    - invalid
+    - taiwan
+    type: string
+    x-enum-varnames:
+    - CountryInvalid
+    - CountryTaiwan
+  featuresdtos.DeleteBookRequest:
     properties:
       id:
         type: string
     required:
     - id
     type: object
-  featuresdtos.GetAccountsByMobileNumberRequest:
-    properties:
-      mobile_number:
-        type: string
-    required:
-    - mobile_number
-    type: object
-  featuresdtos.RestoreAccountRequest:
+  featuresdtos.DeleteRestaurantRequest:
     properties:
       id:
         type: string
     required:
     - id
     type: object
-  featuresdtos.UpdateAccountRequest:
+  featuresdtos.GetRestaurantRequest:
     properties:
-      account_number:
-        type: string
-      branch_address:
-        type: string
       id:
-        type: string
-      mobile_number:
         type: string
     required:
     - id
     type: object
-host: localhost:7001
+  featuresdtos.RestoreRestaurantRequest:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  postgresgorm.OrderBy:
+    properties:
+      direction:
+        $ref: '#/definitions/postgresgorm.OrderByDirection'
+      field:
+        type: string
+    type: object
+  postgresgorm.OrderByDirection:
+    enum:
+    - asc
+    - desc
+    type: string
+    x-enum-varnames:
+    - OrderByDirectionAsc
+    - OrderByDirectionDesc
+  postgresgorm.Pagination:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+    type: object
+  time.Weekday:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-varnames:
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+host: localhost:8001
 info:
   contact: {}
-  description: Simple service for accounts resources
-  title: Accounts Service API
+  description: Simple service for restaurants resources
+  title: Restaurants Service API
   version: "1.0"
 paths:
-  /account/create:
+  /book/create:
     post:
       consumes:
       - application/json
-      description: Create a new account
+      description: Create a new book
       parameters:
-      - description: Account
+      - description: Book
         in: body
-        name: account
+        name: book
         required: true
         schema:
-          $ref: '#/definitions/featuresdtos.CreateAccountRequest'
+          $ref: '#/definitions/dtos.Book'
       produces:
       - application/json
       responses:
         "200":
-          description: Account created successfully
+          description: Book created successfully
           schema:
             $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Create a new account
+      summary: Create a new book
       tags:
-      - accounts
-  /account/delete:
+      - books
+  /book/delete:
     post:
-      description: Delete an account
+      description: Delete a book
       parameters:
-      - description: Account
+      - description: Book
         in: body
-        name: account
+        name: book
         required: true
         schema:
-          $ref: '#/definitions/featuresdtos.DeleteAccountRequest'
+          $ref: '#/definitions/featuresdtos.DeleteBookRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: account deleted successfully
+          description: book deleted successfully
           schema:
             $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Delete an account
+      summary: Delete a book
       tags:
-      - accounts
-  /account/restore:
+      - books
+  /books/search:
     post:
-      description: Restore an account
+      description: Search books
       parameters:
-      - description: Account
+      - description: Book
         in: body
-        name: account
+        name: book
         required: true
         schema:
-          $ref: '#/definitions/featuresdtos.RestoreAccountRequest'
+          $ref: '#/definitions/dtos.SearchBooks'
       produces:
       - application/json
       responses:
         "200":
-          description: account restored successfully
+          description: book retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/customizegin.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dtos.Book'
+                  type: array
+              type: object
+      summary: Search books
+      tags:
+      - books
+  /categories:
+    get:
+      description: Get all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: categories retrieved successfully
           schema:
             $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Restore an account
+      summary: Get all categories
       tags:
-      - accounts
-  /account/update:
+      - categories
+  /restaurant/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new restaurant
+      parameters:
+      - description: Restaurant
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.Restaurant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Restaurant created successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Create a new restaurant
+      tags:
+      - restaurants
+  /restaurant/delete:
+    post:
+      description: Delete a restaurant
+      parameters:
+      - description: Restaurant
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.DeleteRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant deleted successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Delete a restaurant
+      tags:
+      - restaurants
+  /restaurant/get:
+    post:
+      description: Get restaurant by id
+      parameters:
+      - description: Restaurant
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.GetRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant retrieved successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Get restaurant by id
+      tags:
+      - restaurants
+  /restaurant/restore:
+    post:
+      description: Restore a restaurant
+      parameters:
+      - description: Restaurant
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.RestoreRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant restored successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Restore a restaurant
+      tags:
+      - restaurants
+  /restaurant/update:
     put:
       consumes:
       - application/json
-      description: Update an account
+      description: Update a restaurant
       parameters:
-      - description: Account
+      - description: Restaurant
         in: body
-        name: account
+        name: restaurant
         required: true
         schema:
-          $ref: '#/definitions/featuresdtos.UpdateAccountRequest'
+          $ref: '#/definitions/dtos.Restaurant'
       produces:
       - application/json
       responses:
         "200":
-          description: account updated successfully
+          description: restaurant updated successfully
           schema:
             $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Update an account
+      summary: Update a restaurant
       tags:
-      - accounts
-  /accounts/get:
+      - restaurants
+  /restaurants/search:
     post:
-      description: Get accounts by mobile number
+      description: Search restaurants
       parameters:
-      - description: Account
+      - description: Restaurant
         in: body
-        name: account
+        name: restaurant
         required: true
         schema:
-          $ref: '#/definitions/featuresdtos.GetAccountsByMobileNumberRequest'
+          $ref: '#/definitions/dtos.SearchRestaurants'
       produces:
       - application/json
       responses:
         "200":
-          description: accounts retrieved successfully
+          description: restaurant retrieved successfully
           schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Get accounts by mobile number
+            allOf:
+            - $ref: '#/definitions/customizegin.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dtos.Restaurant'
+                  type: array
+              type: object
+      summary: Search restaurants
       tags:
-      - accounts
+      - restaurants
 swagger: "2.0"
