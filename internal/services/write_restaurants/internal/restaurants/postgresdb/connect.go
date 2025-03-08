@@ -18,7 +18,7 @@ func NewGormDB(cfg *GormDBConfig, logger gormcustomizelogger.GormCustomLogger) *
 			TablePrefix:   "",
 			SingularTable: true,
 		},
-		DisableForeignKeyConstraintWhenMigrating: cfg.GetDBDisableForeignKeyConstraintWhenMigrating(),
+		DisableForeignKeyConstraintWhenMigrating: cfg.DBDisableForeignKeyConstraintWhenMigrating,
 	}
 
 	if logger == nil {
@@ -28,7 +28,7 @@ func NewGormDB(cfg *GormDBConfig, logger gormcustomizelogger.GormCustomLogger) *
 		gormConfig.Logger.LogMode(gormlogger.Info)
 	}
 
-	db, err := gorm.Open(postgres.Open(cfg.GetDSN()), gormConfig)
+	db, err := gorm.Open(postgres.Open(cfg.DSN), gormConfig)
 	if err != nil {
 		log.Fatalf("error occur while connect to postgresql db: %s", err)
 	}
@@ -38,9 +38,9 @@ func NewGormDB(cfg *GormDBConfig, logger gormcustomizelogger.GormCustomLogger) *
 		log.Fatalf("error occur while connect to postgresql db: %s", err)
 	}
 
-	sqlDB.SetMaxIdleConns(cfg.GetDBMaxIdle())
-	sqlDB.SetMaxOpenConns(cfg.GetDBMaxOpen())
-	sqlDB.SetConnMaxLifetime(time.Duration(cfg.GetDBMaxLifetimeMinute()) * time.Minute)
+	sqlDB.SetMaxIdleConns(cfg.DBMaxIdle)
+	sqlDB.SetMaxOpenConns(cfg.DBMaxOpen)
+	sqlDB.SetConnMaxLifetime(time.Duration(cfg.DBMaxLifetimeMinute) * time.Minute)
 
 	return db
 }

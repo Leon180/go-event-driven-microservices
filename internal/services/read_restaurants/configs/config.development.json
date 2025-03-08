@@ -21,5 +21,18 @@
     "logLevel": -1,
     "callerEnabled": true,
     "enableTracing": true
+  },
+  "mongoDBConfig": {
+    "host": "localhost",
+    "port": 27017,
+    "user": "admin",
+    "password": "admin",
+    "database": "restaurants",
+    "useAuth": true,
+    "enableTracing": true,
+    "connectTimeout": 60,
+    "maxConnIdleTime": 180,
+    "minPoolSize": 20,
+    "maxPoolSize": 300
   }
 }

@@ -7,36 +7,11 @@ import (
 )
 
 type GormDBConfig struct {
-	DSN                                        string            `mapstructure:"dsn"`
-	DBDisableForeignKeyConstraintWhenMigrating bool              `mapstructure:"dbDisableForeignKeyConstraintWhenMigrating"`
-	DBMaxIdle                                  int               `mapstructure:"dbMaxIdle"`
-	DBMaxOpen                                  int               `mapstructure:"dbMaxOpen"`
-	DBMaxLifetimeMinute                        int               `mapstructure:"dbMaxLifetimeMinute"`
-	Env                                        enums.Environment `mapstructure:"-"`
-}
-
-func (o *GormDBConfig) GetDSN() string {
-	return o.DSN
-}
-
-func (o *GormDBConfig) GetDBDisableForeignKeyConstraintWhenMigrating() bool {
-	return o.DBDisableForeignKeyConstraintWhenMigrating
-}
-
-func (o *GormDBConfig) GetDBMaxIdle() int {
-	return o.DBMaxIdle
-}
-
-func (o *GormDBConfig) GetDBMaxOpen() int {
-	return o.DBMaxOpen
-}
-
-func (o *GormDBConfig) GetDBMaxLifetimeMinute() int {
-	return o.DBMaxLifetimeMinute
-}
-
-func (o *GormDBConfig) GetEnvironment() enums.Environment {
-	return o.Env
+	DSN                                        string `mapstructure:"dsn"`
+	DBDisableForeignKeyConstraintWhenMigrating bool   `mapstructure:"dbDisableForeignKeyConstraintWhenMigrating"`
+	DBMaxIdle                                  int    `mapstructure:"dbMaxIdle"`
+	DBMaxOpen                                  int    `mapstructure:"dbMaxOpen"`
+	DBMaxLifetimeMinute                        int    `mapstructure:"dbMaxLifetimeMinute"`
 }
 
 func NewGormDBConfig(env enums.Environment) (*GormDBConfig, error) {
@@ -45,6 +20,5 @@ func NewGormDBConfig(env enums.Environment) (*GormDBConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	gormDB.Env = env
 	return &gormDB, nil
 }
