@@ -17,3 +17,20 @@ const (
 	OrderByDirectionAsc  OrderByDirection = "asc"
 	OrderByDirectionDesc OrderByDirection = "desc"
 )
+
+type OrderByDirectionBsonValue int
+
+const (
+	OrderByDirectionBsonValueAsc  OrderByDirectionBsonValue = 1
+	OrderByDirectionBsonValueDesc OrderByDirectionBsonValue = -1
+)
+
+func (o *OrderByDirection) GetSortDirectionBsonValue() OrderByDirectionBsonValue {
+	switch *o {
+	case OrderByDirectionAsc:
+		return OrderByDirectionBsonValueAsc
+	case OrderByDirectionDesc:
+		return OrderByDirectionBsonValueDesc
+	}
+	return OrderByDirectionBsonValueAsc
+}

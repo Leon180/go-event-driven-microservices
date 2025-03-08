@@ -46,8 +46,8 @@ func (impl *SearchRestaurantsFullInfoImpl) SearchRestaurantsFullInfo(
 			impl.applyPriceRangeFilter(search.MinPriceFilter, search.MaxPriceFilter),
 			impl.applyCategoryFilter(search.CategoryFilter),
 			impl.applyTableAvailabilityFilter(search.TableAvailableWeek, search.TableAvailableStartTime, search.TableAvailableEndTime),
-			impl.applyPagination(search.Pagination),
-			impl.applyOrdering(search.OrderBy),
+			customizegorm.ApplyPagination(search.Pagination),
+			customizegorm.ApplyOrdering(search.OrderBy),
 		)
 	var restaurants []aggregates.Restaurant
 	if err := sql.Find(&restaurants).Error; err != nil {
@@ -240,27 +240,6 @@ func (impl *SearchRestaurantsFullInfoImpl) applyTableAvailabilityFilter(
 				WHERE branch.restaurant_id = restaurant.id AND
 				available.end_time <= ?
 			)`, *availableEndTime)
-		}
-		return db
-	}
-}
-
-func (impl *SearchRestaurantsFullInfoImpl) applyPagination(
-	pagination *customizegorm.Pagination,
-) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		if pagination != nil {
-			return db.Limit(pagination.PageSize).
-				Offset((pagination.Page - 1) * pagination.PageSize)
-		}
-		return db
-	}
-}
-
-func (impl *SearchRestaurantsFullInfoImpl) applyOrdering(orderBy []customizegorm.OrderBy) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		for _, ob := range orderBy {
-			db = db.Order(ob.ToSort())
 		}
 		return db
 	}
