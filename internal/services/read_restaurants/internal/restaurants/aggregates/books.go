@@ -6,9 +6,9 @@ import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/validates/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
+	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/validates/dtos"
 	"github.com/samber/lo"
 )
 

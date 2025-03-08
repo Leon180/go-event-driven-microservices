@@ -3,7 +3,7 @@ package postgresdbmigrations
 import (
 	"log"
 
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 )

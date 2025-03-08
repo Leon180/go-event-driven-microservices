@@ -2,7 +2,7 @@ package dtos
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
 	"github.com/samber/lo"
 )
 

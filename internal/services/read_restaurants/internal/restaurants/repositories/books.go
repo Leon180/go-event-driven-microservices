@@ -4,9 +4,9 @@ import (
 	"context"
 
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
 )
 
 //go:generate mockgen -source=books.go -destination=./mocks/books_mock.go -package=mocks

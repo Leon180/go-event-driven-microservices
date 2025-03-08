@@ -34,5 +34,21 @@
     "maxConnIdleTime": 180,
     "minPoolSize": 20,
     "maxPoolSize": 300
+  },
+  "redisConfig": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "admin",
+    "database": 0,
+    "poolSize": 30,
+    "enableTracing": true,
+    "maxRetries": 5,
+    "minRetryBackoff": 300,
+    "maxRetryBackoff": 500,
+    "dialTimeout": 5,
+    "readTimeout": 5,
+    "writeTimeout": 3,
+    "minIdleConns": 20,
+    "poolTimeout": 6
   }
 }

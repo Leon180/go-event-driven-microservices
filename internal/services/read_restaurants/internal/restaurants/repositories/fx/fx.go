@@ -1,7 +1,7 @@
 package repositoriesfx
 
 import (
-	repositoriespostgres "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories/postgres"
+	repositoriespostgres "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories/postgres"
 	"go.uber.org/fx"
 )
 

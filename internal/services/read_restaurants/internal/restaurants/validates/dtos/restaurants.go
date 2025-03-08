@@ -5,7 +5,7 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
 )
 
 func ValidateRestaurant(restaurant *dtos.Restaurant) error {

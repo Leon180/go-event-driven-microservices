@@ -5,7 +5,7 @@ import (
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
 
-	mongodb "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/mongodb"
+	mongodb "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/fx"
 )

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/app"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/app"
 
-	_ "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/docs" // swagger docs
+	_ "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/docs" // swagger docs
 )
 
 //go:generate swag init -pdl 3 -o ../../docs

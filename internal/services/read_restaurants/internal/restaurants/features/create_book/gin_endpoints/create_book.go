@@ -2,8 +2,8 @@ package ginendpoints
 
 import (
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/create_book/services"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
 	"github.com/gin-gonic/gin"
 )
 
