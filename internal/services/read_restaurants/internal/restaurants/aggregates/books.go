@@ -1,76 +1,24 @@
 package aggregates
 
 import (
-	"time"
-
-	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
-	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/validates/dtos"
 	"github.com/samber/lo"
 )
-
-type BookDTOAggregateBuilder interface {
-	// save book and related entities(table, available) to the aggregate
-	SaveBook(book *dtos.Book) error
-
-	// set all edit type code to none
-	SetAllEditTypeCodeToNone()
-
-	// get book aggregates
-	GetAggregates() []Book
-
-	// get pending edit entities during update
-	GetEditEntities() []BookEditEntities
-}
-
-func NewBookDTOAggregateBuilder(uuidGenerator uuid.UUIDGenerator) BookDTOAggregateBuilder {
-	return &bookDTOAggregateImpl{
-		books:         make([]Book, 0),
-		uuidGenerator: uuidGenerator,
-	}
-}
-
-type bookDTOAggregateImpl struct {
-	books []Book
-
-	// dependencies
-	uuidGenerator uuid.UUIDGenerator
-}
-
-type BookEditEntities struct {
-	CreateEntities *BookCreateEntities
-	UpdateEntities *BookUpdateEntities
-	DeleteEntities *BookDeleteEntities
-}
-
-func newBookEditEntities() BookEditEntities {
-	return BookEditEntities{
-		CreateEntities: &BookCreateEntities{},
-		UpdateEntities: &BookUpdateEntities{},
-		DeleteEntities: &BookDeleteEntities{},
-	}
-}
-
-type BookCreateEntities struct {
-	Books []entities.Book
-}
-
-type BookUpdateEntities struct {
-	Books []entities.UpdateBook
-}
-
-type BookDeleteEntities struct {
-	Books []entities.Book
-}
 
 type Books []Book
 
 func (b Books) ToDTO() []dtos.Book {
 	return lo.Map(b, func(book Book, _ int) dtos.Book {
 		return *book.ToDTO()
+	})
+}
+
+func (b Books) ToDocuments() []documents.Book {
+	return lo.Map(b, func(book Book, _ int) documents.Book {
+		return *book.ToDocument()
 	})
 }
 
@@ -113,99 +61,79 @@ func (b *Book) ToDTO() *dtos.Book {
 	}
 }
 
-func (b *bookDTOAggregateImpl) SaveBook(book *dtos.Book) error {
-	if book == nil {
-		return nil
-	}
-	if err := validatesdtos.ValidateBook(book); err != nil {
-		return err
-	}
-	for i := range b.books {
-		if book.ID != nil && b.books[i].ID == *book.ID {
-			if book.TableID == b.books[i].TableID && book.AvailableID == b.books[i].AvailableID {
-				return b.updateBook(&b.books[i], book)
+func (b *Book) ToDocument() *documents.Book {
+	return &documents.Book{
+		ID:                     b.ID,
+		TableID:                b.TableID,
+		AvailableID:            b.AvailableID,
+		Amount:                 b.Amount,
+		MobileNumber:           b.MobileNumber,
+		CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.CommonCQRSHistoryModel).ToDocument(),
+		Table: func() documents.Table {
+			if b.Table == nil {
+				return documents.Table{}
 			}
-			return customizeerrors.BookTableAndAvailableNotMatchError
-		}
-		// same table id and available id, duplicate book
-		if b.books[i].TableID == book.TableID && b.books[i].AvailableID == book.AvailableID {
-			return customizeerrors.BookAlreadyExistsError
-		}
+			return documents.Table{
+				ID:                     b.Table.ID,
+				BranchID:               b.Table.BranchID,
+				Capacity:               b.Table.Capacity,
+				CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.Table.CommonCQRSHistoryModel).ToDocument(),
+			}
+		}(),
+		Available: func() documents.Available {
+			if b.Available == nil {
+				return documents.Available{}
+			}
+			return documents.Available{
+				ID:                     b.Available.ID,
+				BranchID:               b.Available.BranchID,
+				Weekday:                b.Available.Weekday,
+				StartTime:              b.Available.StartTime,
+				EndTime:                b.Available.EndTime,
+				CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.Available.CommonCQRSHistoryModel).ToDocument(),
+			}
+		}(),
 	}
-	return b.addBook(book)
 }
 
-func (b *bookDTOAggregateImpl) addBook(book *dtos.Book) error {
-	if book == nil {
-		return nil
-	}
-	var bookID string
-	if book.ID == nil {
-		bookID = b.uuidGenerator.GenerateUUID()
-	} else {
-		bookID = *book.ID
-	}
-	timeNow := time.Now()
-	b.books = append(b.books, Book{
+type BookDocuments documents.Books
+
+func (b BookDocuments) ToAggregate() Books {
+	return lo.Map(b, func(book documents.Book, _ int) Book {
+		bookDocument := BookDocument(book)
+		return *bookDocument.ToAggregate()
+	})
+}
+
+type BookDocument documents.Book
+
+func (b *BookDocument) ToAggregate() *Book {
+	return &Book{
 		Book: entities.Book{
-			ID:           bookID,
-			TableID:      book.TableID,
-			AvailableID:  book.AvailableID,
-			Amount:       book.Amount,
-			MobileNumber: book.MobileNumber,
-			CommonCQRSHistoryModel: entities.CommonCQRSHistoryModel{
-				ActiveStatus: true,
-				CreatedAt:    timeNow,
-				UpdatedAt:    timeNow,
+			ID:                     b.ID,
+			TableID:                b.TableID,
+			AvailableID:            b.AvailableID,
+			Amount:                 b.Amount,
+			MobileNumber:           b.MobileNumber,
+			CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.CommonCQRSHistoryModel).ToEntity(),
+		},
+		Table: &Table{
+			Table: entities.Table{
+				ID:                     b.Table.ID,
+				BranchID:               b.Table.BranchID,
+				Capacity:               b.Table.Capacity,
+				CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.Table.CommonCQRSHistoryModel).ToEntity(),
 			},
 		},
-		editTypeCode: enums.EditTypeCodeCreate,
-	})
-	return nil
-}
-
-func (b *bookDTOAggregateImpl) updateBook(book *Book, update *dtos.Book) error {
-	if book == nil || update == nil {
-		return nil
+		Available: &Available{
+			Available: entities.Available{
+				ID:                     b.Available.ID,
+				BranchID:               b.Available.BranchID,
+				Weekday:                b.Available.Weekday,
+				StartTime:              b.Available.StartTime,
+				EndTime:                b.Available.EndTime,
+				CommonCQRSHistoryModel: CommonCQRSHistoryModelDocument(b.Available.CommonCQRSHistoryModel).ToEntity(),
+			},
+		},
 	}
-	book.TableID = update.TableID
-	book.AvailableID = update.AvailableID
-	book.Amount = update.Amount
-	book.MobileNumber = update.MobileNumber
-	book.CommonCQRSHistoryModel.UpdatedAt = time.Now()
-	book.update = update.ToUpdateBook().RemoveUnchangedFields(book.Book)
-	if book.update != nil {
-		book.editTypeCode = enums.EditTypeCodeUpdate
-	}
-	return nil
-}
-
-func (b *bookDTOAggregateImpl) SetAllEditTypeCodeToNone() {
-	for i := range b.books {
-		b.books[i].editTypeCode = enums.EditTypeCodeNone
-	}
-}
-
-func (impl *bookDTOAggregateImpl) GetAggregates() []Book {
-	return impl.books
-}
-
-func (impl *bookDTOAggregateImpl) GetEditEntities() []BookEditEntities {
-	res := make([]BookEditEntities, len(impl.books))
-	for i, book := range impl.books {
-		// Initialize container
-		res[i] = newBookEditEntities()
-		createEntities, updateEntities, deleteEntities := res[i].CreateEntities, res[i].UpdateEntities, res[i].DeleteEntities
-
-		// Handle restaurant
-		appendEntityByType(
-			&createEntities.Books,
-			&updateEntities.Books,
-			&deleteEntities.Books,
-			book.Book,
-			book.update,
-			book.editTypeCode,
-		)
-	}
-	return res
 }

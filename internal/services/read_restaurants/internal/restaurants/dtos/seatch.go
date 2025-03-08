@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
+	utilitiesdb "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/db"
 )
 
 type SearchRestaurants struct {
@@ -20,8 +20,8 @@ type SearchRestaurants struct {
 	TableAvailableWeek      []time.Weekday
 	TableAvailableStartTime *string
 	TableAvailableEndTime   *string
-	OrderBy                 []customizegorm.OrderBy
-	Pagination              *customizegorm.Pagination
+	OrderBy                 []utilitiesdb.OrderBy
+	Pagination              *utilitiesdb.Pagination
 }
 
 type SearchBooks struct {
@@ -36,6 +36,6 @@ type SearchBooks struct {
 	TableAvailableStartTime *string
 	TableAvailableEndTime   *string
 
-	OrderBy    []customizegorm.OrderBy
-	Pagination *customizegorm.Pagination
+	OrderBy    []utilitiesdb.OrderBy
+	Pagination *utilitiesdb.Pagination
 }

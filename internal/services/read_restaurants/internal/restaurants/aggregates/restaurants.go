@@ -371,25 +371,3 @@ func (r *RestaurantDocument) ToAggregate() *Restaurant {
 		}),
 	}
 }
-
-type CommonCQRSHistoryModelDocument documents.CommonCQRSHistoryModel
-
-func (c CommonCQRSHistoryModelDocument) ToEntity() entities.CommonCQRSHistoryModel {
-	return entities.CommonCQRSHistoryModel{
-		ActiveStatus: c.ActiveStatus,
-		CreatedAt:    c.CreatedAt,
-		CreatedBy:    c.CreatedBy,
-		UpdatedAt:    c.UpdatedAt,
-		UpdatedBy:    c.UpdatedBy,
-	}
-}
-
-func (c CommonCQRSHistoryModelDocument) ToDocument() documents.CommonCQRSHistoryModel {
-	return documents.CommonCQRSHistoryModel{
-		ActiveStatus: c.ActiveStatus,
-		CreatedAt:    c.CreatedAt,
-		CreatedBy:    c.CreatedBy,
-		UpdatedAt:    c.UpdatedAt,
-		UpdatedBy:    c.UpdatedBy,
-	}
-}

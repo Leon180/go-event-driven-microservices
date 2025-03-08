@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
 	"gorm.io/gorm"
 )
 
@@ -54,4 +56,26 @@ func appendEntityByTypeCD[T any](create *[]T, delete *[]T, entity T, editTypeCod
 
 func appendEntityByTypeU[U any](update *[]U, updateEntity *U) {
 	*update = append(*update, *updateEntity)
+}
+
+type CommonCQRSHistoryModelDocument documents.CommonCQRSHistoryModel
+
+func (c CommonCQRSHistoryModelDocument) ToEntity() entities.CommonCQRSHistoryModel {
+	return entities.CommonCQRSHistoryModel{
+		ActiveStatus: c.ActiveStatus,
+		CreatedAt:    c.CreatedAt,
+		CreatedBy:    c.CreatedBy,
+		UpdatedAt:    c.UpdatedAt,
+		UpdatedBy:    c.UpdatedBy,
+	}
+}
+
+func (c CommonCQRSHistoryModelDocument) ToDocument() documents.CommonCQRSHistoryModel {
+	return documents.CommonCQRSHistoryModel{
+		ActiveStatus: c.ActiveStatus,
+		CreatedAt:    c.CreatedAt,
+		CreatedBy:    c.CreatedBy,
+		UpdatedAt:    c.UpdatedAt,
+		UpdatedBy:    c.UpdatedBy,
+	}
 }

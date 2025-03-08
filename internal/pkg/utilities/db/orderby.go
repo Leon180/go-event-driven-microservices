@@ -1,4 +1,4 @@
-package postgresgorm
+package db
 
 import "fmt"
 

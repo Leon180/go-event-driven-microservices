@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
+	utilitiesdb "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/db"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
@@ -202,7 +202,7 @@ func (impl *SearchRestaurantsMongoImpl) buildMatchStage(search *dtos.SearchResta
 	return bson.D{{Key: "$match", Value: match}}
 }
 
-func (impl *SearchRestaurantsMongoImpl) buildSortStage(orderBy []customizegorm.OrderBy) bson.D {
+func (impl *SearchRestaurantsMongoImpl) buildSortStage(orderBy []utilitiesdb.OrderBy) bson.D {
 	sort := bson.D{}
 	for _, order := range orderBy {
 		sort = append(sort, bson.E{Key: order.Field, Value: order.Direction.GetSortDirectionBsonValue()})
