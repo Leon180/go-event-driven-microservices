@@ -22,9 +22,14 @@
             "command": "cd internal/services/loans; go mod tidy; go generate ./...; go test ./... -v -cover"
         },
         {
-            "label": "berforeInitRestaurantsServer",
+            "label": "berforeInitReadRestaurantsServer",
             "type": "shell",
-            "command": "cd internal/services/restaurants; go mod tidy; go generate ./...; go test ./... -v -cover"
+            "command": "cd internal/services/read_restaurants; go mod tidy; go generate ./...; go test ./... -v -cover"
+        },
+        {
+            "label": "berforeInitWriteRestaurantsServer",
+            "type": "shell",
+            "command": "cd internal/services/write_restaurants; go mod tidy; go generate ./...; go test ./... -v -cover"
         }
     ]
 }

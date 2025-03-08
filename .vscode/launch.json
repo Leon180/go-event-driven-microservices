@@ -54,13 +54,22 @@
             "program": "${workspaceFolder}/internal/services/loans/cmd/app/main.go",
         },
         {
-            "name": "Debug Restaurants",
+            "name": "Debug Read Restaurants",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/internal/services/restaurants/cmd/app/main.go",
+            "program": "${workspaceFolder}/internal/services/read_restaurants/cmd/app/main.go",
             "args": [],
-            "preLaunchTask": "berforeInitRestaurantsServer" // 更新swagger文件, mod參考
+            "preLaunchTask": "berforeInitReadRestaurantsServer" // 更新swagger文件, mod參考
+        },
+        {
+            "name": "Debug Write Restaurants",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/internal/services/write_restaurants/cmd/app/main.go",
+            "args": [],
+            "preLaunchTask": "berforeInitWriteRestaurantsServer" // 更新swagger文件, mod參考
         }
     ],
 }
