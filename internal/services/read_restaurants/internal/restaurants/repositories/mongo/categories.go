@@ -5,6 +5,7 @@ import (
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"go.mongodb.org/mongo-driver/bson"
@@ -29,7 +30,7 @@ type listCategoriesMongoImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *listCategoriesMongoImpl) ListCategories(ctx context.Context) (documents.Categories, error) {
+func (impl *listCategoriesMongoImpl) ListCategories(ctx context.Context) (aggregates.Categories, error) {
 	cursor, err := impl.collection.Find(ctx, bson.M{})
 	if err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
@@ -42,5 +43,5 @@ func (impl *listCategoriesMongoImpl) ListCategories(ctx context.Context) (docume
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
 		return nil, err
 	}
-	return categories, nil
+	return aggregates.CategoryDocuments(categories).ToAggregate(), nil
 }

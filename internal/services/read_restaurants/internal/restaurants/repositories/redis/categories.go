@@ -5,6 +5,7 @@ import (
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/redis/go-redis/v9"
@@ -25,7 +26,7 @@ type listCategoriesRedisImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *listCategoriesRedisImpl) ListCategories(ctx context.Context) (documents.Categories, error) {
+func (impl *listCategoriesRedisImpl) ListCategories(ctx context.Context) (aggregates.Categories, error) {
 	keys, err := impl.db.Keys(ctx, "*").Result()
 	if err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
@@ -37,7 +38,7 @@ func (impl *listCategoriesRedisImpl) ListCategories(ctx context.Context) (docume
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
 		return nil, err
 	}
-	return categories, nil
+	return aggregates.CategoryDocuments(categories).ToAggregate(), nil
 }
 
 func NewSetCategoriesRedis(
@@ -55,11 +56,12 @@ type setCategoriesRedisImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *setCategoriesRedisImpl) SetCategory(ctx context.Context, category *documents.Category) error {
+func (impl *setCategoriesRedisImpl) SetCategory(ctx context.Context, category *aggregates.Category) error {
 	if category == nil || category.ID == "" {
 		return nil
 	}
-	if _, err := impl.db.Set(ctx, category.ID, category, 0).Result(); err != nil {
+	categoryDocument := category.ToDocument()
+	if _, err := impl.db.Set(ctx, category.ID, *categoryDocument, 0).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set category", err)
 		return err
 	}

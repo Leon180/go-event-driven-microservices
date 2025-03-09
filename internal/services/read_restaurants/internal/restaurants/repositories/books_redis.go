@@ -15,4 +15,5 @@ type ReadBooksRedis interface {
 
 type SetBookRedis interface {
 	SetBook(ctx context.Context, book *aggregates.Book, timeOut time.Duration) error
+	DeleteBook(ctx context.Context, book *aggregates.Book) error
 }

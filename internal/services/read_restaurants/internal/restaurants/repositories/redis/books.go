@@ -59,8 +59,20 @@ func (impl *setBookRedisImpl) SetBook(ctx context.Context, book *aggregates.Book
 	if book == nil || book.ID == "" {
 		return nil
 	}
-	if _, err := impl.db.Set(ctx, book.ID, book, timeOut).Result(); err != nil {
+	bookDocument := book.ToDocument()
+	if _, err := impl.db.Set(ctx, book.ID, *bookDocument, timeOut).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set book", err)
+		return err
+	}
+	return nil
+}
+
+func (impl *setBookRedisImpl) DeleteBook(ctx context.Context, book *aggregates.Book) error {
+	if book == nil || book.ID == "" {
+		return nil
+	}
+	if err := impl.db.Del(ctx, book.ID).Err(); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete book", err)
 		return err
 	}
 	return nil

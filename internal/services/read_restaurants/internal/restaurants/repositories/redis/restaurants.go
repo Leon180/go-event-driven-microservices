@@ -74,3 +74,17 @@ func (impl *setRestaurantsRedisImpl) SetRestaurant(
 	}
 	return nil
 }
+
+func (impl *setRestaurantsRedisImpl) DeleteRestaurant(
+	ctx context.Context,
+	restaurant *aggregates.Restaurant,
+) error {
+	if restaurant == nil || restaurant.ID == "" {
+		return nil
+	}
+	if err := impl.db.Del(ctx, restaurant.ID).Err(); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete restaurant", err)
+		return err
+	}
+	return nil
+}

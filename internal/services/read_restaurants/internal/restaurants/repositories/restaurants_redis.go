@@ -15,4 +15,5 @@ type ReadRestaurantsRedis interface {
 
 type SetRestaurantsRedis interface {
 	SetRestaurant(ctx context.Context, restaurant *aggregates.Restaurant, timeOut time.Duration) error
+	DeleteRestaurant(ctx context.Context, restaurant *aggregates.Restaurant) error
 }

@@ -20,7 +20,8 @@ type RedisConfig struct {
 	ReadTimeout     int    `mapstructure:"readTimeout"     default:"5"`   // in seconds
 	WriteTimeout    int    `mapstructure:"writeTimeout"    default:"3"`   // in seconds
 	MinIdleConns    int    `mapstructure:"minIdleConns"    default:"20"`
-	PoolTimeout     int    `mapstructure:"poolTimeout"     default:"6"` // in seconds
+	PoolTimeout     int    `mapstructure:"poolTimeout"     default:"6"`  // in seconds
+	CacheTimeOut    int    `mapstructure:"cacheTimeOut"    default:"60"` // in seconds
 }
 
 func NewRedisConfig(env enums.Environment) (*RedisConfig, error) {

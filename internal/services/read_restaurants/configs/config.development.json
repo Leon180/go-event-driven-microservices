@@ -49,6 +49,7 @@
     "readTimeout": 5,
     "writeTimeout": 3,
     "minIdleConns": 20,
-    "poolTimeout": 6
+    "poolTimeout": 6,
+    "cacheTimeOut": 60
   }
 }
