@@ -5,55 +5,42 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	createBookCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/commands"
 	createBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/gin_endpoints"
 	createBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
+	createRestaurantCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/commands"
 	createRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/gin_endpoints"
 	createRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
+	deleteBookCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/commands"
 	deleteBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/gin_endpoints"
 	deleteBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/services"
+	deleteRestaurantCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/commands"
 	deleteRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/gin_endpoints"
 	deleteRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/services"
+	getRestaurantCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/commands"
 	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
 	getRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/services"
+	listCategoriesCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/commands"
 	listCategoriesGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/gin_endpoints"
 	listCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/services"
+	restoreRestaurantCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/commands"
 	restoreRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/gin_endpoints"
 	restoreRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/services"
+	searchBooksCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/commands"
 	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/gin_endpoints"
 	searchBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/services"
+	searchRestaurantsCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/commands"
 	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
 	searchRestaurantsServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/services"
+	updateRestaurantCommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/commands"
 	updateRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/gin_endpoints"
 	updateRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/services"
+
 	"github.com/samber/lo"
 	"go.uber.org/fx"
 )
 
-// ProvideModule is the module for the accounts features
-// It provides the services and customizeginendpoints.Endpoint for the restaurants features:
-// - createRestaurantServices.CreateRestaurant
-// - deleteRestaurantServices.DeleteRestaurant
-// - getRestaurantServices.GetRestaurant
-// - searchRestaurantsServices.SearchRestaurants
-// - customizeginendpoints.Endpoint(createRestaurantGinEndpoints.NewCreateRestaurant)
-// - customizeginendpoints.Endpoint(deleteRestaurantGinEndpoints.NewDeleteRestaurant)
-// - customizeginendpoints.Endpoint(getRestaurantGinEndpoints.NewGetRestaurant)
-// - customizeginendpoints.Endpoint(restoreRestaurantGinEndpoints.NewRestoreRestaurant)
-// - customizeginendpoints.Endpoint(searchRestaurantsGinEndpoints.NewSearchRestaurants)
-// - customizeginendpoints.Endpoint(updateRestaurantGinEndpoints.NewUpdateRestaurant)
-// - customizeginendpoints.Endpoint(createBookGinEndpoints.NewCreateBook)
-// - customizeginendpoints.Endpoint(deleteBookGinEndpoints.NewDeleteBook)
-// - customizeginendpoints.Endpoint(searchBooksGinEndpoints.NewSearchBooks)
-// dependencies:
-// - uuid.UUIDGenerator
-// - repositories.SearchRestaurantsFullInfo
-// - repositories.ReadRestaurant
-// - repositories.UpdateRestaurantsWithTransaction
-// - repositories.SearchBooksFullInfo
-// - repositories.ReadBooks
-// - postgres.Transactor[repositories.UpdateRestaurantsWithTransaction]
-// - postgres.Transactor[repositories.UpdateBooksWithTransaction]
-// - contextloggers.ContextLogger
+// ProvideModule is the module for the restaurants features services, commands and endpoints
 var ProvideModule = fx.Module(
 	"restaurantsFeaturesProvideFx",
 
@@ -69,6 +56,20 @@ var ProvideModule = fx.Module(
 		deleteBookServices.NewDeleteBook,
 		searchBooksServices.NewSearchBooks,
 		listCategoriesServices.NewListCategories,
+	),
+
+	// commands
+	fx.Provide(
+		createRestaurantCommands.NewCreateRestaurantHandler,
+		deleteRestaurantCommands.NewDeleteRestaurantHandler,
+		getRestaurantCommands.NewGetRestaurantHandler,
+		restoreRestaurantCommands.NewRestoreRestaurantHandler,
+		searchRestaurantsCommands.NewSearchRestaurantsHandler,
+		updateRestaurantCommands.NewUpdateRestaurantHandler,
+		createBookCommands.NewCreateBookHandler,
+		deleteBookCommands.NewDeleteBookHandler,
+		searchBooksCommands.NewSearchBooksHandler,
+		listCategoriesCommands.NewListCategoriesHandler,
 	),
 
 	// endpoints

@@ -14,7 +14,7 @@ type DeleteRestaurantHandler interface {
 	DeleteRestaurant(ctx context.Context, command *DeleteRestaurant) error
 }
 
-func NewDeleteRestaurant(
+func NewDeleteRestaurantHandler(
 	updateRestaurantsMongo repositories.UpdateRestaurantsMongo,
 	readRestaurantsMongo repositories.ReadRestaurantsMongo,
 	setRestaurantsRedis repositories.SetRestaurantsRedis,

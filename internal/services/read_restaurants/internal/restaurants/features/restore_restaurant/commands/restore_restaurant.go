@@ -16,7 +16,7 @@ type RestoreRestaurantHandler interface {
 	RestoreRestaurant(ctx context.Context, command *RestoreRestaurant) error
 }
 
-func NewRestoreRestaurant(
+func NewRestoreRestaurantHandler(
 	redisConfig redisdb.RedisConfig,
 	updateRestaurantsMongo repositories.UpdateRestaurantsMongo,
 	readRestaurantsMongo repositories.ReadRestaurantsMongo,

@@ -21,7 +21,7 @@ type GetRestaurantHandler interface {
 	) (*aggregates.Restaurant, error)
 }
 
-func NewGetRestaurant(
+func NewGetRestaurantHandler(
 	redisConfig redisdb.RedisConfig,
 	readRestaurantsMongo repositories.ReadRestaurantsMongo,
 	readRestaurantsRedis repositories.ReadRestaurantsRedis,

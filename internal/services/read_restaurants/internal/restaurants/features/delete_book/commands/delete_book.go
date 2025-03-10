@@ -14,7 +14,7 @@ type DeleteBookHandler interface {
 	DeleteBook(ctx context.Context, command *DeleteBook) error
 }
 
-func NewDeleteBook(
+func NewDeleteBookHandler(
 	updateBooksMongo repositories.UpdateBooksMongo,
 	readBooksMongo repositories.ReadBooksMongo,
 	setBookRedis repositories.SetBookRedis,

@@ -11,7 +11,7 @@ type ListCategoriesHandler interface {
 	ListCategories(ctx context.Context) (aggregates.Categories, error)
 }
 
-func NewListCategories(
+func NewListCategoriesHandler(
 	listCategoriesMongo repositories.ListCategoriesMongo,
 	listCategoriesRedis repositories.ListCategoriesRedis,
 ) ListCategoriesHandler {
