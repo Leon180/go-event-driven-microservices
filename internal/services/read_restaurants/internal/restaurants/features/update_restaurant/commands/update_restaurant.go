@@ -5,8 +5,8 @@ import (
 	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	redisdb "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/redisdb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 )
 

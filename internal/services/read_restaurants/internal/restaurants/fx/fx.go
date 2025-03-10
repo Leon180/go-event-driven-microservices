@@ -4,6 +4,8 @@ import (
 	customizeginfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/fx"
 	environmentsfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/environments/fx"
 	loggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx"
+	mongodbfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/mongodb/fx"
+	redisdbfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb/fx"
 	contextloggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers/fx"
 	uuidfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid/fx"
 	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/configs/fx"
@@ -35,6 +37,8 @@ var ProvideModule = fx.Module(
 
 	// db
 	postgresdbfx.ProvideModule,
+	redisdbfx.ProvideModule,
+	mongodbfx.ProvideModule,
 
 	// app configs
 	appconfigsfx.ProvideModule,

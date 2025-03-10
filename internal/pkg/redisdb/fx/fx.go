@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/redisdb"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/fx"
 )

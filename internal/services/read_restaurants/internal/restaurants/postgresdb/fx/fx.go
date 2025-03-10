@@ -1,7 +1,7 @@
 package postgresdbfx
 
 import (
-	postgresdb "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/postgresdb"
+	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/postgresdb/fx"
 	postgresdbmigrations "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/postgresdb/migrations"
 	"go.uber.org/fx"
 )
@@ -13,13 +13,7 @@ import (
 // dependencies:
 // - enums.Environment
 // - gormlogger.GormCustomLogger
-var ProvideModule = fx.Module(
-	"postgresdbProvideFx",
-	fx.Provide(
-		postgresdb.NewGormDBConfig,
-		postgresdb.NewGormDB,
-	),
-)
+var ProvideModule = postgresdbfx.ProvideModule
 
 // InvokeModule is the module for the postgresdb
 // It invokes the migrate db function
