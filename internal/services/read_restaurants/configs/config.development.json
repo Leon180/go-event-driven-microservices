@@ -51,5 +51,16 @@
     "minIdleConns": 20,
     "poolTimeout": 6,
     "cacheTimeOut": 60
+  },
+  "rabbitmqOptions": {
+    "autoStart": true,
+    "userName": "guest",
+    "password": "guest",
+    "hostName": "localhost",
+    "port": 5672,
+    "httpPort": 15672,
+    "retryAttempts": 3,
+    "retryDelay": 300,
+    "reconnectDelay": 3000
   }
 }

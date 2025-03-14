@@ -21,6 +21,8 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
+	github.com/ahmetb/go-linq/v3 v3.2.0 // indirect
+	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/bytedance/sonic v1.12.7 // indirect
 	github.com/bytedance/sonic/loader v0.2.2 // indirect
 	github.com/caarlos0/env/v8 v8.0.0 // indirect
@@ -46,6 +48,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
@@ -66,6 +69,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.7.1 // indirect
 	github.com/redis/go-redis/extra/redisotel/v9 v9.7.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
