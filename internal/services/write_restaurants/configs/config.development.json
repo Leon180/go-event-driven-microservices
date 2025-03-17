@@ -1,6 +1,6 @@
 {
   "appConfig": {
-    "connWebPort": "8001",
+    "connWebPort": "8002",
     "serviceName": "restaurants",
     "version": "v1",
     "maxAge": 12,

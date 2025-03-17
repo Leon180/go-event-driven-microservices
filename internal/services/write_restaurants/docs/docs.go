@@ -384,6 +384,39 @@ const docTemplate = `{
                 }
             }
         },
+        "db.OrderBy": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/definitions/db.OrderByDirection"
+                },
+                "field": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.OrderByDirection": {
+            "type": "string",
+            "enum": [
+                "asc",
+                "desc"
+            ],
+            "x-enum-varnames": [
+                "OrderByDirectionAsc",
+                "OrderByDirectionDesc"
+            ]
+        },
+        "db.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                }
+            }
+        },
         "dtos.Address": {
             "type": "object",
             "properties": {
@@ -580,11 +613,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -642,11 +675,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -859,39 +892,6 @@ const docTemplate = `{
                 }
             }
         },
-        "postgresgorm.OrderBy": {
-            "type": "object",
-            "properties": {
-                "direction": {
-                    "$ref": "#/definitions/postgresgorm.OrderByDirection"
-                },
-                "field": {
-                    "type": "string"
-                }
-            }
-        },
-        "postgresgorm.OrderByDirection": {
-            "type": "string",
-            "enum": [
-                "asc",
-                "desc"
-            ],
-            "x-enum-varnames": [
-                "OrderByDirectionAsc",
-                "OrderByDirectionDesc"
-            ]
-        },
-        "postgresgorm.Pagination": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
-                }
-            }
-        },
         "time.Weekday": {
             "type": "integer",
             "enum": [
@@ -901,9 +901,23 @@ const docTemplate = `{
                 3,
                 4,
                 5,
+                6,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
                 6
             ],
             "x-enum-varnames": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
                 "Sunday",
                 "Monday",
                 "Tuesday",
