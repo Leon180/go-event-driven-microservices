@@ -3,19 +3,19 @@ package ginendpoints
 import (
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/services"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/queries"
 	"github.com/gin-gonic/gin"
 )
 
 type searchRestaurantsImpl struct {
-	searchRestaurantsService services.SearchRestaurants
+	searchRestaurantsQuery queries.SearchRestaurantsHandler
 }
 
 func NewSearchRestaurants(
-	searchRestaurantsService services.SearchRestaurants,
+	searchRestaurantsQuery queries.SearchRestaurantsHandler,
 ) customizegin.Endpoint {
 	return &searchRestaurantsImpl{
-		searchRestaurantsService: searchRestaurantsService,
+		searchRestaurantsQuery: searchRestaurantsQuery,
 	}
 }
 
@@ -36,7 +36,21 @@ func (handle *searchRestaurantsImpl) Handle(c *gin.Context) {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	restaurants, err := handle.searchRestaurantsService.SearchRestaurants(c.Request.Context(), &req)
+	restaurants, err := handle.searchRestaurantsQuery.SearchRestaurants(c.Request.Context(), &queries.SearchRestaurants{
+		NameFilter:              req.NameFilter,
+		NamePreciseSearch:       req.NamePreciseSearch,
+		DescriptionFilter:       req.DescriptionFilter,
+		CityFilter:              req.CityFilter,
+		CountryFilter:           req.CountryFilter,
+		MaxPriceFilter:          req.MaxPriceFilter,
+		MinPriceFilter:          req.MinPriceFilter,
+		CategoryFilter:          req.CategoryFilter,
+		TableAvailableWeek:      req.TableAvailableWeek,
+		TableAvailableStartTime: req.TableAvailableStartTime,
+		TableAvailableEndTime:   req.TableAvailableEndTime,
+		OrderBy:                 req.OrderBy,
+		Pagination:              req.Pagination,
+	})
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return

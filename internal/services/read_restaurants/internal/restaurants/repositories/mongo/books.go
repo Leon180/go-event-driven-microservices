@@ -10,6 +10,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,19 +19,19 @@ import (
 
 func NewSearchBooksMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.SearchBooksMongo {
 	return &SearchBooksMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type SearchBooksMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -41,6 +42,8 @@ func (impl *SearchBooksMongoImpl) SearchBooks(
 	if searchBooks == nil {
 		return nil, nil
 	}
+
+	collection := impl.collections.Book
 
 	pipeline := mongo.Pipeline{}
 
@@ -64,7 +67,7 @@ func (impl *SearchBooksMongoImpl) SearchBooks(
 		)
 	}
 
-	cursor, err := impl.collection.Aggregate(ctx, pipeline)
+	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to search books", err)
 		return nil, err
@@ -146,18 +149,19 @@ func (impl *SearchBooksMongoImpl) buildSortStage(orderBy []utilitiesdb.OrderBy) 
 
 func NewReadBooksMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.ReadBooksMongo {
 	return &ReadBooksMongoImpl{
 		db:            db,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type ReadBooksMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -165,8 +169,10 @@ func (impl *ReadBooksMongoImpl) ReadBook(ctx context.Context, id string) (*aggre
 	if id == "" {
 		return nil, nil
 	}
+
+	collection := impl.collections.Book
 	var book documents.Book
-	if err := impl.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&book); err != nil {
+	if err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&book); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read book", err)
 		return nil, err
 	}
@@ -176,19 +182,19 @@ func (impl *ReadBooksMongoImpl) ReadBook(ctx context.Context, id string) (*aggre
 
 func NewUpdateBooksMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.UpdateBooksMongo {
 	return &UpdateBooksMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type UpdateBooksMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -201,7 +207,8 @@ func (impl *UpdateBooksMongoImpl) CreateBooks(ctx context.Context, books aggrega
 	for i, doc := range bookDocuments {
 		docs[i] = doc
 	}
-	if _, err := impl.collection.InsertMany(ctx, docs); err != nil {
+	collection := impl.collections.Book
+	if _, err := collection.InsertMany(ctx, docs); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create books", err)
 		return err
 	}
@@ -213,7 +220,8 @@ func (impl *UpdateBooksMongoImpl) UpdateBook(ctx context.Context, updateBook *ag
 		return nil
 	}
 	bookDocument := updateBook.ToDocument()
-	if _, err := impl.collection.UpdateOne(ctx, bson.M{"_id": updateBook.ID}, bson.M{"$set": *bookDocument}); err != nil {
+	collection := impl.collections.Book
+	if _, err := collection.UpdateOne(ctx, bson.M{"_id": updateBook.ID}, bson.M{"$set": *bookDocument}); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update book", err)
 		return err
 	}
@@ -224,7 +232,8 @@ func (impl *UpdateBooksMongoImpl) DeleteBooks(ctx context.Context, ids []string)
 	if len(ids) == 0 {
 		return nil
 	}
-	if _, err := impl.collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": ids}}); err != nil {
+	collection := impl.collections.Book
+	if _, err := collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": ids}}); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete books", err)
 		return err
 	}

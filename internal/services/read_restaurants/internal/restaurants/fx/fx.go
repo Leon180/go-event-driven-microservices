@@ -5,14 +5,13 @@ import (
 	environmentsfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/environments/fx"
 	loggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx"
 	messagingfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/fx"
-	mongodbfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/mongodb/fx"
 	rabbitmqfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/fx"
 	redisdbfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb/fx"
 	contextloggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers/fx"
 	uuidfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid/fx"
 	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/configs/fx"
 	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/fx"
-	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/postgresdb/fx"
+	mongodbfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb/fx"
 	restaurantsrabbitmq "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/rabbitmq"
 	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories/fx"
 	"go.uber.org/fx"
@@ -39,7 +38,6 @@ var ProvideModule = fx.Module(
 	contextloggersfx.ProvideModule,
 
 	// db
-	postgresdbfx.ProvideModule,
 	redisdbfx.ProvideModule,
 	mongodbfx.ProvideModule,
 
@@ -65,9 +63,6 @@ var ProvideModule = fx.Module(
 
 var InvokeModule = fx.Module(
 	"restaurantsInvokeFx",
-
-	// migrations
-	postgresdbfx.InvokeModule,
 
 	// rabbitmq
 	rabbitmqfx.InvokeModule,

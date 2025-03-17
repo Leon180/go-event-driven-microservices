@@ -2,108 +2,66 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
-	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
-	"github.com/samber/lo"
 )
 
-type CreateRestaurant interface {
-	CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error
+type CreateRestaurantHandler interface {
+	CreateRestaurant(ctx context.Context, aggregate *aggregates.Restaurant) error
 }
 
-func NewCreateRestaurant(
-	uuidGenerator uuid.UUIDGenerator,
-	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
-	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo,
-) CreateRestaurant {
+func NewCreateRestaurantHandler(
+	redisConfig redisdb.RedisConfig,
+	updateRestaurantsMongo repositories.UpdateRestaurantsMongo,
+	readRestaurantsMongo repositories.ReadRestaurantsMongo,
+	setRestaurantsRedis repositories.SetRestaurantsRedis,
+) CreateRestaurantHandler {
 	return &createRestaurantImpl{
-		uuidGenerator: uuidGenerator,
-		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
-		searchRestaurantsFullInfoRepository:        searchRestaurantsFullInfoRepository,
+		updateRestaurantsMongo: updateRestaurantsMongo,
+		readRestaurantsMongo:   readRestaurantsMongo,
+		setRestaurantsRedis:    setRestaurantsRedis,
 	}
 }
 
 type createRestaurantImpl struct {
-	uuidGenerator                              uuid.UUIDGenerator
-	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
-	searchRestaurantsFullInfoRepository        repositories.SearchRestaurantsFullInfo
+	redisConfig            redisdb.RedisConfig
+	updateRestaurantsMongo repositories.UpdateRestaurantsMongo
+	readRestaurantsMongo   repositories.ReadRestaurantsMongo
+	setRestaurantsRedis    repositories.SetRestaurantsRedis
 }
 
-func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error {
-	if req == nil {
+func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, aggregate *aggregates.Restaurant) error {
+	if aggregate == nil {
 		return nil
 	}
 
 	// check if restaurant already exists
-	restaurants, err := handle.searchRestaurantsFullInfoRepository.SearchRestaurantsFullInfo(
-		ctx,
-		&dtos.SearchRestaurants{
-			NameFilter:        &req.Name,
-			NamePreciseSearch: true,
-		},
-	)
+	restaurant, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if lo.ContainsBy(restaurants, func(restaurant aggregates.Restaurant) bool {
-		return restaurant.ActiveStatus
-	}) {
-		return customizeerrors.RestaurantAlreadyExistsError
-	}
-
-	if lo.ContainsBy(restaurants, func(restaurant aggregates.Restaurant) bool {
-		return !restaurant.ActiveStatus
-	}) {
+	if restaurant != nil {
+		if restaurant.ActiveStatus {
+			return customizeerrors.RestaurantAlreadyExistsError
+		}
 		return customizeerrors.RestaurantAlreadyExistsButInactiveError
 	}
 
-	// build restaurant create entities by aggregate
-	restaurantDTOAggregateBuilder := aggregates.NewRestaurantDTOAggregateBuilder(handle.uuidGenerator)
-	err = restaurantDTOAggregateBuilder.SaveRestaurant(req)
+	err = handle.updateRestaurantsMongo.CreateRestaurants(ctx, []aggregates.Restaurant{*aggregate})
 	if err != nil {
 		return err
 	}
-	editEntities := restaurantDTOAggregateBuilder.GetEditEntities()
-	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
-		return nil
-	}
-	createEntities := *editEntities[0].CreateEntities
 
-	// create
-	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
+	err = handle.setRestaurantsRedis.SetRestaurant(
+		ctx,
+		aggregate,
+		time.Duration(handle.redisConfig.CacheTimeOut)*time.Second,
+	)
 	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err := tx.CreateRestaurants(ctx, createEntities.Restaurants); err != nil {
-		return err
-	}
-	if err := tx.CreateBranches(ctx, createEntities.Branches); err != nil {
-		return err
-	}
-	if err := tx.CreateAddresses(ctx, createEntities.Addresses); err != nil {
-		return err
-	}
-	if err := tx.CreatePriceRanges(ctx, createEntities.PriceRanges); err != nil {
-		return err
-	}
-	if err := tx.CreateBranchCategoryRelations(ctx, createEntities.BranchCategoryRelations); err != nil {
-		return err
-	}
-	if err := tx.CreateTables(ctx, createEntities.Tables); err != nil {
-		return err
-	}
-	if err := tx.CreateAvailables(ctx, createEntities.Availables); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return err
 	}
 

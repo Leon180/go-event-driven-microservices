@@ -2,87 +2,63 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
-	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/redisdb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
-	"github.com/samber/lo"
 )
 
-type CreateBook interface {
-	CreateBook(ctx context.Context, req *dtos.Book) error
+type CreateBookHandler interface {
+	CreateBook(ctx context.Context, aggregate *aggregates.Book) error
 }
 
-func NewCreateBook(
-	uuidGenerator uuid.UUIDGenerator,
-	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction],
-	searchBooksFullInfoRepository repositories.SearchBooksFullInfo,
-) CreateBook {
+func NewCreateBookHandler(
+	redisConfig redisdb.RedisConfig,
+	updateBooksMongo repositories.UpdateBooksMongo,
+	readBooksMongo repositories.ReadBooksMongo,
+	setBookRedis repositories.SetBookRedis,
+) CreateBookHandler {
 	return &createBookImpl{
-		uuidGenerator:                        uuidGenerator,
-		updateBooksWithTransactionRepository: updateBooksWithTransactionRepository,
-		searchBooksFullInfoRepository:        searchBooksFullInfoRepository,
+		redisConfig:      redisConfig,
+		updateBooksMongo: updateBooksMongo,
+		readBooksMongo:   readBooksMongo,
+		setBookRedis:     setBookRedis,
 	}
 }
 
 type createBookImpl struct {
-	uuidGenerator                        uuid.UUIDGenerator
-	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction]
-	searchBooksFullInfoRepository        repositories.SearchBooksFullInfo
+	redisConfig      redisdb.RedisConfig
+	updateBooksMongo repositories.UpdateBooksMongo
+	readBooksMongo   repositories.ReadBooksMongo
+	setBookRedis     repositories.SetBookRedis
 }
 
-func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) error {
-	if req == nil {
+func (handle *createBookImpl) CreateBook(ctx context.Context, aggregate *aggregates.Book) error {
+	if aggregate == nil {
 		return nil
 	}
 
 	// check if book already exists
-	books, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, &dtos.SearchBooks{
-		TableID:     &req.TableID,
-		AvailableID: &req.AvailableID,
-	})
+	book, err := handle.readBooksMongo.ReadBook(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if lo.ContainsBy(books, func(book aggregates.Book) bool {
-		return book.ActiveStatus
-	}) {
-		return customizeerrors.BookAlreadyExistsError
-	}
-
-	if lo.ContainsBy(books, func(book aggregates.Book) bool {
-		return !book.ActiveStatus
-	}) {
+	if book != nil {
+		if book.ActiveStatus {
+			return customizeerrors.BookAlreadyExistsError
+		}
 		return customizeerrors.BookAlreadyExistsButInactiveError
 	}
 
-	// build book create entities by aggregate
-	bookDTOAggregateBuilder := aggregates.NewBookDTOAggregateBuilder(handle.uuidGenerator)
-	err = bookDTOAggregateBuilder.SaveBook(req)
+	err = handle.updateBooksMongo.CreateBooks(ctx, []aggregates.Book{*aggregate})
 	if err != nil {
 		return err
 	}
-	editEntities := bookDTOAggregateBuilder.GetEditEntities()
-	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
-		return nil
-	}
-	createEntities := *editEntities[0].CreateEntities
 
-	// create
-	tx, err := handle.updateBooksWithTransactionRepository.BeginTx(ctx)
+	err = handle.setBookRedis.SetBook(ctx, aggregate, time.Duration(handle.redisConfig.CacheTimeOut)*time.Second)
 	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err := tx.CreateBooks(ctx, createEntities.Books); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return err
 	}
 

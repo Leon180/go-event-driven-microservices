@@ -52,7 +52,7 @@
     "poolTimeout": 6,
     "cacheTimeOut": 60
   },
-  "rabbitmqOptions": {
+  "rabbitMQConfig": {
     "autoStart": true,
     "userName": "guest",
     "password": "guest",

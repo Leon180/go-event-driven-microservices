@@ -4,42 +4,43 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
-	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
-	"github.com/samber/lo"
 )
 
-type DeleteRestaurant interface {
-	DeleteRestaurant(ctx context.Context, req *featuresdtos.DeleteRestaurantRequest) error
+type DeleteRestaurantHandler interface {
+	DeleteRestaurant(ctx context.Context, aggregate *aggregates.Restaurant) error
 }
 
-func NewDeleteRestaurant(
-	updateRestaurantsRepository repositories.UpdateRestaurants,
-	readRestaurantsRepository repositories.ReadRestaurants,
-) DeleteRestaurant {
+func NewDeleteRestaurantHandler(
+	updateRestaurantsMongo repositories.UpdateRestaurantsMongo,
+	readRestaurantsMongo repositories.ReadRestaurantsMongo,
+	setRestaurantsRedis repositories.SetRestaurantsRedis,
+) DeleteRestaurantHandler {
 	return &deleteRestaurantImpl{
-		updateRestaurantsRepository: updateRestaurantsRepository,
-		readRestaurantsRepository:   readRestaurantsRepository,
+		updateRestaurantsMongo: updateRestaurantsMongo,
+		readRestaurantsMongo:   readRestaurantsMongo,
+		setRestaurantsRedis:    setRestaurantsRedis,
 	}
 }
 
 type deleteRestaurantImpl struct {
-	updateRestaurantsRepository repositories.UpdateRestaurants
-	readRestaurantsRepository   repositories.ReadRestaurants
+	updateRestaurantsMongo repositories.UpdateRestaurantsMongo
+	readRestaurantsMongo   repositories.ReadRestaurantsMongo
+	setRestaurantsRedis    repositories.SetRestaurantsRedis
 }
 
 func (handle *deleteRestaurantImpl) DeleteRestaurant(
 	ctx context.Context,
-	req *featuresdtos.DeleteRestaurantRequest,
+	aggregate *aggregates.Restaurant,
 ) error {
-	if req == nil {
+	if aggregate == nil {
 		return nil
 	}
-	if req.ID == "" {
+	if aggregate.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
-	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, req.ID)
+	restaurant, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
@@ -49,9 +50,11 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 	if !restaurant.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
-	updateRestaurant := entities.UpdateRestaurant{
-		ID:           restaurant.ID,
-		ActiveStatus: lo.ToPtr(false),
+	if err := handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
+		return err
 	}
-	return handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant)
+	if err := handle.setRestaurantsRedis.DeleteRestaurant(ctx, aggregate); err != nil {
+		return err
+	}
+	return nil
 }

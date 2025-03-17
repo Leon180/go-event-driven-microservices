@@ -1,8 +1,6 @@
 package json
 
 import (
-	"reflect"
-
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/serializers"
@@ -11,14 +9,12 @@ import (
 
 func NewMessageJSONSerializer(
 	serializer serializers.Serializer,
-	typeMaker types.TypeMaker,
 ) serializers.MessageSerializer {
-	return &messageJSONSerializer{serializer: serializer, typeMaker: typeMaker}
+	return &messageJSONSerializer{serializer: serializer}
 }
 
 type messageJSONSerializer struct {
 	serializer serializers.Serializer
-	typeMaker  types.TypeMaker
 }
 
 func (m *messageJSONSerializer) Serialize(message types.Message) (*serializers.SerializationResult, error) {
@@ -32,7 +28,7 @@ func (m *messageJSONSerializer) SerializeObject(message any) (*serializers.Seria
 
 	data, err := m.serializer.Marshal(message)
 	if err != nil {
-		return nil, err
+		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
 	return &serializers.SerializationResult{Data: data, ContentType: m.ContentType()}, nil
@@ -51,26 +47,21 @@ func (m *messageJSONSerializer) Deserialize(
 		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	instance, err := m.typeMaker.GetTypeInstance(messageType)
-	if err != nil {
-		return nil, err
+	targetMessagePointer := types.EmptyInstanceByTypeNameAndImplementedInterface[types.Message](messageType)
+
+	if targetMessagePointer == nil {
+		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	if reflect.TypeOf(instance).Kind() != reflect.Ptr {
-		if err := m.serializer.Unmarshal(data, &instance); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := m.serializer.Unmarshal(data, instance); err != nil {
-			return nil, err
-		}
+	if contentType != m.ContentType() {
+		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	if message, ok := instance.(types.Message); ok {
-		return message, nil
+	if err := m.serializer.Unmarshal(data, targetMessagePointer); err != nil {
+		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	return nil, customizeerrors.MessageTypeInvalidError
+	return targetMessagePointer.(types.Message), nil
 }
 
 func (m *messageJSONSerializer) DeserializeObject(
@@ -82,26 +73,21 @@ func (m *messageJSONSerializer) DeserializeObject(
 		return nil, nil
 	}
 
+	targetMessagePointer := types.InstanceByTypeName(messageType)
+
+	if targetMessagePointer == nil {
+		return nil, customizeerrors.MessageTypeInvalidError
+	}
+
 	if contentType != m.ContentType() {
 		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	instance, err := m.typeMaker.GetTypeInstance(messageType)
-	if err != nil {
-		return nil, err
+	if err := m.serializer.Unmarshal(data, targetMessagePointer); err != nil {
+		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	if reflect.TypeOf(instance).Kind() != reflect.Ptr {
-		if err := m.serializer.Unmarshal(data, &instance); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := m.serializer.Unmarshal(data, instance); err != nil {
-			return nil, err
-		}
-	}
-
-	return instance, nil
+	return targetMessagePointer, nil
 }
 
 func (m *messageJSONSerializer) ContentType() enums.ContentType {

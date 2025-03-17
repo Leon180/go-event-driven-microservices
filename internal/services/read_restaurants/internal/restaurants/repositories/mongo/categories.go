@@ -7,6 +7,7 @@ import (
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,24 +15,25 @@ import (
 
 func NewListCategoriesMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.ListCategoriesMongo {
 	return &listCategoriesMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type listCategoriesMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
 func (impl *listCategoriesMongoImpl) ListCategories(ctx context.Context) (aggregates.Categories, error) {
-	cursor, err := impl.collection.Find(ctx, bson.M{})
+	collection := impl.collections.Category
+	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
 		return nil, err

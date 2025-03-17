@@ -10,6 +10,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,19 +20,19 @@ import (
 
 func NewSearchRestaurantsMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.SearchRestaurantsMongo {
 	return &SearchRestaurantsMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type SearchRestaurantsMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -64,8 +65,10 @@ func (impl *SearchRestaurantsMongoImpl) SearchRestaurants(
 		)
 	}
 
+	collection := impl.collections.Restaurant
+
 	// Execute pipeline
-	cursor, err := impl.collection.Aggregate(ctx, pipeline)
+	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to search restaurants", err)
 		return nil, err
@@ -212,19 +215,19 @@ func (impl *SearchRestaurantsMongoImpl) buildSortStage(orderBy []utilitiesdb.Ord
 
 func NewReadRestaurantsMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.ReadRestaurantsMongo {
 	return &ReadRestaurantsMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type ReadRestaurantsMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -235,8 +238,9 @@ func (impl *ReadRestaurantsMongoImpl) ReadRestaurant(
 	if id == "" {
 		return nil, nil
 	}
+	collection := impl.collections.Restaurant
 	var restaurant documents.Restaurant
-	if err := impl.collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&restaurant); err != nil {
+	if err := collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&restaurant); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
 			Error("failed to read restaurant full info", err)
 		return nil, err
@@ -248,19 +252,19 @@ func (impl *ReadRestaurantsMongoImpl) ReadRestaurant(
 // Update Restaurants Impl
 func NewUpdateRestaurantsMongo(
 	db *mongo.Client,
-	collection *mongo.Collection,
+	collections *mongodb.Collections,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.UpdateRestaurantsMongo {
 	return &UpdateRestaurantsMongoImpl{
 		db:            db,
-		collection:    collection,
+		collections:   collections,
 		contextLogger: contextLogger,
 	}
 }
 
 type UpdateRestaurantsMongoImpl struct {
 	db            *mongo.Client
-	collection    *mongo.Collection
+	collections   *mongodb.Collections
 	contextLogger contextloggers.ContextLogger
 }
 
@@ -276,7 +280,8 @@ func (impl *UpdateRestaurantsMongoImpl) CreateRestaurants(
 	for i, doc := range restaurantsDocs {
 		docs[i] = doc
 	}
-	if _, err := impl.collection.InsertMany(ctx, docs); err != nil {
+	collection := impl.collections.Restaurant
+	if _, err := collection.InsertMany(ctx, docs); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
 		return err
 	}
@@ -291,7 +296,8 @@ func (impl *UpdateRestaurantsMongoImpl) UpdateRestaurant(
 		return nil
 	}
 	doc := restaurant.ToDocument()
-	if _, err := impl.collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: restaurant.ID}}, bson.D{{Key: "$set", Value: *doc}}); err != nil {
+	collection := impl.collections.Restaurant
+	if _, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: restaurant.ID}}, bson.D{{Key: "$set", Value: *doc}}); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to update restaurant", err)
 		return err
 	}
@@ -302,7 +308,8 @@ func (impl *UpdateRestaurantsMongoImpl) DeleteRestaurants(ctx context.Context, i
 	if len(ids) == 0 {
 		return nil
 	}
-	if _, err := impl.collection.DeleteMany(ctx, bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}}}); err != nil {
+	collection := impl.collections.Restaurant
+	if _, err := collection.DeleteMany(ctx, bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}}}); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete restaurants", err)
 		return err
 	}

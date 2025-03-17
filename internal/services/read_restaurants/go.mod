@@ -14,6 +14,7 @@ require (
 	github.com/swaggo/swag v1.16.4
 	go.mongodb.org/mongo-driver v1.17.3
 	go.uber.org/fx v1.23.0
+	go.uber.org/mock v0.5.0
 	gorm.io/gorm v1.25.12
 )
 

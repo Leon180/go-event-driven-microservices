@@ -4,18 +4,18 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
 	rabbitmqconsumer "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/consumer"
 	rabbitmqoperators "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/operators"
-	createbookcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/commands"
 	createbookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/events"
-	createrestaurantcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/commands"
+	createbookservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
 	createrestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/events"
-	deletebookcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/commands"
+	createrestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
 	deletebookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/events"
-	deleterestaurantcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/commands"
+	deletebookservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/services"
 	deleterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/events"
-	restorerestaurantcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/commands"
+	deleterestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/services"
 	restorerestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/events"
-	updaterestaurantcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/commands"
+	restorerestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/services"
 	updaterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/events"
+	updaterestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/services"
 	"go.uber.org/fx"
 )
 
@@ -23,21 +23,17 @@ var ProvideModule = fx.Module(
 	"restaurantsRabbitMQProvideModule",
 	fx.Provide(
 		NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc,
-		fx.Annotate(
-			NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc,
-			fx.As(new(rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc)),
-		),
 	),
 )
 
 func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	logger loggers.Logger,
-	createBookCommand createbookcommands.CreateBookHandler,
-	createRestaurantCommand createrestaurantcommands.CreateRestaurantHandler,
-	deleteBookCommand deletebookcommands.DeleteBookHandler,
-	deleteRestaurantCommand deleterestaurantcommands.DeleteRestaurantHandler,
-	restoreRestaurantCommand restorerestaurantcommands.RestoreRestaurantHandler,
-	updateRestaurantCommand updaterestaurantcommands.UpdateRestaurantHandler,
+	createBookService createbookservices.CreateBookHandler,
+	createRestaurantService createrestaurantservices.CreateRestaurantHandler,
+	deleteBookService deletebookservices.DeleteBookHandler,
+	deleteRestaurantService deleterestaurantservices.DeleteRestaurantHandler,
+	restoreRestaurantService restorerestaurantservices.RestoreRestaurantHandler,
+	updateRestaurantService updaterestaurantservices.UpdateRestaurantHandler,
 ) rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc {
 	return func(builder rabbitmqoperators.RabbitMQOperatorsConfigBuilder) {
 		builder.
@@ -45,42 +41,42 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 				createbookevents.CreateBook{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						createbookevents.NewCreateBookHandler(logger, createBookCommand),
+						createbookevents.NewCreateBookHandler(logger, createBookService),
 					)
 				}).
 			AddConsumer(
 				createrestaurantevents.CreateRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						createrestaurantevents.NewCreateRestaurantHandler(logger, createRestaurantCommand),
+						createrestaurantevents.NewCreateRestaurantHandler(logger, createRestaurantService),
 					)
 				}).
 			AddConsumer(
 				deletebookevents.DeleteBook{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						deletebookevents.NewDeleteBookHandler(logger, deleteBookCommand),
+						deletebookevents.NewDeleteBookHandler(logger, deleteBookService),
 					)
 				}).
 			AddConsumer(
 				deleterestaurantevents.DeleteRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						deleterestaurantevents.NewDeleteRestaurantHandler(logger, deleteRestaurantCommand),
+						deleterestaurantevents.NewDeleteRestaurantHandler(logger, deleteRestaurantService),
 					)
 				}).
 			AddConsumer(
 				restorerestaurantevents.RestoreRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						restorerestaurantevents.NewRestoreRestaurantHandler(logger, restoreRestaurantCommand),
+						restorerestaurantevents.NewRestoreRestaurantHandler(logger, restoreRestaurantService),
 					)
 				}).
 			AddConsumer(
 				updaterestaurantevents.UpdateRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
-						updaterestaurantevents.NewUpdateRestaurantHandler(logger, updateRestaurantCommand),
+						updaterestaurantevents.NewUpdateRestaurantHandler(logger, updateRestaurantService),
 					)
 				})
 	}

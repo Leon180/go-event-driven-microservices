@@ -15,71 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/book/create": {
-            "post": {
-                "description": "Create a new book",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Create a new book",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.Book"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Book created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/book/delete": {
-            "post": {
-                "description": "Delete a book",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Delete a book",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/featuresdtos.DeleteBookRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "book deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/books/search": {
             "post": {
                 "description": "Search books",
@@ -146,71 +81,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/restaurant/create": {
-            "post": {
-                "description": "Create a new restaurant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "restaurants"
-                ],
-                "summary": "Create a new restaurant",
-                "parameters": [
-                    {
-                        "description": "Restaurant",
-                        "name": "restaurant",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.Restaurant"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Restaurant created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/restaurant/delete": {
-            "post": {
-                "description": "Delete a restaurant",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "restaurants"
-                ],
-                "summary": "Delete a restaurant",
-                "parameters": [
-                    {
-                        "description": "Restaurant",
-                        "name": "restaurant",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/featuresdtos.DeleteRestaurantRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "restaurant deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/restaurant/get": {
             "post": {
                 "description": "Get restaurant by id",
@@ -235,71 +105,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "restaurant retrieved successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/restaurant/restore": {
-            "post": {
-                "description": "Restore a restaurant",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "restaurants"
-                ],
-                "summary": "Restore a restaurant",
-                "parameters": [
-                    {
-                        "description": "Restaurant",
-                        "name": "restaurant",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/featuresdtos.RestoreRestaurantRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "restaurant restored successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/restaurant/update": {
-            "put": {
-                "description": "Update a restaurant",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "restaurants"
-                ],
-                "summary": "Update a restaurant",
-                "parameters": [
-                    {
-                        "description": "Restaurant",
-                        "name": "restaurant",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.Restaurant"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "restaurant updated successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -381,6 +186,39 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "db.OrderBy": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/definitions/db.OrderByDirection"
+                },
+                "field": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.OrderByDirection": {
+            "type": "string",
+            "enum": [
+                "asc",
+                "desc"
+            ],
+            "x-enum-varnames": [
+                "OrderByDirectionAsc",
+                "OrderByDirectionDesc"
+            ]
+        },
+        "db.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
                 }
             }
         },
@@ -580,11 +418,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -642,11 +480,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -815,28 +653,6 @@ const docTemplate = `{
                 "CountryTaiwan"
             ]
         },
-        "featuresdtos.DeleteBookRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "featuresdtos.DeleteRestaurantRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "featuresdtos.GetRestaurantRequest": {
             "type": "object",
             "required": [
@@ -845,50 +661,6 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
-                }
-            }
-        },
-        "featuresdtos.RestoreRestaurantRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "postgresgorm.OrderBy": {
-            "type": "object",
-            "properties": {
-                "direction": {
-                    "$ref": "#/definitions/postgresgorm.OrderByDirection"
-                },
-                "field": {
-                    "type": "string"
-                }
-            }
-        },
-        "postgresgorm.OrderByDirection": {
-            "type": "string",
-            "enum": [
-                "asc",
-                "desc"
-            ],
-            "x-enum-varnames": [
-                "OrderByDirectionAsc",
-                "OrderByDirectionDesc"
-            ]
-        },
-        "postgresgorm.Pagination": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
                 }
             }
         },

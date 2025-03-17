@@ -3,19 +3,19 @@ package ginendpoints
 import (
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/services"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/queries"
 	"github.com/gin-gonic/gin"
 )
 
 type getRestaurantImpl struct {
-	getRestaurantService services.GetRestaurant
+	getRestaurantQuery queries.GetRestaurantHandler
 }
 
 func NewGetRestaurant(
-	getRestaurantService services.GetRestaurant,
+	getRestaurantQuery queries.GetRestaurantHandler,
 ) customizegin.Endpoint {
 	return &getRestaurantImpl{
-		getRestaurantService: getRestaurantService,
+		getRestaurantQuery: getRestaurantQuery,
 	}
 }
 
@@ -36,7 +36,7 @@ func (handle *getRestaurantImpl) Handle(c *gin.Context) {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	restaurant, err := handle.getRestaurantService.GetRestaurant(c.Request.Context(), &req)
+	restaurant, err := handle.getRestaurantQuery.GetRestaurant(c.Request.Context(), &queries.GetRestaurant{ID: req.ID})
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return

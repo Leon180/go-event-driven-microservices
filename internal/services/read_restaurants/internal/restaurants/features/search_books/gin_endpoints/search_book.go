@@ -3,19 +3,19 @@ package ginendpoints
 import (
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/services"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/queries"
 	"github.com/gin-gonic/gin"
 )
 
 type searchBooksImpl struct {
-	searchBooksService services.SearchBooks
+	searchBooksQuery queries.SearchBooksHandler
 }
 
 func NewSearchBooks(
-	searchBooksService services.SearchBooks,
+	searchBooksQuery queries.SearchBooksHandler,
 ) customizegin.Endpoint {
 	return &searchBooksImpl{
-		searchBooksService: searchBooksService,
+		searchBooksQuery: searchBooksQuery,
 	}
 }
 
@@ -36,7 +36,18 @@ func (handle *searchBooksImpl) Handle(c *gin.Context) {
 		customizegin.ResponseError(c, nil, "", err)
 		return
 	}
-	books, err := handle.searchBooksService.SearchBooks(c.Request.Context(), &req)
+	books, err := handle.searchBooksQuery.SearchBooks(c.Request.Context(), &queries.SearchBooks{
+		MobileNumber:            req.MobileNumber,
+		TableID:                 req.TableID,
+		AvailableID:             req.AvailableID,
+		NameFilter:              req.NameFilter,
+		NamePreciseSearch:       req.NamePreciseSearch,
+		TableAvailableWeek:      req.TableAvailableWeek,
+		TableAvailableStartTime: req.TableAvailableStartTime,
+		TableAvailableEndTime:   req.TableAvailableEndTime,
+		OrderBy:                 req.OrderBy,
+		Pagination:              req.Pagination,
+	})
 	if err != nil {
 		customizegin.ResponseError(c, nil, "", err)
 		return

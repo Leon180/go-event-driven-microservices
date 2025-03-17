@@ -9,7 +9,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
 )
 
-//go:generate mockgen -source=restaurants_postgres.go -destination=./mocks/rrestaurants_postgres_mock.go -package=mocks
+//go:generate mockgen -source=restaurants.go -destination=./mocks/restaurants_mock.go -package=mocks
 
 type SearchRestaurantsFullInfo interface {
 	SearchRestaurantsFullInfo(

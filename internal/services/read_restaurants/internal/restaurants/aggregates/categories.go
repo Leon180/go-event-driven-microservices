@@ -9,6 +9,11 @@ import (
 
 type Category entities.Category
 
+func (c *Category) ToEntity() *entities.Category {
+	e := entities.Category(*c)
+	return &e
+}
+
 func (c *Category) TableName() string {
 	return "category"
 }
@@ -38,6 +43,12 @@ func (c *Category) ToDocument() *documents.Category {
 }
 
 type Categories []Category
+
+func (c Categories) ToEntities() []entities.Category {
+	return lo.Map(c, func(category Category, _ int) entities.Category {
+		return *category.ToEntity()
+	})
+}
 
 func (c Categories) ToDTO() []dtos.Category {
 	return lo.Map(c, func(category Category, _ int) dtos.Category {

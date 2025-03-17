@@ -19,6 +19,28 @@ definitions:
       success:
         type: boolean
     type: object
+  db.OrderBy:
+    properties:
+      direction:
+        $ref: '#/definitions/db.OrderByDirection'
+      field:
+        type: string
+    type: object
+  db.OrderByDirection:
+    enum:
+    - asc
+    - desc
+    type: string
+    x-enum-varnames:
+    - OrderByDirectionAsc
+    - OrderByDirectionDesc
+  db.Pagination:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+    type: object
   dtos.Address:
     properties:
       city:
@@ -148,10 +170,10 @@ definitions:
         type: boolean
       orderBy:
         items:
-          $ref: '#/definitions/postgresgorm.OrderBy'
+          $ref: '#/definitions/db.OrderBy'
         type: array
       pagination:
-        $ref: '#/definitions/postgresgorm.Pagination'
+        $ref: '#/definitions/db.Pagination'
       tableAvailableEndTime:
         type: string
       tableAvailableStartTime:
@@ -189,10 +211,10 @@ definitions:
         type: boolean
       orderBy:
         items:
-          $ref: '#/definitions/postgresgorm.OrderBy'
+          $ref: '#/definitions/db.OrderBy'
         type: array
       pagination:
-        $ref: '#/definitions/postgresgorm.Pagination'
+        $ref: '#/definitions/db.Pagination'
       tableAvailableEndTime:
         type: string
       tableAvailableStartTime:
@@ -341,55 +363,12 @@ definitions:
     x-enum-varnames:
     - CountryInvalid
     - CountryTaiwan
-  featuresdtos.DeleteBookRequest:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  featuresdtos.DeleteRestaurantRequest:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
   featuresdtos.GetRestaurantRequest:
     properties:
       id:
         type: string
     required:
     - id
-    type: object
-  featuresdtos.RestoreRestaurantRequest:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  postgresgorm.OrderBy:
-    properties:
-      direction:
-        $ref: '#/definitions/postgresgorm.OrderByDirection'
-      field:
-        type: string
-    type: object
-  postgresgorm.OrderByDirection:
-    enum:
-    - asc
-    - desc
-    type: string
-    x-enum-varnames:
-    - OrderByDirectionAsc
-    - OrderByDirectionDesc
-  postgresgorm.Pagination:
-    properties:
-      page:
-        type: integer
-      pageSize:
-        type: integer
     type: object
   time.Weekday:
     enum:
@@ -416,48 +395,6 @@ info:
   title: Restaurants Service API
   version: "1.0"
 paths:
-  /book/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a new book
-      parameters:
-      - description: Book
-        in: body
-        name: book
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.Book'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Book created successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Create a new book
-      tags:
-      - books
-  /book/delete:
-    post:
-      description: Delete a book
-      parameters:
-      - description: Book
-        in: body
-        name: book
-        required: true
-        schema:
-          $ref: '#/definitions/featuresdtos.DeleteBookRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: book deleted successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Delete a book
-      tags:
-      - books
   /books/search:
     post:
       description: Search books
@@ -498,48 +435,6 @@ paths:
       summary: Get all categories
       tags:
       - categories
-  /restaurant/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a new restaurant
-      parameters:
-      - description: Restaurant
-        in: body
-        name: restaurant
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.Restaurant'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Restaurant created successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Create a new restaurant
-      tags:
-      - restaurants
-  /restaurant/delete:
-    post:
-      description: Delete a restaurant
-      parameters:
-      - description: Restaurant
-        in: body
-        name: restaurant
-        required: true
-        schema:
-          $ref: '#/definitions/featuresdtos.DeleteRestaurantRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: restaurant deleted successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Delete a restaurant
-      tags:
-      - restaurants
   /restaurant/get:
     post:
       description: Get restaurant by id
@@ -558,48 +453,6 @@ paths:
           schema:
             $ref: '#/definitions/customizegin.JSONResponse'
       summary: Get restaurant by id
-      tags:
-      - restaurants
-  /restaurant/restore:
-    post:
-      description: Restore a restaurant
-      parameters:
-      - description: Restaurant
-        in: body
-        name: restaurant
-        required: true
-        schema:
-          $ref: '#/definitions/featuresdtos.RestoreRestaurantRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: restaurant restored successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Restore a restaurant
-      tags:
-      - restaurants
-  /restaurant/update:
-    put:
-      consumes:
-      - application/json
-      description: Update a restaurant
-      parameters:
-      - description: Restaurant
-        in: body
-        name: restaurant
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.Restaurant'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: restaurant updated successfully
-          schema:
-            $ref: '#/definitions/customizegin.JSONResponse'
-      summary: Update a restaurant
       tags:
       - restaurants
   /restaurants/search:

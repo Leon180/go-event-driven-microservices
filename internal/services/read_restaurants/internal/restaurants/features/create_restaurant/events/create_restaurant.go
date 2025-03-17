@@ -7,7 +7,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	createrestaurantcommands "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/commands"
+	createrestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
 )
 
 type CreateRestaurant struct {
@@ -15,37 +15,31 @@ type CreateRestaurant struct {
 	aggregates.Restaurant
 }
 
-func (c *CreateRestaurant) ToCommand() *createrestaurantcommands.CreateRestaurant {
-	command := createrestaurantcommands.CreateRestaurant(c.Restaurant)
-	return &command
-}
-
 func NewCreateRestaurantHandler(
 	logger loggers.Logger,
-	createRestaurantCommand createrestaurantcommands.CreateRestaurantHandler,
+	createRestaurantService createrestaurantservices.CreateRestaurantHandler,
 ) *CreateRestaurantHandle {
 	return &CreateRestaurantHandle{
 		logger:                  logger,
-		createRestaurantCommand: createRestaurantCommand,
+		createRestaurantService: createRestaurantService,
 	}
 }
 
 type CreateRestaurantHandle struct {
 	logger                  loggers.Logger
-	createRestaurantCommand createrestaurantcommands.CreateRestaurantHandler
+	createRestaurantService createrestaurantservices.CreateRestaurantHandler
 }
 
 func (h *CreateRestaurantHandle) Handle(ctx context.Context, event types.MessageConsumeContext) error {
-	restaurant, ok := event.Message().(*CreateRestaurant)
+	m, ok := event.Message().(*CreateRestaurant)
 	if !ok {
 		h.logger.Error("error in casting CreateRestaurant event")
 		return customizeerrors.RestaurantEventCastingError
 	}
 
-	command := restaurant.ToCommand()
-	err := h.createRestaurantCommand.CreateRestaurant(ctx, command)
+	err := h.createRestaurantService.CreateRestaurant(ctx, &m.Restaurant)
 	if err != nil {
-		h.logger.Error("error in sending CreateRestaurant with id: {%s}, error: {%v}", command.Restaurant.ID, err)
+		h.logger.Error("error in sending CreateRestaurant with id: {%s}, error: {%v}", m.Restaurant.ID, err)
 		return err
 	}
 	h.logger.Info("CreateRestaurant consumer handled.")

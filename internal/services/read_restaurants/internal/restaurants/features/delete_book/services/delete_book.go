@@ -4,39 +4,40 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
-	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
-	"github.com/samber/lo"
 )
 
-type DeleteBook interface {
-	DeleteBook(ctx context.Context, req *featuresdtos.DeleteBookRequest) error
+type DeleteBookHandler interface {
+	DeleteBook(ctx context.Context, command *aggregates.Book) error
 }
 
-func NewDeleteBook(
-	updateBooksRepository repositories.UpdateBooks,
-	readBooksRepository repositories.ReadBooks,
-) DeleteBook {
+func NewDeleteBookHandler(
+	updateBooksMongo repositories.UpdateBooksMongo,
+	readBooksMongo repositories.ReadBooksMongo,
+	setBookRedis repositories.SetBookRedis,
+) DeleteBookHandler {
 	return &deleteBookImpl{
-		updateBooksRepository: updateBooksRepository,
-		readBooksRepository:   readBooksRepository,
+		updateBooksMongo: updateBooksMongo,
+		readBooksMongo:   readBooksMongo,
+		setBookRedis:     setBookRedis,
 	}
 }
 
 type deleteBookImpl struct {
-	updateBooksRepository repositories.UpdateBooks
-	readBooksRepository   repositories.ReadBooks
+	updateBooksMongo repositories.UpdateBooksMongo
+	readBooksMongo   repositories.ReadBooksMongo
+	setBookRedis     repositories.SetBookRedis
 }
 
-func (handle *deleteBookImpl) DeleteBook(ctx context.Context, req *featuresdtos.DeleteBookRequest) error {
-	if req == nil {
+func (handle *deleteBookImpl) DeleteBook(ctx context.Context, command *aggregates.Book) error {
+	if command == nil {
 		return nil
 	}
-	if req.ID == "" {
+	if command.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
-	book, err := handle.readBooksRepository.ReadBook(ctx, req.ID)
+	book, err := handle.readBooksMongo.ReadBook(ctx, command.ID)
 	if err != nil {
 		return err
 	}
@@ -46,9 +47,18 @@ func (handle *deleteBookImpl) DeleteBook(ctx context.Context, req *featuresdtos.
 	if !book.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
-	updateBook := entities.UpdateBook{
-		ID:           book.ID,
-		ActiveStatus: lo.ToPtr(false),
+
+	aggregate := aggregates.Book(*command)
+
+	err = handle.updateBooksMongo.UpdateBook(ctx, &aggregate)
+	if err != nil {
+		return err
 	}
-	return handle.updateBooksRepository.UpdateBook(ctx, &updateBook)
+
+	err = handle.setBookRedis.DeleteBook(ctx, &aggregate)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
