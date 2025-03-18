@@ -6,12 +6,14 @@ import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
+	updaterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/update_restaurant/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 )
 
@@ -24,6 +26,8 @@ type updateRestaurantImpl struct {
 	readRestaurantsRepository                  repositories.ReadRestaurants
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
 	contextlogger                              contextloggers.ContextLogger
+	rabbitmqProducer                           producer.Producer
+	updateRestaurantMessageBuilder             updaterestaurantevents.UpdateRestaurantMessageBuilder
 }
 
 func NewUpdateRestaurant(
@@ -31,12 +35,16 @@ func NewUpdateRestaurant(
 	readRestaurantsRepository repositories.ReadRestaurants,
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	contextlogger contextloggers.ContextLogger,
+	rabbitmqProducer producer.Producer,
+	updateRestaurantMessageBuilder updaterestaurantevents.UpdateRestaurantMessageBuilder,
 ) UpdateRestaurant {
 	return &updateRestaurantImpl{
 		uuidGenerator:                              uuidGenerator,
 		readRestaurantsRepository:                  readRestaurantsRepository,
 		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
 		contextlogger:                              contextlogger,
+		rabbitmqProducer:                           rabbitmqProducer,
+		updateRestaurantMessageBuilder:             updateRestaurantMessageBuilder,
 	}
 }
 
@@ -99,6 +107,15 @@ func (handle *updateRestaurantImpl) UpdateRestaurant(ctx context.Context, req *d
 
 	if err := tx.Commit(); err != nil {
 		return err
+	}
+
+	// publish update restaurant event
+	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
+	for _, restaurant := range aggregates {
+		message := handle.updateRestaurantMessageBuilder.Build(&restaurant)
+		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+			return err
+		}
 	}
 
 	return nil

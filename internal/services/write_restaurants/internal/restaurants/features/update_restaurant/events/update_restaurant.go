@@ -3,7 +3,7 @@ package events
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 )
 
 type UpdateRestaurant struct {
@@ -11,23 +11,23 @@ type UpdateRestaurant struct {
 	aggregates.Restaurant
 }
 
-type UpdateRestaurantBuilder interface {
-	Build(restaurant aggregates.Restaurant) *UpdateRestaurant
+type UpdateRestaurantMessageBuilder interface {
+	Build(restaurant *aggregates.Restaurant) *UpdateRestaurant
 }
 
-func NewUpdateRestaurantBuilder(uuidGenerator uuid.UUIDGenerator) UpdateRestaurantBuilder {
-	return &updateRestaurantBuilderImpl{
+func NewUpdateRestaurantMessageBuilder(uuidGenerator uuid.UUIDGenerator) UpdateRestaurantMessageBuilder {
+	return &updateRestaurantMessageBuilderImpl{
 		uuidGenerator: uuidGenerator,
 	}
 }
 
-type updateRestaurantBuilderImpl struct {
+type updateRestaurantMessageBuilderImpl struct {
 	uuidGenerator uuid.UUIDGenerator
 }
 
-func (b *updateRestaurantBuilderImpl) Build(restaurant aggregates.Restaurant) *UpdateRestaurant {
+func (b *updateRestaurantMessageBuilderImpl) Build(restaurant *aggregates.Restaurant) *UpdateRestaurant {
 	return &UpdateRestaurant{
-		Restaurant: restaurant,
+		Restaurant: *restaurant,
 		Message:    types.NewMessage(b.uuidGenerator.GenerateUUID(), "UpdateRestaurant"),
 	}
 }

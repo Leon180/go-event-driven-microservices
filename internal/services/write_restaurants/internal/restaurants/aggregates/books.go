@@ -6,9 +6,9 @@ import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/validates/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
+	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/validates/dtos"
 	"github.com/samber/lo"
 )
 
@@ -64,6 +64,25 @@ type BookUpdateEntities struct {
 
 type BookDeleteEntities struct {
 	Books []entities.Book
+}
+
+type BookEntities entities.Books
+
+func (b BookEntities) ToAggregates() []Book {
+	return lo.Map(b, func(book entities.Book, _ int) Book {
+		be := BookEntity(book)
+		return *be.ToAggregate()
+	})
+}
+
+type BookEntity entities.Book
+
+func (b *BookEntity) ToAggregate() *Book {
+	e := entities.Book(*b)
+	return &Book{
+		Book:         e,
+		editTypeCode: enums.EditTypeCodeNone,
+	}
 }
 
 type Books []Book

@@ -1,9 +1,9 @@
-package integrationevents
+package events
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 )
 
 type CreateBook struct {
@@ -11,23 +11,23 @@ type CreateBook struct {
 	aggregates.Book
 }
 
-type CreateBookBuilder interface {
-	Build(book aggregates.Book) *CreateBook
+type CreateBookMessageBuilder interface {
+	Build(book *aggregates.Book) *CreateBook
 }
 
-func NewCreateBookBuilder(uuidGenerator uuid.UUIDGenerator) CreateBookBuilder {
-	return &createBookBuilderImpl{
+func NewCreateBookMessageBuilder(uuidGenerator uuid.UUIDGenerator) CreateBookMessageBuilder {
+	return &createBookMessageBuilderImpl{
 		uuidGenerator: uuidGenerator,
 	}
 }
 
-type createBookBuilderImpl struct {
+type createBookMessageBuilderImpl struct {
 	uuidGenerator uuid.UUIDGenerator
 }
 
-func (b *createBookBuilderImpl) Build(book aggregates.Book) *CreateBook {
+func (b *createBookMessageBuilderImpl) Build(book *aggregates.Book) *CreateBook {
 	return &CreateBook{
-		Book:    book,
+		Book:    *book,
 		Message: types.NewMessage(b.uuidGenerator.GenerateUUID(), "CreateBook"),
 	}
 }

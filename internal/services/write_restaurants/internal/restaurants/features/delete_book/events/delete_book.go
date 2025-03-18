@@ -3,7 +3,7 @@ package integrationevents
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 )
 
 type DeleteBook struct {
@@ -11,23 +11,23 @@ type DeleteBook struct {
 	aggregates.Book
 }
 
-type DeleteBookBuilder interface {
-	Build(book aggregates.Book) *DeleteBook
+type DeleteBookMessageBuilder interface {
+	Build(book *aggregates.Book) *DeleteBook
 }
 
-func NewDeleteBookBuilder(uuidGenerator uuid.UUIDGenerator) DeleteBookBuilder {
-	return &deleteBookBuilderImpl{
+func NewDeleteBookMessageBuilder(uuidGenerator uuid.UUIDGenerator) DeleteBookMessageBuilder {
+	return &deleteBookMessageBuilderImpl{
 		uuidGenerator: uuidGenerator,
 	}
 }
 
-type deleteBookBuilderImpl struct {
+type deleteBookMessageBuilderImpl struct {
 	uuidGenerator uuid.UUIDGenerator
 }
 
-func (b *deleteBookBuilderImpl) Build(book aggregates.Book) *DeleteBook {
+func (b *deleteBookMessageBuilderImpl) Build(book *aggregates.Book) *DeleteBook {
 	return &DeleteBook{
-		Book:    book,
+		Book:    *book,
 		Message: types.NewMessage(b.uuidGenerator.GenerateUUID(), "DeleteBook"),
 	}
 }

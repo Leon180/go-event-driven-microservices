@@ -6,9 +6,9 @@ import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/validates/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
+	validatesdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/validates/dtos"
 	"github.com/samber/lo"
 )
 
@@ -56,6 +56,25 @@ type restaurantDTOAggregateImpl struct {
 
 	// dependencies
 	uuidGenerator uuid.UUIDGenerator
+}
+
+type RestaurantEntities entities.Restaurants
+
+func (r RestaurantEntities) ToAggregates() []Restaurant {
+	return lo.Map(r, func(restaurant entities.Restaurant, _ int) Restaurant {
+		re := RestaurantEntity(restaurant)
+		return *re.ToAggregate()
+	})
+}
+
+type RestaurantEntity entities.Restaurant
+
+func (r *RestaurantEntity) ToAggregate() *Restaurant {
+	e := entities.Restaurant(*r)
+	return &Restaurant{
+		Restaurant:   e,
+		editTypeCode: enums.EditTypeCodeNone,
+	}
 }
 
 type RestaurantEditEntities struct {
