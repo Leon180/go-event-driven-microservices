@@ -65,7 +65,7 @@ definitions:
         description: HH:MM
         type: string
       weekday:
-        $ref: '#/definitions/time.Weekday'
+        type: integer
     type: object
   dtos.Book:
     properties:
@@ -180,7 +180,7 @@ definitions:
         type: string
       tableAvailableWeek:
         items:
-          $ref: '#/definitions/time.Weekday'
+          type: integer
         type: array
       tableID:
         type: string
@@ -221,7 +221,7 @@ definitions:
         type: string
       tableAvailableWeek:
         items:
-          $ref: '#/definitions/time.Weekday'
+          type: integer
         type: array
     type: object
   dtos.Table:
@@ -391,38 +391,6 @@ definitions:
     required:
     - id
     type: object
-  time.Weekday:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    type: integer
-    x-enum-varnames:
-    - Sunday
-    - Monday
-    - Tuesday
-    - Wednesday
-    - Thursday
-    - Friday
-    - Saturday
-    - Sunday
-    - Monday
-    - Tuesday
-    - Wednesday
-    - Thursday
-    - Friday
-    - Saturday
 host: localhost:8001
 info:
   contact: {}

@@ -446,7 +446,7 @@
                     "type": "string"
                 },
                 "weekday": {
-                    "$ref": "#/definitions/time.Weekday"
+                    "type": "integer"
                 }
             }
         },
@@ -622,7 +622,7 @@
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/time.Weekday"
+                        "type": "integer"
                     }
                 },
                 "tableID": {
@@ -684,7 +684,7 @@
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/time.Weekday"
+                        "type": "integer"
                     }
                 }
             }
@@ -885,41 +885,6 @@
                     "type": "string"
                 }
             }
-        },
-        "time.Weekday": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            ],
-            "x-enum-varnames": [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
-            ]
         }
     }
 }

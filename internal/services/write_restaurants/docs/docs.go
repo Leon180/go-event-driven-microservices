@@ -452,7 +452,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "weekday": {
-                    "$ref": "#/definitions/time.Weekday"
+                    "type": "integer"
                 }
             }
         },
@@ -628,7 +628,7 @@ const docTemplate = `{
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/time.Weekday"
+                        "type": "integer"
                     }
                 },
                 "tableID": {
@@ -690,7 +690,7 @@ const docTemplate = `{
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/time.Weekday"
+                        "type": "integer"
                     }
                 }
             }
@@ -891,41 +891,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "time.Weekday": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            ],
-            "x-enum-varnames": [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
-            ]
         }
     }
 }`
