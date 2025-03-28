@@ -28,10 +28,8 @@ install-dependencies:
 
 .PHONY: format
 format:
-	@./scripts/format.sh accounts
-	@./scripts/format.sh cards
-	@./scripts/format.sh customers
-	@./scripts/format.sh loans
+	@./scripts/format.sh read_restaurants
+	@./scripts/format.sh write_restaurants
 	@./scripts/format.sh pkg
 
 .PHONY: lint

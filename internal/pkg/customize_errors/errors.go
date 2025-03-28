@@ -68,6 +68,7 @@ var (
 	RestaurantAlreadyExistsError            = newErrorFromErrorCode(RestaurantAlreadyExists)
 	RestaurantNotFoundError                 = newErrorFromErrorCode(RestaurantNotFound)
 	RestaurantAlreadyExistsButInactiveError = newErrorFromErrorCode(RestaurantAlreadyExistsButInactive)
+	RestaurantEventCastingError             = newErrorFromErrorCode(RestaurantEventCasting)
 
 	// Branch
 	BranchNameEmptyError     = newErrorFromErrorCode(BranchNameEmpty)
@@ -99,6 +100,13 @@ var (
 	BookNotFoundError                  = newErrorFromErrorCode(BookNotFound)
 	BookTableAndAvailableNotMatchError = newErrorFromErrorCode(BookTableAndAvailableNotMatch)
 	BookAlreadyExistsButInactiveError  = newErrorFromErrorCode(BookAlreadyExistsButInactive)
+	BookEventCastingError              = newErrorFromErrorCode(BookEventCasting)
+
+	// rabbitmq
+	RabbitmqConnectionError = newErrorFromErrorCode(RabbitmqConnection)
+
+	// message
+	MessageTypeInvalidError = newErrorFromErrorCode(MessageTypeInvalid)
 )
 
 type CustomError interface {
@@ -173,6 +181,7 @@ const (
 	RestaurantAlreadyExists            ErrorCode = 40002
 	RestaurantNotFound                 ErrorCode = 40003
 	RestaurantAlreadyExistsButInactive ErrorCode = 40004
+	RestaurantEventCasting             ErrorCode = 40005
 
 	// Branch
 	BranchNameEmpty     ErrorCode = 41001
@@ -208,6 +217,13 @@ const (
 	BookNotFound                  ErrorCode = 46003
 	BookTableAndAvailableNotMatch ErrorCode = 46004
 	BookAlreadyExistsButInactive  ErrorCode = 46005
+	BookEventCasting              ErrorCode = 46006
+
+	// rabbitmq
+	RabbitmqConnection ErrorCode = 50001
+
+	// message
+	MessageTypeInvalid ErrorCode = 60001
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
@@ -273,6 +289,7 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	RestaurantAlreadyExists:            "restaurant already exists",
 	RestaurantNotFound:                 "restaurant not found",
 	RestaurantAlreadyExistsButInactive: "restaurant already exists but is inactive",
+	RestaurantEventCasting:             "restaurant event casting error",
 
 	// Branch
 	BranchNameEmpty:     "branch name is empty",
@@ -308,6 +325,13 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	BookNotFound:                  "book not found",
 	BookTableAndAvailableNotMatch: "book table and available not match",
 	BookAlreadyExistsButInactive:  "book already exists but is inactive",
+	BookEventCasting:              "book event casting error",
+
+	// rabbitmq
+	RabbitmqConnection: "rabbitmq connection error",
+
+	// message
+	MessageTypeInvalid: "message type is invalid",
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
@@ -373,6 +397,7 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	RestaurantAlreadyExists:            http.StatusConflict,
 	RestaurantNotFound:                 http.StatusNotFound,
 	RestaurantAlreadyExistsButInactive: http.StatusConflict,
+	RestaurantEventCasting:             http.StatusBadRequest,
 
 	// Branch
 	BranchNameEmpty:     http.StatusBadRequest,
@@ -408,6 +433,13 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	BookNotFound:                  http.StatusNotFound,
 	BookTableAndAvailableNotMatch: http.StatusConflict,
 	BookAlreadyExistsButInactive:  http.StatusConflict,
+	BookEventCasting:              http.StatusBadRequest,
+
+	// rabbitmq
+	RabbitmqConnection: http.StatusInternalServerError,
+
+	// message
+	MessageTypeInvalid: http.StatusBadRequest,
 }
 
 func (e ErrorCode) GetCode() int {
