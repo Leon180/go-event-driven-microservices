@@ -19,6 +19,28 @@ definitions:
       success:
         type: boolean
     type: object
+  db.OrderBy:
+    properties:
+      direction:
+        $ref: '#/definitions/db.OrderByDirection'
+      field:
+        type: string
+    type: object
+  db.OrderByDirection:
+    enum:
+    - asc
+    - desc
+    type: string
+    x-enum-varnames:
+    - OrderByDirectionAsc
+    - OrderByDirectionDesc
+  db.Pagination:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+    type: object
   dtos.Address:
     properties:
       city:
@@ -148,10 +170,10 @@ definitions:
         type: boolean
       orderBy:
         items:
-          $ref: '#/definitions/postgresgorm.OrderBy'
+          $ref: '#/definitions/db.OrderBy'
         type: array
       pagination:
-        $ref: '#/definitions/postgresgorm.Pagination'
+        $ref: '#/definitions/db.Pagination'
       tableAvailableEndTime:
         type: string
       tableAvailableStartTime:
@@ -189,10 +211,10 @@ definitions:
         type: boolean
       orderBy:
         items:
-          $ref: '#/definitions/postgresgorm.OrderBy'
+          $ref: '#/definitions/db.OrderBy'
         type: array
       pagination:
-        $ref: '#/definitions/postgresgorm.Pagination'
+        $ref: '#/definitions/db.Pagination'
       tableAvailableEndTime:
         type: string
       tableAvailableStartTime:
@@ -369,30 +391,15 @@ definitions:
     required:
     - id
     type: object
-  postgresgorm.OrderBy:
-    properties:
-      direction:
-        $ref: '#/definitions/postgresgorm.OrderByDirection'
-      field:
-        type: string
-    type: object
-  postgresgorm.OrderByDirection:
-    enum:
-    - asc
-    - desc
-    type: string
-    x-enum-varnames:
-    - OrderByDirectionAsc
-    - OrderByDirectionDesc
-  postgresgorm.Pagination:
-    properties:
-      page:
-        type: integer
-      pageSize:
-        type: integer
-    type: object
   time.Weekday:
     enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
     - 0
     - 1
     - 2
@@ -409,7 +416,14 @@ definitions:
     - Thursday
     - Friday
     - Saturday
-host: localhost:8001
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+host: localhost:8002
 info:
   contact: {}
   description: Simple service for restaurants resources

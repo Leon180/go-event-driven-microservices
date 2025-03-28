@@ -2,6 +2,7 @@ package repositoriesredis
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
@@ -27,16 +28,18 @@ type listCategoriesRedisImpl struct {
 }
 
 func (impl *listCategoriesRedisImpl) ListCategories(ctx context.Context) (aggregates.Categories, error) {
-	keys, err := impl.db.Keys(ctx, "*").Result()
+	categories := make(documents.Categories, 0)
+	l, err := impl.db.HGetAll(ctx, "categories").Result()
 	if err != nil {
-		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
 		return nil, err
 	}
-
-	var categories documents.Categories
-	if err := impl.db.MGet(ctx, keys...).Scan(&categories); err != nil {
-		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to list categories", err)
-		return nil, err
+	for _, v := range l {
+		var category documents.Category
+		if err := json.Unmarshal([]byte(v), &category); err != nil {
+			impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to unmarshal category", err)
+			continue
+		}
+		categories = append(categories, category)
 	}
 	return aggregates.CategoryDocuments(categories).ToAggregate(), nil
 }
@@ -61,7 +64,7 @@ func (impl *setCategoriesRedisImpl) SetCategory(ctx context.Context, category *a
 		return nil
 	}
 	categoryDocument := category.ToDocument()
-	if _, err := impl.db.Set(ctx, category.ID, *categoryDocument, 0).Result(); err != nil {
+	if _, err := impl.db.HSet(ctx, "categories", *categoryDocument).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set category", err)
 		return err
 	}

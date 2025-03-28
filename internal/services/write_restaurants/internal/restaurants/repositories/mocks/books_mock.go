@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	aggregates "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
-	dtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	entities "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	aggregates "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	dtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	entities "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	gomock "go.uber.org/mock/gomock"
 )
 

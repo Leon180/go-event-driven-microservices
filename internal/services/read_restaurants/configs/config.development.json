@@ -26,7 +26,7 @@
     "host": "localhost",
     "port": 27017,
     "user": "admin",
-    "password": "admin",
+    "password": "secret",
     "database": "restaurants",
     "useAuth": true,
     "enableTracing": true,

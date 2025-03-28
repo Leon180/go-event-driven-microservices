@@ -5,10 +5,12 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	createRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/create_restaurant/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 )
 
@@ -20,11 +22,15 @@ func NewCreateRestaurant(
 	uuidGenerator uuid.UUIDGenerator,
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo,
+	rabbitmqProducer producer.Producer,
+	createRestaurantMessageBuilder createRestaurantEvents.CreateRestaurantMessageBuilder,
 ) CreateRestaurant {
 	return &createRestaurantImpl{
 		uuidGenerator: uuidGenerator,
 		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
 		searchRestaurantsFullInfoRepository:        searchRestaurantsFullInfoRepository,
+		rabbitmqProducer:                           rabbitmqProducer,
+		createRestaurantMessageBuilder:             createRestaurantMessageBuilder,
 	}
 }
 
@@ -32,6 +38,8 @@ type createRestaurantImpl struct {
 	uuidGenerator                              uuid.UUIDGenerator
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
 	searchRestaurantsFullInfoRepository        repositories.SearchRestaurantsFullInfo
+	rabbitmqProducer                           producer.Producer
+	createRestaurantMessageBuilder             createRestaurantEvents.CreateRestaurantMessageBuilder
 }
 
 func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error {
@@ -64,8 +72,7 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 
 	// build restaurant create entities by aggregate
 	restaurantDTOAggregateBuilder := aggregates.NewRestaurantDTOAggregateBuilder(handle.uuidGenerator)
-	err = restaurantDTOAggregateBuilder.SaveRestaurant(req)
-	if err != nil {
+	if err := restaurantDTOAggregateBuilder.SaveRestaurant(req); err != nil {
 		return err
 	}
 	editEntities := restaurantDTOAggregateBuilder.GetEditEntities()
@@ -105,6 +112,15 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 
 	if err := tx.Commit(); err != nil {
 		return err
+	}
+
+	// publish create restaurant events
+	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
+	for _, restaurant := range aggregates {
+		message := handle.createRestaurantMessageBuilder.Build(&restaurant)
+		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+			return err
+		}
 	}
 
 	return nil

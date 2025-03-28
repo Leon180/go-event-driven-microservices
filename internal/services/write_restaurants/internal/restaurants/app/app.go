@@ -2,7 +2,7 @@ package app
 
 import (
 	fxapp "github.com/Leon180/go-event-driven-microservices/internal/pkg/fxapp"
-	restaurantsfx "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/fx"
+	restaurantsfx "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/fx"
 )
 
 type RestaurantsFxApp struct{}

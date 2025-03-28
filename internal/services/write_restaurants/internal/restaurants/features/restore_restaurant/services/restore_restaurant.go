@@ -4,9 +4,12 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/restore_restaurant/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/restore_restaurant/dtos"
+	restoreRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/restore_restaurant/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 )
 
@@ -17,16 +20,22 @@ type RestoreRestaurant interface {
 func NewRestoreRestaurant(
 	updateRestaurantsRepository repositories.UpdateRestaurants,
 	readRestaurantsRepository repositories.ReadRestaurants,
+	rabbitmqProducer producer.Producer,
+	restoreRestaurantMessageBuilder restoreRestaurantEvents.RestoreRestaurantMessageBuilder,
 ) RestoreRestaurant {
 	return &restoreRestaurantImpl{
-		updateRestaurantsRepository: updateRestaurantsRepository,
-		readRestaurantsRepository:   readRestaurantsRepository,
+		updateRestaurantsRepository:     updateRestaurantsRepository,
+		readRestaurantsRepository:       readRestaurantsRepository,
+		rabbitmqProducer:                rabbitmqProducer,
+		restoreRestaurantMessageBuilder: restoreRestaurantMessageBuilder,
 	}
 }
 
 type restoreRestaurantImpl struct {
-	updateRestaurantsRepository repositories.UpdateRestaurants
-	readRestaurantsRepository   repositories.ReadRestaurants
+	updateRestaurantsRepository     repositories.UpdateRestaurants
+	readRestaurantsRepository       repositories.ReadRestaurants
+	rabbitmqProducer                producer.Producer
+	restoreRestaurantMessageBuilder restoreRestaurantEvents.RestoreRestaurantMessageBuilder
 }
 
 func (handle *restoreRestaurantImpl) RestoreRestaurant(
@@ -39,6 +48,7 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(
 	if req.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
+
 	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, req.ID)
 	if err != nil {
 		return err
@@ -53,5 +63,16 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(
 		ID:           restaurant.ID,
 		ActiveStatus: lo.ToPtr(true),
 	}
-	return handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant)
+	if err := handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant); err != nil {
+		return err
+	}
+
+	// publish restore restaurant event
+	re := aggregates.RestaurantEntity(*restaurant)
+	message := handle.restoreRestaurantMessageBuilder.Build(re.ToAggregate())
+	if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+		return err
+	}
+
+	return nil
 }

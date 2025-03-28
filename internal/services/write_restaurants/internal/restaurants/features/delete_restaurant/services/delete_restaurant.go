@@ -4,9 +4,12 @@ import (
 	"context"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
-	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/features/delete_restaurant/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
+	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_restaurant/dtos"
+	deleteRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_restaurant/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 )
 
@@ -17,16 +20,22 @@ type DeleteRestaurant interface {
 func NewDeleteRestaurant(
 	updateRestaurantsRepository repositories.UpdateRestaurants,
 	readRestaurantsRepository repositories.ReadRestaurants,
+	rabbitmqProducer producer.Producer,
+	deleteRestaurantMessageBuilder deleteRestaurantEvents.DeleteRestaurantMessageBuilder,
 ) DeleteRestaurant {
 	return &deleteRestaurantImpl{
-		updateRestaurantsRepository: updateRestaurantsRepository,
-		readRestaurantsRepository:   readRestaurantsRepository,
+		updateRestaurantsRepository:    updateRestaurantsRepository,
+		readRestaurantsRepository:      readRestaurantsRepository,
+		rabbitmqProducer:               rabbitmqProducer,
+		deleteRestaurantMessageBuilder: deleteRestaurantMessageBuilder,
 	}
 }
 
 type deleteRestaurantImpl struct {
-	updateRestaurantsRepository repositories.UpdateRestaurants
-	readRestaurantsRepository   repositories.ReadRestaurants
+	updateRestaurantsRepository    repositories.UpdateRestaurants
+	readRestaurantsRepository      repositories.ReadRestaurants
+	rabbitmqProducer               producer.Producer
+	deleteRestaurantMessageBuilder deleteRestaurantEvents.DeleteRestaurantMessageBuilder
 }
 
 func (handle *deleteRestaurantImpl) DeleteRestaurant(
@@ -39,6 +48,7 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 	if req.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
+
 	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, req.ID)
 	if err != nil {
 		return err
@@ -53,5 +63,16 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 		ID:           restaurant.ID,
 		ActiveStatus: lo.ToPtr(false),
 	}
-	return handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant)
+	if err := handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant); err != nil {
+		return err
+	}
+
+	// publish delete restaurant event
+	re := aggregates.RestaurantEntity(*restaurant)
+	message := handle.deleteRestaurantMessageBuilder.Build(re.ToAggregate())
+	if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+		return err
+	}
+
+	return nil
 }

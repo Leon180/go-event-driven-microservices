@@ -4,8 +4,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
+	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -28,33 +31,108 @@ func InitEnv() enums.Environment {
 	}
 
 	manualEnv := os.Getenv(enums.AppEnv)
-
-	if manualEnv != "" && enums.Environment(manualEnv).IsValid() {
+	if enums.Environment(manualEnv).IsValid() {
 		env = enums.Environment(manualEnv)
 	}
 
 	return env
 }
 
-func FindProjectRootWorkingDirectory() (string, error) {
-	var rootDirectory string
-	projectNameEnv := viper.GetString(enums.ProjectNameEnv)
-	if projectNameEnv != "" {
-		rootDir, err := findProjectRootDirectoryFromProjectName(projectNameEnv)
-		if err != nil {
-			return "", err
-		}
-		rootDirectory = rootDir
-	} else {
-		currecntDir, _ := os.Getwd()
-		rootDir, err := findRootDirectory(currecntDir)
-		if err != nil {
-			return "", err
-		}
-		rootDirectory = rootDir
+func loadEnvFilesRecursive(envFileNameExtension enums.FileNameExtension) error {
+	currecntDir, err := os.Getwd()
+	if err != nil {
+		log.Printf("error get working directory: %v", err)
+		return err
 	}
 
-	absoluteRootWorkingDirectory, _ := filepath.Abs(rootDirectory)
+	for {
+		envFilePath := filepath.Join(currecntDir, envFileNameExtension.String())
+		if err := godotenv.Load(envFilePath); err == nil {
+			return nil
+		}
+		parentDir := filepath.Dir(currecntDir)
+		if parentDir == currecntDir {
+			break
+		}
+		currecntDir = parentDir
+	}
 
+	return customizeerrors.FileNotFoundError
+}
+
+func setRootWorkingDirectoryEnvironment() error {
+	rootDir, err := FindProjectRootWorkingDirectory()
+	if err != nil {
+		log.Printf("error find project root working directory: %v", err)
+		return err
+	}
+	viper.Set(enums.AppRootPath, rootDir)
+	return nil
+}
+
+func fixProjectRootWorkingDirectoryPath() error {
+	rootDir, err := FindProjectRootWorkingDirectory()
+	if err != nil {
+		log.Printf("error find project root working directory: %v", err)
+		return err
+	}
+	return os.Chdir(rootDir)
+}
+
+func FindProjectRootWorkingDirectory() (string, error) {
+	rootDirectory := findProjectRootDirectory()
+	if rootDirectory == "" {
+		return "", customizeerrors.DirectoryNotFoundError
+	}
+	absoluteRootWorkingDirectory, _ := filepath.Abs(rootDirectory)
 	return absoluteRootWorkingDirectory, nil
+}
+
+func findProjectRootDirectory() string {
+	projectNameEnv := viper.GetString(enums.ProjectNameEnv)
+	if projectNameEnv != "" {
+		return findProjectRootDirectoryFromProjectName(projectNameEnv)
+	}
+	currecntDir, _ := os.Getwd()
+	return findRootDirectory(currecntDir)
+}
+
+func findProjectRootDirectoryFromProjectName(projectName string) string {
+	currecntDir, _ := os.Getwd()
+	parentDir := filepath.Dir(currecntDir)
+	for {
+		if strings.HasSuffix(currecntDir, projectName) {
+			return currecntDir
+		}
+		if currecntDir == "" || parentDir == currecntDir {
+			log.Printf("project root directory not found")
+			return ""
+		}
+		currecntDir, parentDir = parentDir, filepath.Dir(parentDir)
+	}
+}
+
+func findRootDirectory(currentDirectory string) string {
+	files, err := os.ReadDir(currentDirectory)
+	if err != nil {
+		log.Printf("error read directory: %v", err)
+		return ""
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		if strings.EqualFold(file.Name(), "go.mod") {
+			return currentDirectory
+		}
+	}
+
+	parentDir := filepath.Dir(currentDirectory)
+	if parentDir == currentDirectory {
+		log.Printf("root directory not found")
+		return ""
+	}
+
+	return findRootDirectory(parentDir)
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/samber/lo"
 	"gorm.io/gorm"

@@ -384,6 +384,39 @@ const docTemplate = `{
                 }
             }
         },
+        "db.OrderBy": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/definitions/db.OrderByDirection"
+                },
+                "field": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.OrderByDirection": {
+            "type": "string",
+            "enum": [
+                "asc",
+                "desc"
+            ],
+            "x-enum-varnames": [
+                "OrderByDirectionAsc",
+                "OrderByDirectionDesc"
+            ]
+        },
+        "db.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                }
+            }
+        },
         "dtos.Address": {
             "type": "object",
             "properties": {
@@ -580,11 +613,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -642,11 +675,11 @@ const docTemplate = `{
                 "orderBy": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/postgresgorm.OrderBy"
+                        "$ref": "#/definitions/db.OrderBy"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/postgresgorm.Pagination"
+                    "$ref": "#/definitions/db.Pagination"
                 },
                 "tableAvailableEndTime": {
                     "type": "string"
@@ -859,42 +892,16 @@ const docTemplate = `{
                 }
             }
         },
-        "postgresgorm.OrderBy": {
-            "type": "object",
-            "properties": {
-                "direction": {
-                    "$ref": "#/definitions/postgresgorm.OrderByDirection"
-                },
-                "field": {
-                    "type": "string"
-                }
-            }
-        },
-        "postgresgorm.OrderByDirection": {
-            "type": "string",
-            "enum": [
-                "asc",
-                "desc"
-            ],
-            "x-enum-varnames": [
-                "OrderByDirectionAsc",
-                "OrderByDirectionDesc"
-            ]
-        },
-        "postgresgorm.Pagination": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
-                }
-            }
-        },
         "time.Weekday": {
             "type": "integer",
             "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
                 0,
                 1,
                 2,
@@ -910,6 +917,13 @@ const docTemplate = `{
                 "Wednesday",
                 "Thursday",
                 "Friday",
+                "Saturday",
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
                 "Saturday"
             ]
         }
@@ -919,7 +933,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8001",
+	Host:             "localhost:8002",
 	BasePath:         "/v1/restaurants",
 	Schemes:          []string{},
 	Title:            "Restaurants Service API",

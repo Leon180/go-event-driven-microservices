@@ -11,7 +11,7 @@ import (
 )
 
 type DeleteBook struct {
-	*types.MessageImpl
+	types.Message
 	aggregates.Book
 }
 

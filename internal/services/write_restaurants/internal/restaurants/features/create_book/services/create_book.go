@@ -5,10 +5,12 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/repositories"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/create_book/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
 )
 
@@ -20,11 +22,15 @@ func NewCreateBook(
 	uuidGenerator uuid.UUIDGenerator,
 	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction],
 	searchBooksFullInfoRepository repositories.SearchBooksFullInfo,
+	rabbitmqProducer producer.Producer,
+	createBookMessageBuilder events.CreateBookMessageBuilder,
 ) CreateBook {
 	return &createBookImpl{
 		uuidGenerator:                        uuidGenerator,
 		updateBooksWithTransactionRepository: updateBooksWithTransactionRepository,
 		searchBooksFullInfoRepository:        searchBooksFullInfoRepository,
+		rabbitmqProducer:                     rabbitmqProducer,
+		createBookMessageBuilder:             createBookMessageBuilder,
 	}
 }
 
@@ -32,6 +38,8 @@ type createBookImpl struct {
 	uuidGenerator                        uuid.UUIDGenerator
 	updateBooksWithTransactionRepository customizegorm.Transactor[repositories.UpdateBooksWithTransaction]
 	searchBooksFullInfoRepository        repositories.SearchBooksFullInfo
+	rabbitmqProducer                     producer.Producer
+	createBookMessageBuilder             events.CreateBookMessageBuilder
 }
 
 func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) error {
@@ -61,8 +69,7 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) er
 
 	// build book create entities by aggregate
 	bookDTOAggregateBuilder := aggregates.NewBookDTOAggregateBuilder(handle.uuidGenerator)
-	err = bookDTOAggregateBuilder.SaveBook(req)
-	if err != nil {
+	if err := bookDTOAggregateBuilder.SaveBook(req); err != nil {
 		return err
 	}
 	editEntities := bookDTOAggregateBuilder.GetEditEntities()
@@ -84,6 +91,15 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, req *dtos.Book) er
 
 	if err := tx.Commit(); err != nil {
 		return err
+	}
+
+	// publish create book events
+	aggregates := bookDTOAggregateBuilder.GetAggregates()
+	for _, book := range aggregates {
+		message := handle.createBookMessageBuilder.Build(&book)
+		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+			return err
+		}
 	}
 
 	return nil

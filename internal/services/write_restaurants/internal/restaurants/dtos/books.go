@@ -1,6 +1,6 @@
 package dtos
 
-import "github.com/Leon180/go-event-driven-microservices/internal/services/restaurants/internal/restaurants/entities"
+import "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 
 type Book struct {
 	ID           *string    `json:"id"`
