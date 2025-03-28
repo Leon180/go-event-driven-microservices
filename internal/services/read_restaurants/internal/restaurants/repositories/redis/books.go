@@ -33,6 +33,9 @@ func (impl *ReadBooksRedisImpl) ReadBook(ctx context.Context, id string) (*aggre
 	}
 	var book documents.Book
 	if err := impl.db.Get(ctx, id).Scan(&book); err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read book", err)
 		return nil, err
 	}
@@ -72,6 +75,9 @@ func (impl *setBookRedisImpl) DeleteBook(ctx context.Context, book *aggregates.B
 		return nil
 	}
 	if err := impl.db.Del(ctx, book.ID).Err(); err != nil {
+		if err == redis.Nil {
+			return nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete book", err)
 		return err
 	}

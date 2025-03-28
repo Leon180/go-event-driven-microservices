@@ -5,14 +5,15 @@ services:
     image: mongo:latest
     container_name: restaurants_mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: restaurants
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: ["CMD", "mongosh", "localhost:27017/restaurants", "--quiet", "--eval", "db.runCommand('ping').ok"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -20,6 +21,8 @@ services:
   redis:
     image: redis:latest
     container_name: restaurants_redis
+    environment:
+      REDIS_PASSWORD: admin
     ports:
       - "6379:6379"
     volumes:

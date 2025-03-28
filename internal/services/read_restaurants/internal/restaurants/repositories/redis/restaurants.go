@@ -36,6 +36,9 @@ func (impl *ReadRestaurantsRedisImpl) ReadRestaurant(
 	}
 	var restaurant documents.Restaurant
 	if err := impl.db.Get(ctx, id).Scan(&restaurant); err != nil {
+		if err == redis.Nil {
+			return nil, nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
 			Error("failed to read restaurant full info", err)
 		return nil, err
@@ -83,6 +86,9 @@ func (impl *setRestaurantsRedisImpl) DeleteRestaurant(
 		return nil
 	}
 	if err := impl.db.Del(ctx, restaurant.ID).Err(); err != nil {
+		if err == redis.Nil {
+			return nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete restaurant", err)
 		return err
 	}

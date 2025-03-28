@@ -173,6 +173,9 @@ func (impl *ReadBooksMongoImpl) ReadBook(ctx context.Context, id string) (*aggre
 	collection := impl.collections.Book
 	var book documents.Book
 	if err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&book); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read book", err)
 		return nil, err
 	}

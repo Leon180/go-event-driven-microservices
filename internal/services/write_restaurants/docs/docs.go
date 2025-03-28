@@ -452,7 +452,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "weekday": {
-                    "type": "integer"
+                    "$ref": "#/definitions/time.Weekday"
                 }
             }
         },
@@ -628,7 +628,7 @@ const docTemplate = `{
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "$ref": "#/definitions/time.Weekday"
                     }
                 },
                 "tableID": {
@@ -690,7 +690,7 @@ const docTemplate = `{
                 "tableAvailableWeek": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "$ref": "#/definitions/time.Weekday"
                     }
                 }
             }
@@ -891,6 +891,41 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "time.Weekday": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-varnames": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ]
         }
     }
 }`
@@ -898,7 +933,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8001",
+	Host:             "localhost:8002",
 	BasePath:         "/v1/restaurants",
 	Schemes:          []string{},
 	Title:            "Restaurants Service API",

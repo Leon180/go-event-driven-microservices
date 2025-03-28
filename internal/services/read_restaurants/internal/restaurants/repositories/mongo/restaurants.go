@@ -241,6 +241,9 @@ func (impl *ReadRestaurantsMongoImpl) ReadRestaurant(
 	collection := impl.collections.Restaurant
 	var restaurant documents.Restaurant
 	if err := collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&restaurant); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
 			Error("failed to read restaurant full info", err)
 		return nil, err

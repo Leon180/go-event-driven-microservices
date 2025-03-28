@@ -11,7 +11,7 @@ import (
 // @Title           Restaurants Service API
 // @Version         1.0
 // @Description     Simple service for restaurants resources
-// @Host           localhost:8001
+// @Host           localhost:8002
 // @BasePath       /v1/restaurants
 func main() {
 	app.NewRestaurantsFxApp().Run()
