@@ -10,6 +10,11 @@ func GetInstance[T any]() T {
 	return getInstanceFromType(typ).(T)
 }
 
+func GetInstancePointer[T any]() *T {
+	typ := GetType[T]()
+	return getInstanceFromType(typ).(*T)
+}
+
 func GetInstanceByType(typ reflect.Type) any {
 	return getInstanceFromType(typ)
 }
@@ -21,6 +26,11 @@ func GetType[T any]() reflect.Type {
 
 func IsPointer[T any]() bool {
 	t := reflect.TypeOf((*T)(nil)).Elem()
+	return t.Kind() == reflect.Ptr
+}
+
+func IsPointerV2(input any) bool {
+	t := reflect.TypeOf(input)
 	return t.Kind() == reflect.Ptr
 }
 
