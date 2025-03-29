@@ -11,5 +11,5 @@ type ListCategoriesRedis interface {
 }
 
 type SetCategoriesRedis interface {
-	SetCategory(ctx context.Context, category *aggregates.Category) error
+	SetCategories(ctx context.Context, categories aggregates.Categories) error
 }

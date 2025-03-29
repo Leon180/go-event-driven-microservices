@@ -44,5 +44,6 @@ var ProvideModule = fx.Module(
 		repositoriesmongo.NewSearchBooksMongo,
 		repositoriesmongo.NewReadBooksMongo,
 		repositoriesmongo.NewUpdateBooksMongo,
+		repositoriesmongo.NewSyncCategoriesMongo,
 	),
 )

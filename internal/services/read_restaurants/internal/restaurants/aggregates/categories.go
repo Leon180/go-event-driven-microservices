@@ -1,6 +1,7 @@
 package aggregates
 
 import (
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/entities"
@@ -62,6 +63,31 @@ func (c Categories) ToDocuments() []documents.Category {
 	})
 }
 
+func (c Categories) GetUpdateCategories(original Categories) UpdateCategories {
+	createCategories := []Category{}
+	deleteCategories := []Category{}
+	m := map[enums.CategoryCode]struct{}{}
+	d := map[enums.CategoryCode]struct{}{}
+	for _, category := range original {
+		m[category.CategoryCode] = struct{}{}
+	}
+	for _, category := range c {
+		if _, ok := m[category.CategoryCode]; !ok {
+			createCategories = append(createCategories, category)
+		}
+		d[category.CategoryCode] = struct{}{}
+	}
+	for _, category := range original {
+		if _, ok := d[category.CategoryCode]; !ok {
+			deleteCategories = append(deleteCategories, category)
+		}
+	}
+	return UpdateCategories{
+		CreateCategories: createCategories,
+		DeleteCategories: deleteCategories,
+	}
+}
+
 type CategoryDocument documents.Category
 
 func (c *CategoryDocument) ToAggregate() *Category {
@@ -83,4 +109,9 @@ func (c CategoryDocuments) ToAggregate() Categories {
 		categoryDocument := CategoryDocument(category)
 		return *categoryDocument.ToAggregate()
 	})
+}
+
+type UpdateCategories struct {
+	CreateCategories []Category
+	DeleteCategories []Category
 }

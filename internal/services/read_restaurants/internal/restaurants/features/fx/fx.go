@@ -23,6 +23,8 @@ import (
 	searchBooksQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/queries"
 	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
 	searchRestaurantsQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/queries"
+	syncCategoriesEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/events"
+	syncCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/services"
 	updateRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/events"
 	updateRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/services"
 
@@ -42,6 +44,7 @@ var ProvideModule = fx.Module(
 		updateRestaurantServices.NewUpdateRestaurantHandler,
 		createBookServices.NewCreateBookHandler,
 		deleteBookServices.NewDeleteBookHandler,
+		syncCategoriesServices.NewSyncCategoriesHandler,
 	),
 
 	// queries
@@ -60,6 +63,7 @@ var ProvideModule = fx.Module(
 		updateRestaurantEvents.NewUpdateRestaurantHandler,
 		createBookEvents.NewCreateBookHandler,
 		deleteBookEvents.NewDeleteBookHandler,
+		syncCategoriesEvents.NewSyncCategoriesHandler,
 	),
 
 	// endpoints

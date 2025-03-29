@@ -59,12 +59,19 @@ type setCategoriesRedisImpl struct {
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *setCategoriesRedisImpl) SetCategory(ctx context.Context, category *aggregates.Category) error {
-	if category == nil || category.ID == "" {
+func (impl *setCategoriesRedisImpl) SetCategories(ctx context.Context, categories aggregates.Categories) error {
+	if len(categories) == 0 {
 		return nil
 	}
-	categoryDocument := category.ToDocument()
-	if _, err := impl.db.HSet(ctx, "categories", *categoryDocument).Result(); err != nil {
+	categoryDocuments := make([]*documents.Category, 0)
+	for _, category := range categories {
+		categoryDocuments = append(categoryDocuments, category.ToDocument())
+	}
+	if err := impl.db.HDel(ctx, "categories").Err(); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete categories", err)
+		return err
+	}
+	if _, err := impl.db.HSet(ctx, "categories", categoryDocuments).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set category", err)
 		return err
 	}

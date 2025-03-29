@@ -14,6 +14,8 @@ import (
 	deleterestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/services"
 	restorerestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/events"
 	restorerestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/services"
+	synccategoriesevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/events"
+	synccategorieservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/services"
 	updaterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/events"
 	updaterestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/services"
 	"go.uber.org/fx"
@@ -34,6 +36,7 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	deleteRestaurantService deleterestaurantservices.DeleteRestaurantHandler,
 	restoreRestaurantService restorerestaurantservices.RestoreRestaurantHandler,
 	updateRestaurantService updaterestaurantservices.UpdateRestaurantHandler,
+	syncCategoriesService synccategorieservices.SyncCategoriesHandler,
 ) rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc {
 	return func(builder rabbitmqoperators.RabbitMQOperatorsConfigBuilder) {
 		builder.
@@ -77,6 +80,13 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						updaterestaurantevents.NewUpdateRestaurantHandler(logger, updateRestaurantService),
+					)
+				}).
+			AddConsumer(
+				synccategoriesevents.SyncCategories{},
+				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
+					builder.SetHandlers(
+						synccategoriesevents.NewSyncCategoriesHandler(logger, syncCategoriesService),
 					)
 				})
 	}
