@@ -2,7 +2,6 @@ package configs
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,29 +28,11 @@ func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) 
 		env = enums.EnvironmentDevelopment
 	}
 
-	cfg := reflect.GetInstance[T]()
-
 	viper.SetDefault(enums.ConfigPath, "")
-
-	configPath := viper.GetString(enums.ConfigPath)
+	configPath := findConfigPath(env)
 	if configPath == "" {
-		appRootPath := viper.GetString(enums.AppRootPath)
-		if appRootPath == "" {
-			appRootPath, _ = environments.FindProjectRootWorkingDirectory()
-		}
-		if appRootPath == "" {
-			log.Printf("appRootPath is empty")
-			return *new(T), customizeerrors.DirectoryNotFoundError
-		}
-		dir, err := findConfigFileDir(appRootPath, env)
-		if err != nil {
-			log.Printf("error find config file dir: %v", err)
-			return *new(T), err
-		}
-		configPath = dir
+		return *new(T), customizeerrors.DirectoryNotFoundError
 	}
-
-	// https://github.com/spf13/viper/issues/390#issuecomment-718756752
 	viper.SetConfigName(fmt.Sprintf("config.%s", env))
 	viper.AddConfigPath(configPath)
 	viper.SetConfigType(string(enums.Json))
@@ -60,42 +41,26 @@ func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) 
 		return *new(T), err
 	}
 
-	isPointer := reflect.IsPointer[T]()
-
+	cfg := reflect.GetInstance[T]()
+	isPointer := reflect.IsPointerV2(cfg)
 	if isPointer {
-		if configKey == "" {
-			if err := viper.Unmarshal(cfg); err != nil {
-				log.Printf("error unmarshal config: %v", err)
-				return *new(T), err
-			}
-		} else {
-			if err := viper.UnmarshalKey(configKey, cfg); err != nil {
-				log.Printf("error unmarshal config key: %v", err)
-				return *new(T), err
-			}
+		if err := unmarchalConfig[T](cfg, configKey); err != nil {
+			return *new(T), err
 		}
 	} else {
-		if configKey == "" {
-			if err := viper.Unmarshal(&cfg); err != nil {
-				log.Printf("error unmarshal config: %v", err)
-				return *new(T), err
-			}
-		} else {
-			if err := viper.UnmarshalKey(configKey, &cfg); err != nil {
-				log.Printf("error unmarshal config key: %v", err)
-				return *new(T), err
-			}
+		if err := unmarchalConfig[T](&cfg, configKey); err != nil {
+			return *new(T), err
 		}
 	}
 
 	viper.AutomaticEnv()
 
 	if isPointer {
-		if err := goenv.Parse(cfg); err != nil {
+		if err := parseEnv[T](cfg); err != nil {
 			return *new(T), err
 		}
 	} else {
-		if err := goenv.Parse(&cfg); err != nil {
+		if err := parseEnv[T](&cfg); err != nil {
 			return *new(T), err
 		}
 	}
@@ -103,12 +68,24 @@ func BindConfigByKey[T any](configKey string, env enums.Environment) (T, error) 
 	return cfg, nil
 }
 
-func findConfigFileDir(
-	rootDir string,
-	env enums.Environment,
-) (string, error) {
+func findConfigPath(env enums.Environment) string {
+	configPath := viper.GetString(enums.ConfigPath)
+	if configPath != "" {
+		return configPath
+	}
+	return findConfigPathByRootPath(env)
+}
+
+func findConfigPathByRootPath(env enums.Environment) string {
+	appRootPath := viper.GetString(enums.AppRootPath)
+	if appRootPath == "" {
+		appRootPath, _ = environments.FindProjectRootWorkingDirectory()
+	}
+	if appRootPath == "" {
+		return ""
+	}
 	var result string
-	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(appRootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -123,13 +100,18 @@ func findConfigFileDir(
 		}
 		return nil
 	})
-	if err != nil {
-		log.Printf("error walk config file dir: %v", err)
-		return "", err
+	return result
+}
+
+// unmarchalConfig will unmarchal config from viper to struct T, the T should be a pointer
+func unmarchalConfig[T any](cfg any, configKey string) error {
+	if configKey == "" {
+		return viper.Unmarshal(cfg)
 	}
-	if result == "" {
-		log.Printf("config file dir not found")
-		return "", customizeerrors.DirectoryNotFoundError
-	}
-	return result, nil
+	return viper.UnmarshalKey(configKey, cfg)
+}
+
+// parseEnv will parse env from viper to struct T, the T should be a pointer
+func parseEnv[T any](cfg any) error {
+	return goenv.Parse(cfg)
 }

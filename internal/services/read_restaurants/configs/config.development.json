@@ -1,0 +1,66 @@
+{
+  "appConfig": {
+    "connWebPort": "8001",
+    "serviceName": "restaurants",
+    "version": "v1",
+    "maxAge": 12,
+    "allowAllOrigins": true,
+    "allowCredentials": true,
+    "allowMethods": "GET, POST, PUT, DELETE, OPTIONS",
+    "allowHeaders": "X-PINGOTHER, Accept, Authorization, Content-Type, X-CSRF-Token, Upgrade, Origin, Connection, Accept-Encoding, Accept-Language, Host, Access-Control-Request-Method, Access-Control-Request-Headers",
+    "exposeHeaders": "Content-Length, Link"
+  },
+  "gormDBConfig": {
+    "dsn": "postgresql://postgres:postgres@localhost:5432/restaurants?sslmode=disable",
+    "dbDisableForeignKeyConstraintWhenMigrating": false,
+    "dbMaxIdle": 10,
+    "dbMaxOpen": 100,
+    "dbMaxLifetimeMinute": 10
+  },
+  "loggerConfig": {
+    "logLevel": -1,
+    "callerEnabled": true,
+    "enableTracing": true
+  },
+  "mongoDBConfig": {
+    "host": "localhost",
+    "port": 27017,
+    "user": "admin",
+    "password": "secret",
+    "database": "restaurants",
+    "useAuth": true,
+    "enableTracing": true,
+    "connectTimeout": 60,
+    "maxConnIdleTime": 180,
+    "minPoolSize": 20,
+    "maxPoolSize": 300
+  },
+  "redisConfig": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "admin",
+    "database": 0,
+    "poolSize": 30,
+    "enableTracing": true,
+    "maxRetries": 5,
+    "minRetryBackoff": 300,
+    "maxRetryBackoff": 500,
+    "dialTimeout": 5,
+    "readTimeout": 5,
+    "writeTimeout": 3,
+    "minIdleConns": 20,
+    "poolTimeout": 6,
+    "cacheTimeOut": 60
+  },
+  "rabbitMQConfig": {
+    "autoStart": true,
+    "userName": "guest",
+    "password": "guest",
+    "hostName": "localhost",
+    "port": 5672,
+    "httpPort": 15672,
+    "retryAttempts": 3,
+    "retryDelay": 300,
+    "reconnectDelay": 3000
+  }
+}

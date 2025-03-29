@@ -12,23 +12,23 @@ const (
 	REPLY                = "reply"
 )
 
-type ContextType string
+type ContentType string
 
 const (
-	ContextTypeJSON               ContextType = "application/json"
-	ContextTypeFormData           ContextType = "application/form-data"
-	ContextTypeXWWWFormUrlencoded ContextType = "application/x-www-form-urlencoded"
-	ContextTypeXML                ContextType = "application/xml"
+	ContentTypeJSON               ContentType = "application/json"
+	ContentTypeFormData           ContentType = "application/form-data"
+	ContentTypeXWWWFormUrlencoded ContentType = "application/x-www-form-urlencoded"
+	ContentTypeXML                ContentType = "application/xml"
 )
 
-func (c ContextType) ToString() string {
+func (c ContentType) ToString() string {
 	return string(c)
 }
 
-type ContextTypeSlice []ContextType
+type ContentTypeSlice []ContentType
 
-func (c ContextTypeSlice) ToStringSlice() []string {
-	return lo.Map(c, func(v ContextType, _ int) string {
+func (c ContentTypeSlice) ToStringSlice() []string {
+	return lo.Map(c, func(v ContentType, _ int) string {
 		return v.ToString()
 	})
 }
@@ -39,12 +39,12 @@ const (
 	ContextTypeGroupDefault ContextTypeGroup = "default"
 )
 
-func (c ContextTypeGroup) GetSlice() ContextTypeSlice {
+func (c ContextTypeGroup) GetSlice() ContentTypeSlice {
 	switch c {
 	case ContextTypeGroupDefault:
-		return ContextTypeSlice{ContextTypeJSON, ContextTypeFormData, ContextTypeXWWWFormUrlencoded}
+		return ContentTypeSlice{ContentTypeJSON, ContentTypeFormData, ContentTypeXWWWFormUrlencoded}
 	default:
-		return ContextTypeSlice{}
+		return ContentTypeSlice{}
 	}
 }
 

@@ -2,24 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "berforeInitAccountsServer",
+            "label": "berforeInitReadRestaurantsServer",
             "type": "shell",
-            "command": "cd internal/services/accounts; go mod tidy; go generate ./...; go test ./... -v -cover"
+            "command": "cd internal/services/read_restaurants; go mod tidy; go generate ./...; go test ./... -v -cover"
         },
         {
-            "label": "berforeInitCardsServer",
+            "label": "berforeInitWriteRestaurantsServer",
             "type": "shell",
-            "command": "cd internal/services/cards; go mod tidy; go generate ./...; go test ./... -v -cover"
-        },
-        {
-            "label": "berforeInitCustomersServer",
-            "type": "shell",
-            "command": "cd internal/services/customers; go mod tidy; go generate ./...; go test ./... -v -cover"
-        },
-        {
-            "label": "berforeInitLoansServer",
-            "type": "shell",
-            "command": "cd internal/services/loans; go mod tidy; go generate ./...; go test ./... -v -cover"
+            "command": "cd internal/services/write_restaurants; go mod tidy; go generate ./...; go test ./... -v -cover"
         }
     ]
 }

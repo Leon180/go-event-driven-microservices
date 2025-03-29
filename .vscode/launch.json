@@ -5,53 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Accounts",
+            "name": "Debug Read Restaurants",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/internal/services/accounts/cmd/app/main.go",
-            "env": {
-                "TZ": "Asia/Taipei",
-                "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
-                "CGO_ENABLED": "1"
-            },
+            "program": "${workspaceFolder}/internal/services/read_restaurants/cmd/app/main.go",
             "args": [],
-            "preLaunchTask": "berforeInitAccountsServer" // 更新swagger文件, mod參考
+            "preLaunchTask": "berforeInitReadRestaurantsServer" // 更新swagger文件, mod參考
         },
         {
-            "name": "Debug Cards",
+            "name": "Debug Write Restaurants",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/internal/services/cards/cmd/app/main.go",
-            "env": {
-                "TZ": "Asia/Taipei",
-                "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
-                "CGO_ENABLED": "1"
-            },
+            "program": "${workspaceFolder}/internal/services/write_restaurants/cmd/app/main.go",
             "args": [],
-            "preLaunchTask": "berforeInitCardsServer" // 更新swagger文件, mod參考
-        },
-        {
-            "name": "Debug Customers",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/internal/services/customers/cmd/app/main.go",
-            "env": {
-                "TZ": "Asia/Taipei",
-                "CONFIGOR_ENV": "development", // development/testing/cake/demo/coretronic/localhost
-                "CGO_ENABLED": "1"
-            },
-            "args": [],
-            "preLaunchTask": "berforeInitCustomersServer" // 更新swagger文件, mod參考
-        },
-        {
-            "name": "Debug Loans",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/internal/services/loans/cmd/app/main.go",
+            "preLaunchTask": "berforeInitWriteRestaurantsServer" // 更新swagger文件, mod參考
         }
     ],
 }
