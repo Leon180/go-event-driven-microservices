@@ -1,6 +1,7 @@
 package featuresfx
 
 import (
+	"context"
 	"fmt"
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
@@ -28,6 +29,8 @@ import (
 	searchBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/search_books/services"
 	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
 	searchRestaurantsServices "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/search_restaurants/services"
+	syncCategoriesEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/sync_categories/events"
+	syncCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/sync_categories/services"
 	updateRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/update_restaurant/events"
 	updateRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/update_restaurant/gin_endpoints"
 	updateRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/update_restaurant/services"
@@ -71,6 +74,7 @@ var ProvideModule = fx.Module(
 		deleteRestaurantEvents.NewDeleteRestaurantMessageBuilder,
 		restoreRestaurantEvents.NewRestoreRestaurantMessageBuilder,
 		updateRestaurantEvents.NewUpdateRestaurantMessageBuilder,
+		syncCategoriesEvents.NewSyncCategoriesMessageBuilder,
 	),
 
 	// services
@@ -85,6 +89,7 @@ var ProvideModule = fx.Module(
 		deleteBookServices.NewDeleteBook,
 		searchBooksServices.NewSearchBooks,
 		listCategoriesServices.NewListCategories,
+		syncCategoriesServices.NewSyncCategories,
 	),
 
 	// endpoints
@@ -120,4 +125,14 @@ func fxTagEndpoint(handler any) any {
 		fx.As(new(customizegin.Endpoint)),
 		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupEndpoints.ToString())),
 	)
+}
+
+var InvokeModule = fx.Invoke(
+	SyncData,
+)
+
+func SyncData(
+	syncCategoriesService syncCategoriesServices.SyncCategories,
+) error {
+	return syncCategoriesService.SyncCategories(context.Background())
 }

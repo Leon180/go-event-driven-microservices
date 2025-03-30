@@ -64,6 +64,9 @@ var ProvideModule = fx.Module(
 var InvokeModule = fx.Module(
 	"restaurantsInvokeFx",
 
+	// messaging
+	messagingfx.InvokeModule,
+
 	// rabbitmq
 	rabbitmqfx.InvokeModule,
 

@@ -7,10 +7,9 @@ import (
 )
 
 type DeleteRestaurant struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Restaurant
 }
-
 type DeleteRestaurantMessageBuilder interface {
 	Build(restaurant *aggregates.Restaurant) *DeleteRestaurant
 }
@@ -27,7 +26,7 @@ type deleteRestaurantMessageBuilderImpl struct {
 
 func (b *deleteRestaurantMessageBuilderImpl) Build(restaurant *aggregates.Restaurant) *DeleteRestaurant {
 	return &DeleteRestaurant{
-		Restaurant: *restaurant,
-		Message:    types.NewMessage(b.uuidGenerator.GenerateUUID(), "DeleteRestaurant"),
+		Restaurant:  *restaurant,
+		MessageImpl: types.NewMessageImpl(b.uuidGenerator.GenerateUUID(), "DeleteRestaurant"),
 	}
 }

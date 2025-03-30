@@ -67,4 +67,7 @@ var InvokeModule = fx.Module(
 
 	// start server
 	customizeginfx.InvokeModule,
+
+	// sync data
+	featuresfx.InvokeModule,
 )

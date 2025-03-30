@@ -234,24 +234,6 @@ func (bcr *BranchCategoryRelation) TableName() string {
 	return "branch_category_relation"
 }
 
-type Category entities.Category
-
-func (c *Category) TableName() string {
-	return "category"
-}
-
-func (c *Category) ToDTO() *dtos.Category {
-	return &dtos.Category{
-		ID:       c.ID,
-		Category: c.CategoryCode.ToCategory(),
-		CommonCQRSHistoryModel: dtos.CommonCQRSHistoryModel{
-			ActiveStatus: c.ActiveStatus,
-			CreatedAt:    c.CreatedAt,
-			UpdatedAt:    c.UpdatedAt,
-		},
-	}
-}
-
 type Table struct {
 	entities.Table
 	editTypeCode enums.EditTypeCode    `gorm:"-"`

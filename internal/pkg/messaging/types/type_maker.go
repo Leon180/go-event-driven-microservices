@@ -329,19 +329,12 @@ func InstanceByTypeName(name string) any {
 
 func EmptyInstanceByTypeNameAndImplementedInterface[TInterface any](
 	name string,
-) any {
+) TInterface {
 	typ := TypeByNameAndImplementedInterface[TInterface](name)
 
-	return getInstanceFromType(typ)
-}
+	instance := getInstanceFromType(typ)
 
-func EmptyInstanceByTypeAndImplementedInterface[TInterface any](
-	typ reflect.Type,
-) any {
-	// we use short type name instead of full type name because this typ in other receiver packages could have different package name
-	typeName := GetTypeName(typ)
-
-	return EmptyInstanceByTypeNameAndImplementedInterface[TInterface](typeName)
+	return instance.(TInterface)
 }
 
 // InstancePointerByTypeName return an empty pointer instance of the type by its name
@@ -372,8 +365,7 @@ func getInstanceFromType(typ reflect.Type) any {
 		return res
 	}
 
-	return reflect.Zero(typ).Interface()
-	// return reflect.New(typ).Elem().Interface()
+	return reflect.New(typ).Interface()
 }
 
 func GetGenericImplementInterfaceTypesT[T any]() map[string][]reflect.Type {

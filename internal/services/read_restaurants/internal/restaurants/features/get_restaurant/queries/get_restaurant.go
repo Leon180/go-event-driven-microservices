@@ -28,18 +28,16 @@ func NewGetRestaurantHandler(
 	setRestaurantsRedis repositories.SetRestaurantsRedis,
 ) GetRestaurantHandler {
 	handle := &getRestaurantImpl{
+		redisConfig:          redisConfig,
 		readRestaurantsMongo: readRestaurantsMongo,
 		readRestaurantsRedis: readRestaurantsRedis,
 		setRestaurantsRedis:  setRestaurantsRedis,
-	}
-	if redisConfig != nil {
-		handle.redisConfig = *redisConfig
 	}
 	return handle
 }
 
 type getRestaurantImpl struct {
-	redisConfig          redisdb.RedisConfig
+	redisConfig          *redisdb.RedisConfig
 	readRestaurantsMongo repositories.ReadRestaurantsMongo
 	readRestaurantsRedis repositories.ReadRestaurantsRedis
 	setRestaurantsRedis  repositories.SetRestaurantsRedis

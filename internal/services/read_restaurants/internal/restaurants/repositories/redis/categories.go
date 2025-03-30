@@ -63,15 +63,21 @@ func (impl *setCategoriesRedisImpl) SetCategories(ctx context.Context, categorie
 	if len(categories) == 0 {
 		return nil
 	}
-	categoryDocuments := make([]*documents.Category, 0)
+	categoryMap := make(map[string]interface{}, len(categories))
 	for _, category := range categories {
-		categoryDocuments = append(categoryDocuments, category.ToDocument())
+		doc := category.ToDocument()
+		jsonBytes, err := json.Marshal(doc)
+		if err != nil {
+			impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to marshal category", err)
+			return err
+		}
+		categoryMap[doc.CategoryCode.ToCategory().String()] = string(jsonBytes)
 	}
-	if err := impl.db.HDel(ctx, "categories").Err(); err != nil {
+	if err := impl.db.Del(ctx, "categories").Err(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete categories", err)
 		return err
 	}
-	if _, err := impl.db.HSet(ctx, "categories", categoryDocuments).Result(); err != nil {
+	if _, err := impl.db.HSet(ctx, "categories", categoryMap).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set category", err)
 		return err
 	}

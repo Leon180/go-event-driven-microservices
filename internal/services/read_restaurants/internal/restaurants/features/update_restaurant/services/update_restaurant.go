@@ -15,7 +15,7 @@ type UpdateRestaurantHandler interface {
 }
 
 func NewUpdateRestaurantHandler(
-	redisConfig redisdb.RedisConfig,
+	redisConfig *redisdb.RedisConfig,
 	readRestaurantsRepository repositories.ReadRestaurantsMongo,
 	updateRestaurantsRepository repositories.UpdateRestaurantsMongo,
 	readRestaurantsRedis repositories.ReadRestaurantsRedis,
@@ -31,7 +31,7 @@ func NewUpdateRestaurantHandler(
 }
 
 type updateRestaurantImpl struct {
-	redisConfig                 redisdb.RedisConfig
+	redisConfig                 *redisdb.RedisConfig
 	readRestaurantsRepository   repositories.ReadRestaurantsMongo
 	updateRestaurantsRepository repositories.UpdateRestaurantsMongo
 	readRestaurantsRedis        repositories.ReadRestaurantsRedis

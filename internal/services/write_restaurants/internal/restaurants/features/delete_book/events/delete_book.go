@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteBook struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Book
 }
 
@@ -27,7 +27,7 @@ type deleteBookMessageBuilderImpl struct {
 
 func (b *deleteBookMessageBuilderImpl) Build(book *aggregates.Book) *DeleteBook {
 	return &DeleteBook{
-		Book:    *book,
-		Message: types.NewMessage(b.uuidGenerator.GenerateUUID(), "DeleteBook"),
+		Book:        *book,
+		MessageImpl: types.NewMessageImpl(b.uuidGenerator.GenerateUUID(), "DeleteBook"),
 	}
 }

@@ -4,6 +4,10 @@ import (
 	"github.com/goccy/go-json"
 )
 
+func NewMetadata() Metadata {
+	return Metadata{}
+}
+
 func MapToMetadata(data map[string]any) Metadata {
 	return Metadata(data)
 }

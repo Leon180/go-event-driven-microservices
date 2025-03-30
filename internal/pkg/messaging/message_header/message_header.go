@@ -16,7 +16,11 @@ const (
 )
 
 func GetCorrelationID(m metadatas.Metadata) string {
-	return m.Get(CorrelationID).(string)
+	val := m.Get(CorrelationID)
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func SetCorrelationID(m metadatas.Metadata, val string) {
@@ -24,7 +28,11 @@ func SetCorrelationID(m metadatas.Metadata, val string) {
 }
 
 func GetMessageID(m metadatas.Metadata) string {
-	return m.Get(MessageID).(string)
+	val := m.Get(MessageID)
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func SetMessageID(m metadatas.Metadata, val string) {
@@ -32,7 +40,11 @@ func SetMessageID(m metadatas.Metadata, val string) {
 }
 
 func GetMessageName(m metadatas.Metadata) string {
-	return m.Get(Name).(string)
+	val := m.Get(Name)
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func SetMessageName(m metadatas.Metadata, val string) {
@@ -40,7 +52,11 @@ func SetMessageName(m metadatas.Metadata, val string) {
 }
 
 func GetMessageType(m metadatas.Metadata) string {
-	return m.Get(MessageType).(string)
+	val := m.Get(MessageType)
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func SetMessageType(m metadatas.Metadata, val string) {
@@ -52,11 +68,19 @@ func SetContentType(m metadatas.Metadata, val string) {
 }
 
 func GetContentType(m metadatas.Metadata) string {
-	return m.Get(ContentType).(string)
+	val := m.Get(ContentType)
+	if val == nil {
+		return ""
+	}
+	return val.(string)
 }
 
 func GetTimeStamp(m metadatas.Metadata) time.Time {
-	return m.Get(TimeStamp).(time.Time)
+	val := m.Get(TimeStamp)
+	if val == nil {
+		return time.Time{}
+	}
+	return val.(time.Time)
 }
 
 func SetTimeStamp(m metadatas.Metadata, val time.Time) {

@@ -26,11 +26,13 @@ func NewRabbitMQProducer(
 	connection connect.AMQPConnection,
 	rabbitmqProducersConfigs []*RabbitMQProducerConfig,
 	logger loggers.Logger,
+	uuidGenerator uuid.UUIDGenerator,
 	eventSerializer serializers.MessageSerializer,
 	producedFuncs []producer.ProducedFunc,
 ) producer.Producer {
 	return &rabbitMQProducer{
 		logger:            logger,
+		uuidGenerator:     uuidGenerator,
 		rabbitmqOptions:   cfg,
 		connection:        connection,
 		messageSerializer: eventSerializer,
@@ -80,6 +82,10 @@ func (r *rabbitMQProducer) PublishMessage(
 	routingKey := producerConfiguration.BindingOptions.RoutingKey
 	if routingKey == "" {
 		routingKey = customizereflect.GetAnysTypeName(message)
+	}
+
+	if meta == nil {
+		meta = metadatas.NewMetadata()
 	}
 
 	meta = r.getMetadata(message, meta)
@@ -134,6 +140,15 @@ func (r *rabbitMQProducer) PublishMessage(
 	if err != nil {
 		return err
 	}
+
+	r.logger.Info(
+		"message published, correlation id: %s, message id: %s, message type: %s, message name: %s, message content type: %s, message headers: %v, message body: %v",
+		messageheader.GetCorrelationID(meta),
+		message.ID(),
+		message.Type(),
+		messageheader.GetMessageName(meta),
+		messageheader.GetContentType(meta),
+	)
 
 	if confirmed := <-confirms; !confirmed.Ack {
 		return errors.New("ack not confirmed")

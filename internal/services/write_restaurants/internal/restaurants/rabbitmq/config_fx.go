@@ -8,6 +8,7 @@ import (
 	deletebookevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_book/events"
 	deleterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_restaurant/events"
 	restorerestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/restore_restaurant/events"
+	synccategoriesevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/sync_categories/events"
 	updaterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/update_restaurant/events"
 	"go.uber.org/fx"
 )
@@ -49,6 +50,11 @@ func NewWriteRestaurantsRabbitMQOperatorsConfigBuilderFunc() rabbitmqoperators.R
 			).
 			AddProducer(
 				updaterestaurantevents.UpdateRestaurant{},
+				func(builder rabbitmqproducer.RabbitMQProducerConfigBuilder) {
+				},
+			).
+			AddProducer(
+				synccategoriesevents.SyncCategories{},
 				func(builder rabbitmqproducer.RabbitMQProducerConfigBuilder) {
 				},
 			)

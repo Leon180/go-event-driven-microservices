@@ -10,7 +10,7 @@ type Message interface {
 	Type() string
 }
 
-func NewMessage(messageID string, messageType string) Message {
+func NewMessageImpl(messageID string, messageType string) *MessageImpl {
 	return &MessageImpl{
 		MessageID:        messageID,
 		MessageTimeStamp: time.Now(),
@@ -24,14 +24,14 @@ type MessageImpl struct {
 	MessageType      string    `json:"message_type"`
 }
 
-func (m *MessageImpl) ID() string {
+func (m MessageImpl) ID() string {
 	return m.MessageID
 }
 
-func (m *MessageImpl) TimeStamp() time.Time {
+func (m MessageImpl) TimeStamp() time.Time {
 	return m.MessageTimeStamp
 }
 
-func (m *MessageImpl) Type() string {
+func (m MessageImpl) Type() string {
 	return m.MessageType
 }

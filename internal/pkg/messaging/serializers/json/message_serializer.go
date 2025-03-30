@@ -61,7 +61,7 @@ func (m *messageJSONSerializer) Deserialize(
 		return nil, customizeerrors.MessageTypeInvalidError
 	}
 
-	return targetMessagePointer.(types.Message), nil
+	return targetMessagePointer, nil
 }
 
 func (m *messageJSONSerializer) DeserializeObject(

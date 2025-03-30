@@ -15,7 +15,7 @@ type CreateBookHandler interface {
 }
 
 func NewCreateBookHandler(
-	redisConfig redisdb.RedisConfig,
+	redisConfig *redisdb.RedisConfig,
 	updateBooksMongo repositories.UpdateBooksMongo,
 	readBooksMongo repositories.ReadBooksMongo,
 	setBookRedis repositories.SetBookRedis,
@@ -29,7 +29,7 @@ func NewCreateBookHandler(
 }
 
 type createBookImpl struct {
-	redisConfig      redisdb.RedisConfig
+	redisConfig      *redisdb.RedisConfig
 	updateBooksMongo repositories.UpdateBooksMongo
 	readBooksMongo   repositories.ReadBooksMongo
 	setBookRedis     repositories.SetBookRedis

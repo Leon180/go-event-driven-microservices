@@ -7,7 +7,7 @@ import (
 )
 
 type CreateBook struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Book
 }
 
@@ -27,7 +27,7 @@ type createBookMessageBuilderImpl struct {
 
 func (b *createBookMessageBuilderImpl) Build(book *aggregates.Book) *CreateBook {
 	return &CreateBook{
-		Book:    *book,
-		Message: types.NewMessage(b.uuidGenerator.GenerateUUID(), "CreateBook"),
+		Book:        *book,
+		MessageImpl: types.NewMessageImpl(b.uuidGenerator.GenerateUUID(), "CreateBook"),
 	}
 }

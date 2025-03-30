@@ -11,7 +11,7 @@ import (
 )
 
 type CreateBook struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Book
 }
 

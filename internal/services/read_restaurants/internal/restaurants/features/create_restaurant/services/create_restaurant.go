@@ -15,12 +15,13 @@ type CreateRestaurantHandler interface {
 }
 
 func NewCreateRestaurantHandler(
-	redisConfig redisdb.RedisConfig,
+	redisConfig *redisdb.RedisConfig,
 	updateRestaurantsMongo repositories.UpdateRestaurantsMongo,
 	readRestaurantsMongo repositories.ReadRestaurantsMongo,
 	setRestaurantsRedis repositories.SetRestaurantsRedis,
 ) CreateRestaurantHandler {
 	return &createRestaurantImpl{
+		redisConfig:            redisConfig,
 		updateRestaurantsMongo: updateRestaurantsMongo,
 		readRestaurantsMongo:   readRestaurantsMongo,
 		setRestaurantsRedis:    setRestaurantsRedis,
@@ -28,7 +29,7 @@ func NewCreateRestaurantHandler(
 }
 
 type createRestaurantImpl struct {
-	redisConfig            redisdb.RedisConfig
+	redisConfig            *redisdb.RedisConfig
 	updateRestaurantsMongo repositories.UpdateRestaurantsMongo
 	readRestaurantsMongo   repositories.ReadRestaurantsMongo
 	setRestaurantsRedis    repositories.SetRestaurantsRedis

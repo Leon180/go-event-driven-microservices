@@ -7,7 +7,7 @@ import (
 )
 
 type CreateRestaurant struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Restaurant
 }
 
@@ -27,7 +27,7 @@ type createRestaurantMessageBuilderImpl struct {
 
 func (b *createRestaurantMessageBuilderImpl) Build(restaurant *aggregates.Restaurant) *CreateRestaurant {
 	return &CreateRestaurant{
-		Restaurant: *restaurant,
-		Message:    types.NewMessage(b.uuidGenerator.GenerateUUID(), "CreateRestaurant"),
+		Restaurant:  *restaurant,
+		MessageImpl: types.NewMessageImpl(b.uuidGenerator.GenerateUUID(), "CreateRestaurant"),
 	}
 }

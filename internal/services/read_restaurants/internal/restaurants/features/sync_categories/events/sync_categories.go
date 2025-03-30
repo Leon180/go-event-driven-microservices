@@ -11,7 +11,7 @@ import (
 )
 
 type SyncCategories struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Categories
 }
 

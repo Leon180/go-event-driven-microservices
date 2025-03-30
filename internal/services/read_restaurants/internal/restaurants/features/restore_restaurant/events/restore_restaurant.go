@@ -11,7 +11,7 @@ import (
 )
 
 type RestoreRestaurant struct {
-	types.Message
+	*types.MessageImpl
 	aggregates.Restaurant
 }
 

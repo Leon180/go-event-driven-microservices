@@ -268,6 +268,11 @@ func (r *rabbitMQConsumer) handleWithRetry(
 	handler consumer.ConsumerHandler,
 	messageConsumeContext types.MessageConsumeContext,
 ) error {
+	r.logger.Info("handling message, correlation id: %s, message id: %s, message type: %s",
+		messageConsumeContext.CorrelationID(),
+		messageConsumeContext.MessageID(),
+		messageConsumeContext.Type(),
+	)
 	return retry.Do(func() error {
 		handleFunc := func(ctx context.Context) error {
 			return handler.Handle(ctx, messageConsumeContext)

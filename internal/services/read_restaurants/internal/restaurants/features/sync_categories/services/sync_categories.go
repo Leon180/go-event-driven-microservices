@@ -13,7 +13,7 @@ type SyncCategoriesHandler interface {
 }
 
 func NewSyncCategoriesHandler(
-	redisConfig redisdb.RedisConfig,
+	redisConfig *redisdb.RedisConfig,
 	syncCategoriesMongo repositories.SyncCategoriesMongo,
 	setCategoriesRedis repositories.SetCategoriesRedis,
 ) SyncCategoriesHandler {
@@ -25,7 +25,7 @@ func NewSyncCategoriesHandler(
 }
 
 type syncCategoriesImpl struct {
-	redisConfig         redisdb.RedisConfig
+	redisConfig         *redisdb.RedisConfig
 	syncCategoriesMongo repositories.SyncCategoriesMongo
 	setCategoriesRedis  repositories.SetCategoriesRedis
 }
