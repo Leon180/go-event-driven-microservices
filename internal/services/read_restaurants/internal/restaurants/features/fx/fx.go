@@ -7,6 +7,8 @@ import (
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	createBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/events"
 	createBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
+	createFailedMessageEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/events"
+	createFailedMessageServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/services"
 	createRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/events"
 	createRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
 	deleteBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/events"
@@ -27,7 +29,6 @@ import (
 	syncCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/services"
 	updateRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/events"
 	updateRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/update_restaurant/services"
-
 	"github.com/samber/lo"
 	"go.uber.org/fx"
 )
@@ -45,6 +46,7 @@ var ProvideModule = fx.Module(
 		createBookServices.NewCreateBookHandler,
 		deleteBookServices.NewDeleteBookHandler,
 		syncCategoriesServices.NewSyncCategoriesHandler,
+		createFailedMessageServices.NewCreateFailedMessageHandler,
 	),
 
 	// queries
@@ -64,6 +66,7 @@ var ProvideModule = fx.Module(
 		createBookEvents.NewCreateBookHandler,
 		deleteBookEvents.NewDeleteBookHandler,
 		syncCategoriesEvents.NewSyncCategoriesHandler,
+		createFailedMessageEvents.NewCreateFailedMessageHandler,
 	),
 
 	// endpoints

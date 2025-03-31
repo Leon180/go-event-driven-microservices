@@ -213,10 +213,6 @@ func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Del
 	r.deliveryRoutines <- struct{}{}
 	defer func() { <-r.deliveryRoutines }()
 
-	if checkMessageRetryExceeded := r.checkMessageRetryExceeded(ctx, &delivery); checkMessageRetryExceeded {
-		return
-	}
-
 	consumeContext, err := r.createMessageConsumeContext(delivery)
 	if err != nil {
 		r.logger.Errorf("error creating message consume context, error: %v", err)
@@ -247,101 +243,85 @@ func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Del
 		}
 	}
 	// requeue with retry count
-	customizeNack := func() {
-		msg := amqp.Publishing{
-			CorrelationId:   delivery.CorrelationId,
-			MessageId:       delivery.MessageId,
-			Timestamp:       time.Now(),
-			Headers:         delivery.Headers,
-			Type:            delivery.Type,
-			ContentType:     delivery.ContentType,
-			Body:            delivery.Body,
-			DeliveryMode:    delivery.DeliveryMode,
-			Expiration:      delivery.Expiration,
-			AppId:           delivery.AppId,
-			Priority:        delivery.Priority,
-			ReplyTo:         delivery.ReplyTo,
-			ContentEncoding: delivery.ContentEncoding,
-		}
-		if err := r.channel.PublishWithContext(
-			ctx,
-			r.exchangeName,
-			r.routingKey,
-			false,
-			false,
-			msg,
-		); err != nil {
-			r.logger.Errorf("error requeueing message to RabbitMQ consumer, error: %v", err)
-		}
-		if err := delivery.Ack(false); err != nil {
-			r.logger.Errorf(
-				"error sending requeue ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
-				err,
-				consumeContext.CorrelationID(),
-				consumeContext.MessageID(),
-				consumeContext.Type(),
-			)
-			return
+	customizeNack := func(err error) {
+		retryCount, _ := delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()].(int32)
+		if retryCount >= int32(r.rabbitmqConfig.RetryAttempts) {
+			// publish message to DLQ
+			r.publichToDLQ(ctx, &delivery, err)
+		} else {
+			// re queue with retry count
+			delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()] = retryCount + 1
+			r.requeueMessage(ctx, &delivery)
 		}
 	}
 	r.handle(ctx, &customizeAck, &customizeNack, consumeContext)
 }
 
-func (r *rabbitMQConsumer) checkMessageRetryExceeded(ctx context.Context, delivery *amqp.Delivery) bool {
-	retryCount, ok := delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()].(int32)
-	if ok && int(retryCount) >= r.rabbitmqConfig.RetryAttempts {
-		// publish message to DLQ
-		msg := amqp.Publishing{
-			CorrelationId:   delivery.CorrelationId,
-			MessageId:       delivery.MessageId,
-			Timestamp:       time.Now(),
-			Headers:         delivery.Headers,
-			Type:            delivery.Type,
-			ContentType:     delivery.ContentType,
-			Body:            delivery.Body,
-			DeliveryMode:    delivery.DeliveryMode,
-			Expiration:      delivery.Expiration,
-			AppId:           delivery.AppId,
-			Priority:        delivery.Priority,
-			ReplyTo:         delivery.ReplyTo,
-			ContentEncoding: delivery.ContentEncoding,
-		}
-		r.logger.Infof(
-			"Max retries reached. Moving to DLQ: id: %s, message id: %s, message type: %s",
+func (r *rabbitMQConsumer) publichToDLQ(ctx context.Context, delivery *amqp.Delivery, err error) {
+	msg := rabbitmq.ConvertDeliveryToPublishing(delivery, true)
+	msg = *rabbitmq.NewPublishingHeaderSetter(&msg).
+		SetError(err).
+		SetRetryCount(int(delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()].(int32))).
+		SetQueue(r.queueName).
+		SetExchange(r.exchangeName).
+		SetRoutingKey(r.routingKey).
+		Build()
+
+	r.logger.Infof(
+		"Max retries reached. Moving to DLQ: id: %s, message id: %s, message type: %s",
+		delivery.CorrelationId,
+		delivery.MessageId,
+		delivery.Type,
+	)
+
+	if err := r.channel.PublishWithContext(
+		ctx,
+		r.rabbitmqConfig.DeadLetterExchange,
+		r.rabbitmqConfig.DeadLetterRoutingKey,
+		false,
+		false,
+		msg,
+	); err != nil {
+		r.logger.Errorf("error publishing message to DLQ, error: %v", err)
+	}
+	if err := delivery.Ack(false); err != nil {
+		r.logger.Errorf(
+			"error sending dlq ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
+			err,
 			delivery.CorrelationId,
 			delivery.MessageId,
 			delivery.Type,
 		)
-		if err := r.channel.PublishWithContext(
-			ctx,
-			r.rabbitmqConfig.DeadLetterExchange,
-			r.rabbitmqConfig.DeadLetterRoutingKey,
-			false,
-			false,
-			msg,
-		); err != nil {
-			r.logger.Errorf("error publishing message to DLQ, error: %v", err)
-		}
-
-		if err := delivery.Ack(false); err != nil {
-			r.logger.Errorf(
-				"error sending requeue ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
-				err,
-				delivery.CorrelationId,
-				delivery.MessageId,
-				delivery.Type,
-			)
-		}
-		return true
 	}
-	delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()] = retryCount + 1
-	return false
+}
+
+func (r *rabbitMQConsumer) requeueMessage(ctx context.Context, delivery *amqp.Delivery) {
+	msg := rabbitmq.ConvertDeliveryToPublishing(delivery, true)
+	if err := r.channel.PublishWithContext(
+		ctx,
+		r.exchangeName,
+		r.routingKey,
+		false,
+		false,
+		msg,
+	); err != nil {
+		r.logger.Errorf("error requeueing message to RabbitMQ consumer, error: %v", err)
+	}
+	if err := delivery.Ack(false); err != nil {
+		r.logger.Errorf(
+			"error sending requeue ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
+			err,
+			delivery.CorrelationId,
+			delivery.MessageId,
+			delivery.Type,
+		)
+	}
 }
 
 func (r *rabbitMQConsumer) handle(
 	ctx context.Context,
 	customizeAck *func(),
-	customizeNack *func(),
+	customizeNack *func(err error),
 	messageConsumeContext types.MessageConsumeContext,
 ) {
 	for _, handler := range r.rabbitmqConsumerConfig.Handlers {
@@ -349,7 +329,7 @@ func (r *rabbitMQConsumer) handle(
 		if err != nil {
 			r.logger.Errorf("error handling consume message, prepare for nacking message, error: %v", err)
 			if customizeNack != nil {
-				(*customizeNack)()
+				(*customizeNack)(err)
 			}
 			return
 		}

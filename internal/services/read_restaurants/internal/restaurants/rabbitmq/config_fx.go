@@ -2,12 +2,15 @@ package restaurantsrabbitmq
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
+	serializers "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/serializers"
 	types "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
 	rabbitmq "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq"
 	rabbitmqconsumer "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/consumer"
 	rabbitmqoperators "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/operators"
 	createbookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/events"
 	createbookservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
+	createfailedmessageevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/events"
+	createfailedmessageservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/services"
 	createrestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/events"
 	createrestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
 	deletebookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/events"
@@ -39,6 +42,8 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	restoreRestaurantService restorerestaurantservices.RestoreRestaurantHandler,
 	updateRestaurantService updaterestaurantservices.UpdateRestaurantHandler,
 	syncCategoriesService synccategorieservices.SyncCategoriesHandler,
+	createFailedMessageService createfailedmessageservices.CreateFailedMessageHandler,
+	messageSerializer serializers.MessageSerializer,
 	rabbitMQConfig *rabbitmq.RabbitMQConfig,
 ) rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc {
 	return func(builder rabbitmqoperators.RabbitMQOperatorsConfigBuilder) {
@@ -110,7 +115,13 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 					synccategoriesevents.SyncCategories{},
 				},
 				func(builder rabbitmqconsumer.DeadLetterRabbitMQConsumerConfigBuilder) {
-					// todo: add handlers
+					builder.SetHandlers(
+						createfailedmessageevents.NewCreateFailedMessageHandler(
+							logger,
+							createFailedMessageService,
+							messageSerializer,
+						),
+					)
 				},
 				rabbitMQConfig,
 			)

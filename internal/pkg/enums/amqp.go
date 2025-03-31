@@ -20,6 +20,10 @@ const (
 	DeliveryHeaderDeadLetterExchange   DeliveryHeader = "x-dead-letter-exchange"
 	DeliveryHeaderDeadLetterRoutingKey DeliveryHeader = "x-dead-letter-routing-key"
 	DeliveryHeaderRetryCount           DeliveryHeader = "x-retry-count"
+	DeliveryHeaderError                DeliveryHeader = "x-error"
+	DeliveryHeaderExchange             DeliveryHeader = "x-exchange"
+	DeliveryHeaderRoutingKey           DeliveryHeader = "x-routing-key"
+	DeliveryHeaderQueue                DeliveryHeader = "x-queue"
 )
 
 func (d DeliveryHeader) ToString() string {

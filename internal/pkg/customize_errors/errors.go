@@ -102,6 +102,9 @@ var (
 	BookAlreadyExistsButInactiveError  = newErrorFromErrorCode(BookAlreadyExistsButInactive)
 	BookEventCastingError              = newErrorFromErrorCode(BookEventCasting)
 
+	// Failed Message
+	FailedMessageAlreadyExistsError = newErrorFromErrorCode(FailedMessageAlreadyExists)
+
 	// rabbitmq
 	RabbitmqConnectionError = newErrorFromErrorCode(RabbitmqConnection)
 
@@ -219,6 +222,9 @@ const (
 	BookAlreadyExistsButInactive  ErrorCode = 46005
 	BookEventCasting              ErrorCode = 46006
 
+	// Failed Message
+	FailedMessageAlreadyExists ErrorCode = 47001
+
 	// rabbitmq
 	RabbitmqConnection ErrorCode = 50001
 
@@ -327,6 +333,9 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	BookAlreadyExistsButInactive:  "book already exists but is inactive",
 	BookEventCasting:              "book event casting error",
 
+	// Failed Message
+	FailedMessageAlreadyExists: "failed message already exists",
+
 	// rabbitmq
 	RabbitmqConnection: "rabbitmq connection error",
 
@@ -434,6 +443,9 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	BookTableAndAvailableNotMatch: http.StatusConflict,
 	BookAlreadyExistsButInactive:  http.StatusConflict,
 	BookEventCasting:              http.StatusBadRequest,
+
+	// Failed Message
+	FailedMessageAlreadyExists: http.StatusConflict,
 
 	// rabbitmq
 	RabbitmqConnection: http.StatusInternalServerError,
