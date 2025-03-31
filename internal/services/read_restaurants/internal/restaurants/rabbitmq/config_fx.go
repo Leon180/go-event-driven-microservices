@@ -2,6 +2,8 @@ package restaurantsrabbitmq
 
 import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
+	types "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/types"
+	rabbitmq "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq"
 	rabbitmqconsumer "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/consumer"
 	rabbitmqoperators "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/operators"
 	createbookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/events"
@@ -37,6 +39,7 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	restoreRestaurantService restorerestaurantservices.RestoreRestaurantHandler,
 	updateRestaurantService updaterestaurantservices.UpdateRestaurantHandler,
 	syncCategoriesService synccategorieservices.SyncCategoriesHandler,
+	rabbitMQConfig *rabbitmq.RabbitMQConfig,
 ) rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc {
 	return func(builder rabbitmqoperators.RabbitMQOperatorsConfigBuilder) {
 		builder.
@@ -46,48 +49,70 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 					builder.SetHandlers(
 						createbookevents.NewCreateBookHandler(logger, createBookService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				createrestaurantevents.CreateRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						createrestaurantevents.NewCreateRestaurantHandler(logger, createRestaurantService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				deletebookevents.DeleteBook{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						deletebookevents.NewDeleteBookHandler(logger, deleteBookService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				deleterestaurantevents.DeleteRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						deleterestaurantevents.NewDeleteRestaurantHandler(logger, deleteRestaurantService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				restorerestaurantevents.RestoreRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						restorerestaurantevents.NewRestoreRestaurantHandler(logger, restoreRestaurantService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				updaterestaurantevents.UpdateRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						updaterestaurantevents.NewUpdateRestaurantHandler(logger, updateRestaurantService),
 					)
-				}).
+				},
+			).
 			AddConsumer(
 				synccategoriesevents.SyncCategories{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						synccategoriesevents.NewSyncCategoriesHandler(logger, syncCategoriesService),
 					)
-				})
+				},
+			).
+			SetDeadLetterConsumer(
+				[]types.Message{
+					createbookevents.CreateBook{},
+					createrestaurantevents.CreateRestaurant{},
+					deletebookevents.DeleteBook{},
+					deleterestaurantevents.DeleteRestaurant{},
+					restorerestaurantevents.RestoreRestaurant{},
+					updaterestaurantevents.UpdateRestaurant{},
+					synccategoriesevents.SyncCategories{},
+				},
+				func(builder rabbitmqconsumer.DeadLetterRabbitMQConsumerConfigBuilder) {
+					// todo: add handlers
+				},
+				rabbitMQConfig,
+			)
 	}
 }

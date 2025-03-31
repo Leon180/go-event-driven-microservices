@@ -13,3 +13,15 @@ const (
 func (e ExchangeType) ToString() string {
 	return string(e)
 }
+
+type DeliveryHeader string
+
+const (
+	DeliveryHeaderDeadLetterExchange   DeliveryHeader = "x-dead-letter-exchange"
+	DeliveryHeaderDeadLetterRoutingKey DeliveryHeader = "x-dead-letter-routing-key"
+	DeliveryHeaderRetryCount           DeliveryHeader = "x-retry-count"
+)
+
+func (d DeliveryHeader) ToString() string {
+	return string(d)
+}

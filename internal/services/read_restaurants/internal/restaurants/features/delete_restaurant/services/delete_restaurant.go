@@ -50,10 +50,10 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 	if !restaurant.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
-	if err := handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
+	if err = handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
 		return err
 	}
-	if err := handle.setRestaurantsRedis.DeleteRestaurant(ctx, aggregate); err != nil {
+	if err = handle.setRestaurantsRedis.DeleteRestaurant(ctx, aggregate); err != nil {
 		return err
 	}
 	return nil

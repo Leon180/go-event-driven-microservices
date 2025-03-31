@@ -21,6 +21,10 @@ type RabbitMQConfig struct {
 	UserName    string `mapstructure:"userName"`
 	Password    string `mapstructure:"password"`
 
+	DeadLetterConsumer   string `mapstructure:"deadLetterConsumer"`
+	DeadLetterExchange   string `mapstructure:"deadLetterExchange"`
+	DeadLetterRoutingKey string `mapstructure:"deadLetterRoutingKey"`
+
 	RetryAttempts  int `mapstructure:"retryAttempts"`
 	RetryDelay     int `mapstructure:"retryDelay"`     // in milliseconds
 	ReconnectDelay int `mapstructure:"reconnectDelay"` // in milliseconds

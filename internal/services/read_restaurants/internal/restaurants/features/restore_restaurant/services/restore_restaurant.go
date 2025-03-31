@@ -55,10 +55,10 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(
 	if restaurant.IsActive() {
 		return customizeerrors.AlreadyActiveError
 	}
-	if err := handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
+	if err = handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
 		return err
 	}
-	if err := handle.setRestaurantsRedis.SetRestaurant(ctx, aggregate, time.Duration(handle.redisConfig.CacheTimeOut)*time.Second); err != nil {
+	if err = handle.setRestaurantsRedis.SetRestaurant(ctx, aggregate, time.Duration(handle.redisConfig.CacheTimeOut)*time.Second); err != nil {
 		return err
 	}
 	return nil

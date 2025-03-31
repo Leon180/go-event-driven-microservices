@@ -39,7 +39,6 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, aggreg
 	if aggregate == nil {
 		return nil
 	}
-
 	// check if restaurant already exists
 	restaurant, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
@@ -51,20 +50,15 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, aggreg
 		}
 		return customizeerrors.RestaurantAlreadyExistsButInactiveError
 	}
-
-	err = handle.updateRestaurantsMongo.CreateRestaurants(ctx, []aggregates.Restaurant{*aggregate})
-	if err != nil {
+	if err = handle.updateRestaurantsMongo.CreateRestaurants(ctx, []aggregates.Restaurant{*aggregate}); err != nil {
 		return err
 	}
-
-	err = handle.setRestaurantsRedis.SetRestaurant(
+	if err = handle.setRestaurantsRedis.SetRestaurant(
 		ctx,
 		aggregate,
 		time.Duration(handle.redisConfig.CacheTimeOut)*time.Second,
-	)
-	if err != nil {
+	); err != nil {
 		return err
 	}
-
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers"
 	messageheader "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/message_header"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
@@ -86,6 +87,7 @@ func (r *rabbitMQProducer) PublishMessage(
 
 	if meta == nil {
 		meta = metadatas.NewMetadata()
+		meta.Set(enums.DeliveryHeaderRetryCount.ToString(), 0)
 	}
 
 	meta = r.getMetadata(message, meta)
@@ -141,7 +143,7 @@ func (r *rabbitMQProducer) PublishMessage(
 		return err
 	}
 
-	r.logger.Info(
+	r.logger.Infof(
 		"message published, correlation id: %s, message id: %s, message type: %s, message name: %s, message content type: %s, message headers: %v, message body: %v",
 		messageheader.GetCorrelationID(meta),
 		message.ID(),
@@ -153,6 +155,15 @@ func (r *rabbitMQProducer) PublishMessage(
 	if confirmed := <-confirms; !confirmed.Ack {
 		return errors.New("ack not confirmed")
 	}
+
+	r.logger.Infof(
+		"message ack confirmed, correlation id: %s, message id: %s, message type: %s, message name: %s, message content type: %s, message headers: %v, message body: %v",
+		messageheader.GetCorrelationID(meta),
+		message.ID(),
+		message.Type(),
+		messageheader.GetMessageName(meta),
+		messageheader.GetContentType(meta),
+	)
 
 	for _, producedFunc := range r.producedFuncs {
 		if producedFunc != nil {

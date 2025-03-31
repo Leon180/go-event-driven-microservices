@@ -90,20 +90,31 @@ func (c *amqpConnectionImpl) connect() error {
 			if amqpErr == nil {
 				continue
 			}
-			c.logger.Error("rabbitmq connection closed: %v", amqpErr)
+			c.logger.Errorf("rabbitmq connection closed, error: %v", amqpErr)
 			c.isConnect = false
 			c.errorEvent <- amqpErr
-			// start reconnecting
-			time.Sleep(time.Duration(c.config.ReconnectDelay) * time.Millisecond)
-			conn, err = c.connectRabbitMQ()
-			if err != nil {
-				c.logger.Error("failed to reconnect to rabbitmq: %v", err)
-				continue
+
+			// Implement exponential backoff for reconnection
+			backoff := time.Duration(c.config.ReconnectDelay) * time.Millisecond
+			maxBackoff := 30 * time.Second
+			for {
+				c.logger.Info("attempting to reconnect to rabbitmq...")
+				conn, err = c.connectRabbitMQ()
+				if err != nil {
+					c.logger.Error("failed to reconnect to rabbitmq: %v", err)
+					// Exponential backoff with max limit
+					backoff = time.Duration(float64(backoff) * 1.5)
+					backoff = min(backoff, maxBackoff)
+					time.Sleep(backoff)
+					continue
+				}
+
+				c.logger.Info("successfully reconnected to rabbitmq")
+				c.Connection = conn
+				c.isConnect = true
+				c.reconnectedEvent <- struct{}{}
+				break
 			}
-			c.logger.Info("reconnected to rabbitmq")
-			c.Connection = conn
-			c.isConnect = true
-			c.reconnectedEvent <- struct{}{}
 		}
 	}()
 
@@ -111,5 +122,16 @@ func (c *amqpConnectionImpl) connect() error {
 }
 
 func (c *amqpConnectionImpl) connectRabbitMQ() (*amqp.Connection, error) {
-	return amqp.Dial(c.config.AmqpEndPoint())
+	// Add connection timeout
+	dialConfig := amqp.Config{
+		Dial:      amqp.DefaultDial(30 * time.Second),
+		Heartbeat: 10 * time.Second, // Send heartbeat every 10 seconds
+	}
+
+	conn, err := amqp.DialConfig(c.config.AmqpEndPoint(), dialConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to rabbitmq: %w", err)
+	}
+
+	return conn, nil
 }

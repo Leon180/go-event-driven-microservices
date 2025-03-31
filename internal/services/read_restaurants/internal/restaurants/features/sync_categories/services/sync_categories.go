@@ -34,14 +34,11 @@ func (handle *syncCategoriesImpl) SyncCategories(ctx context.Context, aggregate 
 	if aggregate == nil {
 		return nil
 	}
-
 	if err := handle.syncCategoriesMongo.SyncCategories(ctx, aggregate); err != nil {
 		return err
 	}
-
 	if err := handle.setCategoriesRedis.SetCategories(ctx, aggregate); err != nil {
 		return err
 	}
-
 	return nil
 }

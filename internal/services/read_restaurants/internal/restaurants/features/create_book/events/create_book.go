@@ -36,13 +36,10 @@ func (h *CreateBookHandle) Handle(ctx context.Context, event types.MessageConsum
 		h.logger.Error("error in casting CreateBook event")
 		return customizeerrors.BookEventCastingError
 	}
-
-	err := h.createBookService.CreateBook(ctx, &m.Book)
-	if err != nil {
-		h.logger.Error("error in sending CreateBook with id: {%s}, error: {%v}", m.Book.ID, err)
+	if err := h.createBookService.CreateBook(ctx, &m.Book); err != nil {
+		h.logger.Errorf("error in sending CreateBook with id: {%s}, error: {%v}", m.Book.ID, err)
 		return err
 	}
 	h.logger.Info("CreateBook consumer handled.")
-
 	return nil
 }

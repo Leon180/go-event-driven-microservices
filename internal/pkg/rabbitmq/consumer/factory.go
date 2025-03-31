@@ -10,6 +10,7 @@ import (
 
 type ConsumerFactory interface {
 	CreateConsumer(config *RabbitMQConsumerConfig, consumedFuncs []consumer.ConsumedFunc) consumer.Consumer
+	CreateDeadLetterConsumer(config *RabbitMQConsumerConfig, consumedFuncs []consumer.ConsumedFunc) consumer.Consumer
 	Connection() connect.AMQPConnection
 }
 
@@ -50,4 +51,18 @@ func (c *consumerFactory) CreateConsumer(
 
 func (c *consumerFactory) Connection() connect.AMQPConnection {
 	return c.connection
+}
+
+func (c *consumerFactory) CreateDeadLetterConsumer(
+	consumerConfig *RabbitMQConsumerConfig,
+	consumedFuncs []consumer.ConsumedFunc,
+) consumer.Consumer {
+	return NewDeadLetterRabbitMQConsumer(
+		consumerConfig,
+		c.rabbitmqConfig,
+		c.logger,
+		c.connection,
+		c.eventSerializer,
+		consumedFuncs,
+	)
 }

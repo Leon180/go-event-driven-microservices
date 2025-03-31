@@ -61,6 +61,9 @@
     "httpPort": 15672,
     "retryAttempts": 3,
     "retryDelay": 300,
-    "reconnectDelay": 3000
+    "reconnectDelay": 3000,
+    "deadLetterConsumer": "dead_letter_consumer",
+    "deadLetterExchange": "dead_letter_exchange",
+    "deadLetterRoutingKey": "dlq"
   }
 }

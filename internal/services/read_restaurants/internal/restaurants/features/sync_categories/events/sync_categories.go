@@ -36,13 +36,10 @@ func (h *SyncCategoriesHandle) Handle(ctx context.Context, event types.MessageCo
 		h.logger.Error("error in casting SyncCategories event")
 		return customizeerrors.BookEventCastingError
 	}
-
-	err := h.syncCategoriesService.SyncCategories(ctx, m.Categories)
-	if err != nil {
-		h.logger.Error("error in sending SyncCategories, error: {%v}", err)
+	if err := h.syncCategoriesService.SyncCategories(ctx, m.Categories); err != nil {
+		h.logger.Errorf("error in sending SyncCategories, error: {%v}", err)
 		return err
 	}
 	h.logger.Info("SyncCategories consumer handled.")
-
 	return nil
 }

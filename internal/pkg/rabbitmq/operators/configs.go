@@ -6,6 +6,7 @@ import (
 )
 
 type RabbitMQOperatorsConfig struct {
-	ProducersConfigs []*rabbitmqproducer.RabbitMQProducerConfig
-	ConsumersConfigs []*rabbitmqconsumer.RabbitMQConsumerConfig
+	ProducersConfigs           []*rabbitmqproducer.RabbitMQProducerConfig
+	ConsumersConfigs           []*rabbitmqconsumer.RabbitMQConsumerConfig
+	DeadLetterConsumersConfigs *rabbitmqconsumer.DeadLetterRabbitMQConsumerConfig
 }

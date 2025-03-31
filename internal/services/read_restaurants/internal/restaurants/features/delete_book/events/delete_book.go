@@ -36,13 +36,10 @@ func (h *DeleteBookHandle) Handle(ctx context.Context, event types.MessageConsum
 		h.logger.Error("error in casting DeleteBook event")
 		return customizeerrors.BookEventCastingError
 	}
-
-	err := h.deleteBookService.DeleteBook(ctx, &m.Book)
-	if err != nil {
-		h.logger.Error("error in sending DeleteBook with id: {%s}, error: {%v}", m.Book.ID, err)
+	if err := h.deleteBookService.DeleteBook(ctx, &m.Book); err != nil {
+		h.logger.Errorf("error in sending DeleteBook with id: {%s}, error: {%v}", m.Book.ID, err)
 		return err
 	}
 	h.logger.Info("DeleteBook consumer handled.")
-
 	return nil
 }

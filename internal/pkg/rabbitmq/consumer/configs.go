@@ -26,6 +26,7 @@ type RabbitMQConsumerConfig struct {
 	BindingOptions      RabbitMQBindingOptions
 	QueueOptions        RabbitMQQueueOptions
 	ExchangeOptions     RabbitMQExchangeOptions
+	MaxRetries          int
 }
 
 type RabbitMQBindingOptions struct {
@@ -75,5 +76,6 @@ func NewDefaultRabbitMQConsumerConfig(
 		},
 		ConsumerMessageType: customizereflect.GetAnysType(message),
 		Name:                name,
+		MaxRetries:          3,
 	}
 }

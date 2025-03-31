@@ -47,18 +47,12 @@ func (handle *deleteBookImpl) DeleteBook(ctx context.Context, command *aggregate
 	if !book.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
-
 	aggregate := aggregates.Book(*command)
-
-	err = handle.updateBooksMongo.UpdateBook(ctx, &aggregate)
-	if err != nil {
+	if err = handle.updateBooksMongo.UpdateBook(ctx, &aggregate); err != nil {
 		return err
 	}
-
-	err = handle.setBookRedis.DeleteBook(ctx, &aggregate)
-	if err != nil {
+	if err = handle.setBookRedis.DeleteBook(ctx, &aggregate); err != nil {
 		return err
 	}
-
 	return nil
 }

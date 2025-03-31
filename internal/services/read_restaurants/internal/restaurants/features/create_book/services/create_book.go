@@ -39,7 +39,6 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, aggregate *aggrega
 	if aggregate == nil {
 		return nil
 	}
-
 	// check if book already exists
 	book, err := handle.readBooksMongo.ReadBook(ctx, aggregate.ID)
 	if err != nil {
@@ -51,16 +50,11 @@ func (handle *createBookImpl) CreateBook(ctx context.Context, aggregate *aggrega
 		}
 		return customizeerrors.BookAlreadyExistsButInactiveError
 	}
-
-	err = handle.updateBooksMongo.CreateBooks(ctx, []aggregates.Book{*aggregate})
-	if err != nil {
+	if err = handle.updateBooksMongo.CreateBooks(ctx, []aggregates.Book{*aggregate}); err != nil {
 		return err
 	}
-
-	err = handle.setBookRedis.SetBook(ctx, aggregate, time.Duration(handle.redisConfig.CacheTimeOut)*time.Second)
-	if err != nil {
+	if err := handle.setBookRedis.SetBook(ctx, aggregate, time.Duration(handle.redisConfig.CacheTimeOut)*time.Second); err != nil {
 		return err
 	}
-
 	return nil
 }

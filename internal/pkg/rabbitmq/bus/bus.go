@@ -16,7 +16,6 @@ import (
 	rabbitmqoperators "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/operators"
 	rabbitmqproducer "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/producer"
 	customizereflect "github.com/Leon180/go-event-driven-microservices/internal/pkg/reflect"
-	"github.com/samber/lo"
 )
 
 type RabbitMQBus interface {
@@ -31,6 +30,7 @@ func NewRabbitMQBus(
 	rabbitmqBuilderFunc rabbitmqoperators.RabbitMQOperatorsConfigBuilderFunc,
 ) (RabbitMQBus, error) {
 	builder := rabbitmqoperators.NewRabbitMQOperatorsConfigBuilder()
+
 	if rabbitmqBuilderFunc != nil {
 		rabbitmqBuilderFunc(builder)
 	}
@@ -45,15 +45,20 @@ func NewRabbitMQBus(
 		messageTypeConsumers:           map[reflect.Type][]consumer.Consumer{},
 	}
 
-	consumersConfigMap := lo.SliceToMap(
-		rabbitBus.rabbitmqOperatorsConfig.ConsumersConfigs,
-		func(config *rabbitmqconsumer.RabbitMQConsumerConfig) (string, *rabbitmqconsumer.RabbitMQConsumerConfig) {
-			key := config.ConsumerMessageType.String()
-			return key, config
-		},
-	)
+	if rabbitBus.rabbitmqOperatorsConfig.DeadLetterConsumersConfigs != nil {
+		rabbitBus.deadLetterConsumer = consumerFactory.CreateDeadLetterConsumer(
+			&rabbitBus.rabbitmqOperatorsConfig.DeadLetterConsumersConfigs.RabbitMQConsumerConfig,
+			[]consumer.ConsumedFunc{func(message types.Message) {
+				for _, consumedFunc := range rabbitBus.deadLetterConsumedFuncs {
+					if consumedFunc != nil {
+						consumedFunc(message)
+					}
+				}
+			}},
+		)
+	}
 
-	for _, consumerConfig := range consumersConfigMap {
+	for _, consumerConfig := range rabbitBus.rabbitmqOperatorsConfig.ConsumersConfigs {
 		mqConsumer := consumerFactory.CreateConsumer(
 			consumerConfig,
 			[]consumer.ConsumedFunc{func(message types.Message) {
@@ -86,6 +91,7 @@ func NewRabbitMQBus(
 
 type rabbitmqBus struct {
 	messageTypeConsumers           map[reflect.Type][]consumer.Consumer
+	deadLetterConsumer             consumer.Consumer
 	producer                       producer.Producer
 	rabbitmqOperatorsConfig        *rabbitmqoperators.RabbitMQOperatorsConfig
 	rabbitmqOperatorsConfigBuilder rabbitmqoperators.RabbitMQOperatorsConfigBuilder
@@ -94,6 +100,7 @@ type rabbitmqBus struct {
 	producerFactory                rabbitmqproducer.ProducerFactory
 	consumedFuncs                  []consumer.ConsumedFunc
 	producedFuncs                  []producer.ProducedFunc
+	deadLetterConsumedFuncs        []consumer.ConsumedFunc
 }
 
 func (r *rabbitmqBus) Consumed(consumedFuncs ...consumer.ConsumedFunc) {
@@ -167,6 +174,14 @@ func (r *rabbitmqBus) Start(ctx context.Context) error {
 			if err != nil {
 				r.logger.Error("error in consumer: ", consumer.Name(), err)
 			}
+		}
+	}
+
+	if r.deadLetterConsumer != nil {
+		err := r.deadLetterConsumer.Start(ctx)
+		r.logger.Info("start dead letter consumer: ", r.deadLetterConsumer.Name())
+		if err != nil {
+			r.logger.Error("error in dead letter consumer: ", r.deadLetterConsumer.Name(), err)
 		}
 	}
 

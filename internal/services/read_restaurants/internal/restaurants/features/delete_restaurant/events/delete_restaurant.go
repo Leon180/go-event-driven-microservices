@@ -36,13 +36,10 @@ func (h *DeleteRestaurantHandle) Handle(ctx context.Context, event types.Message
 		h.logger.Error("error in casting DeleteRestaurant event")
 		return customizeerrors.RestaurantEventCastingError
 	}
-
-	err := h.deleteRestaurantService.DeleteRestaurant(ctx, &m.Restaurant)
-	if err != nil {
-		h.logger.Error("error in sending DeleteRestaurant with id: {%s}, error: {%v}", m.Restaurant.ID, err)
+	if err := h.deleteRestaurantService.DeleteRestaurant(ctx, &m.Restaurant); err != nil {
+		h.logger.Errorf("error in sending DeleteRestaurant with id: {%s}, error: {%v}", m.Restaurant.ID, err)
 		return err
 	}
 	h.logger.Info("DeleteRestaurant consumer handled.")
-
 	return nil
 }

@@ -51,6 +51,9 @@ type rabbitMQConsumer struct {
 	channel                *amqp.Channel
 	deliveryRoutines       chan struct{}
 	errorChan              chan error
+	exchangeName           string
+	queueName              string
+	routingKey             string
 }
 
 func (r *rabbitMQConsumer) Start(ctx context.Context) error {
@@ -58,17 +61,17 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 		return customizeerrors.RabbitmqConnectionError
 	}
 
-	exchangeName := r.rabbitmqConsumerConfig.ExchangeOptions.Name
+	r.exchangeName = r.rabbitmqConsumerConfig.ExchangeOptions.Name
 	if r.rabbitmqConsumerConfig.ExchangeOptions.Name == "" {
-		exchangeName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
+		r.exchangeName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
 	}
-	routingKey := r.rabbitmqConsumerConfig.BindingOptions.RoutingKey
+	r.routingKey = r.rabbitmqConsumerConfig.BindingOptions.RoutingKey
 	if r.rabbitmqConsumerConfig.BindingOptions.RoutingKey == "" {
-		routingKey = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
+		r.routingKey = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
 	}
-	queueName := r.rabbitmqConsumerConfig.QueueOptions.Name
+	r.queueName = r.rabbitmqConsumerConfig.QueueOptions.Name
 	if r.rabbitmqConsumerConfig.QueueOptions.Name == "" {
-		queueName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
+		r.queueName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
 	}
 
 	r.handleReconnectionEvent(ctx)
@@ -87,7 +90,7 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 	}
 
 	err = r.channel.ExchangeDeclare(
-		exchangeName,
+		r.exchangeName,
 		r.rabbitmqConsumerConfig.ExchangeOptions.Type.ToString(),
 		r.rabbitmqConsumerConfig.ExchangeOptions.Durable,
 		r.rabbitmqConsumerConfig.ExchangeOptions.AutoDelete,
@@ -99,7 +102,7 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 	}
 
 	_, err = r.channel.QueueDeclare(
-		queueName,
+		r.queueName,
 		r.rabbitmqConsumerConfig.QueueOptions.Durable,
 		r.rabbitmqConsumerConfig.QueueOptions.AutoDelete,
 		r.rabbitmqConsumerConfig.QueueOptions.Exclusive,
@@ -110,9 +113,9 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 	}
 
 	err = r.channel.QueueBind(
-		queueName,
-		routingKey,
-		exchangeName,
+		r.queueName,
+		r.routingKey,
+		r.exchangeName,
 		r.rabbitmqConsumerConfig.NoWait,
 		r.rabbitmqConsumerConfig.BindingOptions.Args)
 	if err != nil {
@@ -120,7 +123,7 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 	}
 
 	delivering, err := r.channel.Consume(
-		queueName,
+		r.queueName,
 		r.rabbitmqConsumerConfig.ConsumerID,
 		r.rabbitmqConsumerConfig.AutoAck, // When autoAck (also known as noAck) is true, the server will acknowledge deliveries to this consumer prior to writing the delivery to the network. When autoAck is true, the consumer should not call Delivery.Ack.
 		r.rabbitmqConsumerConfig.QueueOptions.Exclusive,
@@ -210,8 +213,13 @@ func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Del
 	r.deliveryRoutines <- struct{}{}
 	defer func() { <-r.deliveryRoutines }()
 
+	if checkMessageRetryExceeded := r.checkMessageRetryExceeded(ctx, &delivery); checkMessageRetryExceeded {
+		return
+	}
+
 	consumeContext, err := r.createMessageConsumeContext(delivery)
 	if err != nil {
+		r.logger.Errorf("error creating message consume context, error: %v", err)
 		return
 	}
 
@@ -222,7 +230,13 @@ func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Del
 
 	customizeAck := func() {
 		if err := delivery.Ack(false); err != nil {
-			r.logger.Error("error sending ACK to RabbitMQ consumer: %v", err)
+			r.logger.Errorf(
+				"error sending ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
+				err,
+				consumeContext.CorrelationID(),
+				consumeContext.MessageID(),
+				consumeContext.Type(),
+			)
 			return
 		}
 		for _, cousumedFunc := range r.consumedFuncs {
@@ -232,13 +246,96 @@ func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Del
 			cousumedFunc(consumeContext.Message())
 		}
 	}
+	// requeue with retry count
 	customizeNack := func() {
-		if err := delivery.Nack(false, true); err != nil {
-			r.logger.Error("error in sending Nack to RabbitMQ consumer: %v", err)
+		msg := amqp.Publishing{
+			CorrelationId:   delivery.CorrelationId,
+			MessageId:       delivery.MessageId,
+			Timestamp:       time.Now(),
+			Headers:         delivery.Headers,
+			Type:            delivery.Type,
+			ContentType:     delivery.ContentType,
+			Body:            delivery.Body,
+			DeliveryMode:    delivery.DeliveryMode,
+			Expiration:      delivery.Expiration,
+			AppId:           delivery.AppId,
+			Priority:        delivery.Priority,
+			ReplyTo:         delivery.ReplyTo,
+			ContentEncoding: delivery.ContentEncoding,
+		}
+		if err := r.channel.PublishWithContext(
+			ctx,
+			r.exchangeName,
+			r.routingKey,
+			false,
+			false,
+			msg,
+		); err != nil {
+			r.logger.Errorf("error requeueing message to RabbitMQ consumer, error: %v", err)
+		}
+		if err := delivery.Ack(false); err != nil {
+			r.logger.Errorf(
+				"error sending requeue ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
+				err,
+				consumeContext.CorrelationID(),
+				consumeContext.MessageID(),
+				consumeContext.Type(),
+			)
 			return
 		}
 	}
 	r.handle(ctx, &customizeAck, &customizeNack, consumeContext)
+}
+
+func (r *rabbitMQConsumer) checkMessageRetryExceeded(ctx context.Context, delivery *amqp.Delivery) bool {
+	retryCount, ok := delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()].(int32)
+	if ok && int(retryCount) >= r.rabbitmqConfig.RetryAttempts {
+		// publish message to DLQ
+		msg := amqp.Publishing{
+			CorrelationId:   delivery.CorrelationId,
+			MessageId:       delivery.MessageId,
+			Timestamp:       time.Now(),
+			Headers:         delivery.Headers,
+			Type:            delivery.Type,
+			ContentType:     delivery.ContentType,
+			Body:            delivery.Body,
+			DeliveryMode:    delivery.DeliveryMode,
+			Expiration:      delivery.Expiration,
+			AppId:           delivery.AppId,
+			Priority:        delivery.Priority,
+			ReplyTo:         delivery.ReplyTo,
+			ContentEncoding: delivery.ContentEncoding,
+		}
+		r.logger.Infof(
+			"Max retries reached. Moving to DLQ: id: %s, message id: %s, message type: %s",
+			delivery.CorrelationId,
+			delivery.MessageId,
+			delivery.Type,
+		)
+		if err := r.channel.PublishWithContext(
+			ctx,
+			r.rabbitmqConfig.DeadLetterExchange,
+			r.rabbitmqConfig.DeadLetterRoutingKey,
+			false,
+			false,
+			msg,
+		); err != nil {
+			r.logger.Errorf("error publishing message to DLQ, error: %v", err)
+		}
+
+		if err := delivery.Ack(false); err != nil {
+			r.logger.Errorf(
+				"error sending requeue ACK to RabbitMQ consumer, error: %v, correlation id: %s, message id: %s, message type: %s",
+				err,
+				delivery.CorrelationId,
+				delivery.MessageId,
+				delivery.Type,
+			)
+		}
+		return true
+	}
+	delivery.Headers[enums.DeliveryHeaderRetryCount.ToString()] = retryCount + 1
+	return false
 }
 
 func (r *rabbitMQConsumer) handle(
@@ -250,7 +347,7 @@ func (r *rabbitMQConsumer) handle(
 	for _, handler := range r.rabbitmqConsumerConfig.Handlers {
 		err := r.handleWithRetry(ctx, handler, messageConsumeContext)
 		if err != nil {
-			r.logger.Error("error handling consume message, prepare for nacking message")
+			r.logger.Errorf("error handling consume message, prepare for nacking message, error: %v", err)
 			if customizeNack != nil {
 				(*customizeNack)()
 			}
@@ -268,7 +365,7 @@ func (r *rabbitMQConsumer) handleWithRetry(
 	handler consumer.ConsumerHandler,
 	messageConsumeContext types.MessageConsumeContext,
 ) error {
-	r.logger.Info("handling message, correlation id: %s, message id: %s, message type: %s",
+	r.logger.Infof("handling message, correlation id: %s, message id: %s, message type: %s",
 		messageConsumeContext.CorrelationID(),
 		messageConsumeContext.MessageID(),
 		messageConsumeContext.Type(),

@@ -36,13 +36,10 @@ func (h *RestoreRestaurantHandle) Handle(ctx context.Context, event types.Messag
 		h.logger.Error("error in casting RestoreRestaurant event")
 		return customizeerrors.RestaurantEventCastingError
 	}
-
-	err := h.restoreRestaurantService.RestoreRestaurant(ctx, &m.Restaurant)
-	if err != nil {
-		h.logger.Error("error in sending RestoreRestaurant with id: {%s}, error: {%v}", m.Restaurant.ID, err)
+	if err := h.restoreRestaurantService.RestoreRestaurant(ctx, &m.Restaurant); err != nil {
+		h.logger.Errorf("error in sending RestoreRestaurant with id: {%s}, error: {%v}", m.Restaurant.ID, err)
 		return err
 	}
 	h.logger.Info("RestoreRestaurant consumer handled.")
-
 	return nil
 }
