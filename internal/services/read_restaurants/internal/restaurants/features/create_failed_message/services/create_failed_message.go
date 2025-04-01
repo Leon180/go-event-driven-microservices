@@ -34,11 +34,14 @@ func (handle *createFailedMessageImpl) CreateFailedMessage(
 	if aggregate == nil {
 		return nil
 	}
-	existingFailedMessage, err := handle.readFailedMessageMongo.ReadFailedMessage(ctx, aggregate.MessageID)
+	if aggregate.MessageID == "" {
+		return customizeerrors.InvalidIDError
+	}
+	existed, err := handle.readFailedMessageMongo.ReadFailedMessage(ctx, aggregate.MessageID)
 	if err != nil {
 		return err
 	}
-	if existingFailedMessage != nil {
+	if existed != nil {
 		return customizeerrors.FailedMessageAlreadyExistsError
 	}
 	if err := handle.createFailedMessageMongo.Create(ctx, aggregate); err != nil {

@@ -2,12 +2,12 @@ package repositoriesredis
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/redis/go-redis/v9"
 )
@@ -34,8 +34,8 @@ func (impl *ReadRestaurantsRedisImpl) ReadRestaurant(
 	if id == "" {
 		return nil, nil
 	}
-	var restaurant documents.Restaurant
-	if err := impl.db.Get(ctx, id).Scan(&restaurant); err != nil {
+	var data []byte
+	if err := impl.db.Get(ctx, id).Scan(&data); err != nil {
 		if err == redis.Nil {
 			return nil, nil
 		}
@@ -43,8 +43,13 @@ func (impl *ReadRestaurantsRedisImpl) ReadRestaurant(
 			Error("failed to read restaurant full info", err)
 		return nil, err
 	}
-	aggregate := aggregates.RestaurantDocument(restaurant)
-	return aggregate.ToAggregate(), nil
+	var restaurant aggregates.Restaurant
+	if err := json.Unmarshal(data, &restaurant); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("failed to unmarshal restaurant when reading from redis: ", err)
+		return nil, err
+	}
+	return &restaurant, nil
 }
 
 // Set Restaurants Impl
@@ -71,8 +76,14 @@ func (impl *setRestaurantsRedisImpl) SetRestaurant(
 	if restaurant == nil || restaurant.ID == "" {
 		return nil
 	}
-	if _, err := impl.db.Set(ctx, restaurant.ID, restaurant, timeOut).Result(); err != nil {
-		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants", err)
+	data, err := json.Marshal(*restaurant)
+	if err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("failed to marshal restaurant when setting to redis: ", err)
+		return err
+	}
+	if _, err := impl.db.Set(ctx, restaurant.ID, data, timeOut).Result(); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to create restaurants: ", err)
 		return err
 	}
 	return nil

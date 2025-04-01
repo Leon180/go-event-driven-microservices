@@ -12,6 +12,8 @@ type Restaurant struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 
+	ActiveStatus bool `json:"active_status"`
+
 	Branches []Branch `json:"branches"`
 }
 

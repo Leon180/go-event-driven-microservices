@@ -7,7 +7,6 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/redis/go-redis/v9"
 )
@@ -28,20 +27,20 @@ type listCategoriesRedisImpl struct {
 }
 
 func (impl *listCategoriesRedisImpl) ListCategories(ctx context.Context) (aggregates.Categories, error) {
-	categories := make(documents.Categories, 0)
+	categories := make(aggregates.Categories, 0)
 	l, err := impl.db.HGetAll(ctx, "categories").Result()
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range l {
-		var category documents.Category
+		var category aggregates.Category
 		if err := json.Unmarshal([]byte(v), &category); err != nil {
 			impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to unmarshal category", err)
 			continue
 		}
 		categories = append(categories, category)
 	}
-	return aggregates.CategoryDocuments(categories).ToAggregate(), nil
+	return categories, nil
 }
 
 func NewSetCategoriesRedis(
@@ -63,15 +62,14 @@ func (impl *setCategoriesRedisImpl) SetCategories(ctx context.Context, categorie
 	if len(categories) == 0 {
 		return nil
 	}
-	categoryMap := make(map[string]interface{}, len(categories))
+	categoryMap := make(map[string]any, len(categories))
 	for _, category := range categories {
-		doc := category.ToDocument()
-		jsonBytes, err := json.Marshal(doc)
+		jsonBytes, err := json.Marshal(category)
 		if err != nil {
 			impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to marshal category", err)
 			return err
 		}
-		categoryMap[doc.CategoryCode.ToCategory().String()] = string(jsonBytes)
+		categoryMap[category.CategoryCode.ToCategory().String()] = string(jsonBytes)
 	}
 	if err := impl.db.Del(ctx, "categories").Err(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to delete categories", err)

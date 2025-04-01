@@ -45,16 +45,17 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(
 	if aggregate.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
-	restaurant, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
+	existed, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if restaurant == nil {
+	if existed == nil {
 		return customizeerrors.RestaurantNotFoundError
 	}
-	if restaurant.IsActive() {
+	if existed.IsActive() {
 		return customizeerrors.AlreadyActiveError
 	}
+	aggregate.ActiveStatus = true
 	if err = handle.updateRestaurantsMongo.UpdateRestaurant(ctx, aggregate); err != nil {
 		return err
 	}

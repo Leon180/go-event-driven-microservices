@@ -43,25 +43,23 @@ func (handle *updateRestaurantImpl) UpdateRestaurant(ctx context.Context, aggreg
 		return nil
 	}
 	// check if restaurant exists
-	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, aggregate.ID)
+	existed, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if restaurant == nil {
+	if existed == nil {
 		return customizeerrors.RestaurantNotFoundError
 	}
 
-	err = handle.updateRestaurantsRepository.UpdateRestaurant(ctx, aggregate)
-	if err != nil {
+	if err = handle.updateRestaurantsRepository.UpdateRestaurant(ctx, aggregate); err != nil {
 		return err
 	}
 
-	err = handle.setRestaurantsRedis.SetRestaurant(
+	if err = handle.setRestaurantsRedis.SetRestaurant(
 		ctx,
 		aggregate,
 		time.Duration(handle.redisConfig.CacheTimeOut)*time.Second,
-	)
-	if err != nil {
+	); err != nil {
 		return err
 	}
 

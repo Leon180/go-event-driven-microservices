@@ -5,7 +5,6 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_restaurant/dtos"
 	deleteRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_restaurant/events"
@@ -49,18 +48,18 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 		return customizeerrors.InvalidIDError
 	}
 
-	restaurant, err := handle.readRestaurantsRepository.ReadRestaurant(ctx, req.ID)
+	existed, err := handle.readRestaurantsRepository.ReadRestaurantFullInfo(ctx, req.ID)
 	if err != nil {
 		return err
 	}
-	if restaurant == nil {
+	if existed == nil {
 		return customizeerrors.RestaurantNotFoundError
 	}
-	if !restaurant.IsActive() {
+	if !existed.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
 	updateRestaurant := entities.UpdateRestaurant{
-		ID:           restaurant.ID,
+		ID:           existed.ID,
 		ActiveStatus: lo.ToPtr(false),
 	}
 	if err := handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant); err != nil {
@@ -68,8 +67,7 @@ func (handle *deleteRestaurantImpl) DeleteRestaurant(
 	}
 
 	// publish delete restaurant event
-	re := aggregates.RestaurantEntity(*restaurant)
-	message := handle.deleteRestaurantMessageBuilder.Build(re.ToAggregate())
+	message := handle.deleteRestaurantMessageBuilder.Build(existed)
 	if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
 		return err
 	}

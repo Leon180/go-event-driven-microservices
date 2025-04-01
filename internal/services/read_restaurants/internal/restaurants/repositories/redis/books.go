@@ -2,12 +2,12 @@ package repositoriesredis
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/aggregates"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/documents"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/repositories"
 	"github.com/redis/go-redis/v9"
 )
@@ -31,16 +31,21 @@ func (impl *ReadBooksRedisImpl) ReadBook(ctx context.Context, id string) (*aggre
 	if id == "" {
 		return nil, nil
 	}
-	var book documents.Book
-	if err := impl.db.Get(ctx, id).Scan(&book); err != nil {
+	var data []byte
+	if err := impl.db.Get(ctx, id).Scan(&data); err != nil {
 		if err == redis.Nil {
 			return nil, nil
 		}
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read book", err)
 		return nil, err
 	}
-	bookDocument := aggregates.BookDocument(book)
-	return bookDocument.ToAggregate(), nil
+	var book aggregates.Book
+	if err := json.Unmarshal(data, &book); err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("failed to unmarshal book when reading from redis: ", err)
+		return nil, err
+	}
+	return &book, nil
 }
 
 func NewSetBookRedis(
@@ -62,8 +67,13 @@ func (impl *setBookRedisImpl) SetBook(ctx context.Context, book *aggregates.Book
 	if book == nil || book.ID == "" {
 		return nil
 	}
-	bookDocument := book.ToDocument()
-	if _, err := impl.db.Set(ctx, book.ID, *bookDocument, timeOut).Result(); err != nil {
+	data, err := json.Marshal(*book)
+	if err != nil {
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("failed to marshal book when setting to redis: ", err)
+		return err
+	}
+	if _, err := impl.db.Set(ctx, book.ID, data, timeOut).Result(); err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to set book", err)
 		return err
 	}

@@ -5,7 +5,6 @@ import (
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_book/dtos"
 	deleteBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/delete_book/events"
@@ -46,18 +45,18 @@ func (handle *deleteBookImpl) DeleteBook(ctx context.Context, req *featuresdtos.
 		return customizeerrors.InvalidIDError
 	}
 
-	book, err := handle.readBooksRepository.ReadBook(ctx, req.ID)
+	existed, err := handle.readBooksRepository.ReadBookFullInfo(ctx, req.ID)
 	if err != nil {
 		return err
 	}
-	if book == nil {
+	if existed == nil {
 		return customizeerrors.BookNotFoundError
 	}
-	if !book.IsActive() {
+	if !existed.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
 	updateBook := entities.UpdateBook{
-		ID:           book.ID,
+		ID:           existed.ID,
 		ActiveStatus: lo.ToPtr(false),
 	}
 	if err := handle.updateBooksRepository.UpdateBook(ctx, &updateBook); err != nil {
@@ -65,8 +64,7 @@ func (handle *deleteBookImpl) DeleteBook(ctx context.Context, req *featuresdtos.
 	}
 
 	// publish delete book event
-	be := aggregates.BookEntity(*book)
-	message := handle.deleteBookMessageBuilder.Build(be.ToAggregate())
+	message := handle.deleteBookMessageBuilder.Build(existed)
 	if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
 		return err
 	}

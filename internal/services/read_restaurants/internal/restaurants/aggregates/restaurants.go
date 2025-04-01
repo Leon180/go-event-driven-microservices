@@ -35,9 +35,10 @@ func (r *Restaurant) TableName() string {
 
 func (r *Restaurant) ToDTO() *dtos.Restaurant {
 	return &dtos.Restaurant{
-		ID:          &r.ID,
-		Name:        r.Name,
-		Description: r.Description,
+		ID:           &r.ID,
+		Name:         r.Name,
+		Description:  r.Description,
+		ActiveStatus: r.ActiveStatus,
 		Branches: lo.Map(r.Branches, func(b Branch, _ int) dtos.Branch {
 			return *b.ToDTO()
 		}),

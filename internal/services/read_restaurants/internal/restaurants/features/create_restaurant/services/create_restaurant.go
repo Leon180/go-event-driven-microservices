@@ -40,12 +40,12 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, aggreg
 		return nil
 	}
 	// check if restaurant already exists
-	restaurant, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
+	existed, err := handle.readRestaurantsMongo.ReadRestaurant(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if restaurant != nil {
-		if restaurant.ActiveStatus {
+	if existed != nil {
+		if existed.ActiveStatus {
 			return customizeerrors.RestaurantAlreadyExistsError
 		}
 		return customizeerrors.RestaurantAlreadyExistsButInactiveError

@@ -30,28 +30,28 @@ type deleteBookImpl struct {
 	setBookRedis     repositories.SetBookRedis
 }
 
-func (handle *deleteBookImpl) DeleteBook(ctx context.Context, command *aggregates.Book) error {
-	if command == nil {
+func (handle *deleteBookImpl) DeleteBook(ctx context.Context, aggregate *aggregates.Book) error {
+	if aggregate == nil {
 		return nil
 	}
-	if command.ID == "" {
+	if aggregate.ID == "" {
 		return customizeerrors.InvalidIDError
 	}
-	book, err := handle.readBooksMongo.ReadBook(ctx, command.ID)
+	existed, err := handle.readBooksMongo.ReadBook(ctx, aggregate.ID)
 	if err != nil {
 		return err
 	}
-	if book == nil {
+	if existed == nil {
 		return customizeerrors.BookNotFoundError
 	}
-	if !book.IsActive() {
+	if !existed.IsActive() {
 		return customizeerrors.AlreadyDeletedError
 	}
-	aggregate := aggregates.Book(*command)
-	if err = handle.updateBooksMongo.UpdateBook(ctx, &aggregate); err != nil {
+	aggregate.ActiveStatus = false
+	if err = handle.updateBooksMongo.UpdateBook(ctx, aggregate); err != nil {
 		return err
 	}
-	if err = handle.setBookRedis.DeleteBook(ctx, &aggregate); err != nil {
+	if err = handle.setBookRedis.DeleteBook(ctx, aggregate); err != nil {
 		return err
 	}
 	return nil
