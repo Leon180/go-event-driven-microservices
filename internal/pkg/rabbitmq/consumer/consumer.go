@@ -54,13 +54,14 @@ type rabbitMQConsumer struct {
 	exchangeName           string
 	queueName              string
 	routingKey             string
+	chClosedCh             chan *amqp.Error
 }
 
 func (r *rabbitMQConsumer) Start(ctx context.Context) error {
+	var err error
 	if r.connection == nil {
 		return customizeerrors.RabbitmqConnectionError
 	}
-
 	r.exchangeName = r.rabbitmqConsumerConfig.ExchangeOptions.Name
 	if r.rabbitmqConsumerConfig.ExchangeOptions.Name == "" {
 		r.exchangeName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
@@ -74,51 +75,48 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 		r.queueName = strcase.ToSnake(r.rabbitmqConsumerConfig.ConsumerMessageType.Name())
 	}
 
-	r.handleReconnectionEvent(ctx)
-
 	// get a new channel on the connection - channel is unique for each consumer
-	ch, err := r.connection.NewChannel()
-	if err != nil {
+	if r.channel, err = r.connection.NewChannel(); err != nil {
+		r.logger.Errorf("error creating new channel, error: %v", err)
 		return customizeerrors.RabbitmqConnectionError
 	}
-	r.channel = ch
 
 	// The prefetch count tells the Rabbit connection how many messages to retrieve from the server per request.
-	prefetchCount := r.rabbitmqConsumerConfig.ConcurrencyLimit * r.rabbitmqConsumerConfig.PrefetchCount
-	if err := r.channel.Qos(prefetchCount, 0, false); err != nil {
+	if err = r.channel.Qos(r.rabbitmqConsumerConfig.ConcurrencyLimit*r.rabbitmqConsumerConfig.PrefetchCount, 0, false); err != nil {
+		r.logger.Errorf("error setting Qos, error: %v", err)
 		return err
 	}
 
-	err = r.channel.ExchangeDeclare(
+	if err = r.channel.ExchangeDeclare(
 		r.exchangeName,
 		r.rabbitmqConsumerConfig.ExchangeOptions.Type.ToString(),
 		r.rabbitmqConsumerConfig.ExchangeOptions.Durable,
 		r.rabbitmqConsumerConfig.ExchangeOptions.AutoDelete,
 		false,
 		r.rabbitmqConsumerConfig.NoWait,
-		r.rabbitmqConsumerConfig.ExchangeOptions.Args)
-	if err != nil {
+		r.rabbitmqConsumerConfig.ExchangeOptions.Args); err != nil {
+		r.logger.Errorf("error declaring exchange, error: %v", err)
 		return err
 	}
 
-	_, err = r.channel.QueueDeclare(
+	if _, err = r.channel.QueueDeclare(
 		r.queueName,
 		r.rabbitmqConsumerConfig.QueueOptions.Durable,
 		r.rabbitmqConsumerConfig.QueueOptions.AutoDelete,
 		r.rabbitmqConsumerConfig.QueueOptions.Exclusive,
 		r.rabbitmqConsumerConfig.NoWait,
-		r.rabbitmqConsumerConfig.QueueOptions.Args)
-	if err != nil {
+		r.rabbitmqConsumerConfig.QueueOptions.Args); err != nil {
+		r.logger.Errorf("error declaring queue, error: %v", err)
 		return err
 	}
 
-	err = r.channel.QueueBind(
+	if err = r.channel.QueueBind(
 		r.queueName,
 		r.routingKey,
 		r.exchangeName,
 		r.rabbitmqConsumerConfig.NoWait,
-		r.rabbitmqConsumerConfig.BindingOptions.Args)
-	if err != nil {
+		r.rabbitmqConsumerConfig.BindingOptions.Args); err != nil {
+		r.logger.Errorf("error binding queue, error: %v", err)
 		return err
 	}
 
@@ -132,35 +130,27 @@ func (r *rabbitMQConsumer) Start(ctx context.Context) error {
 		nil,
 	)
 	if err != nil {
+		r.logger.Errorf("error consuming messages, error: %v", err)
 		return err
 	}
 
-	chClosedCh := make(chan *amqp.Error, 1)
-	r.channel.NotifyClose(chClosedCh)
-
+	r.chClosedCh = r.channel.NotifyClose(make(chan *amqp.Error, 1))
+	go r.handleErrorEvent()
+	go r.handleReconnectionEvent(ctx)
+	go r.handleChannelClosed(ctx)
 	for i := range r.rabbitmqConsumerConfig.ConcurrencyLimit {
 		r.logger.Infof("Processing messages on thread %d", i)
 		go func() {
 			for {
-				select {
-				case <-ctx.Done():
-					r.logger.Info("shutting down consumer")
+				delivery, ok := <-delivering
+				if !ok {
+					r.logger.Info("consumer connection dropped")
 					return
-				case amqErr := <-chClosedCh:
-					r.logger.Errorf("AMQP Channel closed due to: %s", amqErr)
-					chClosedCh = make(chan *amqp.Error, 1)
-					r.channel.NotifyClose(chClosedCh)
-				case delivery, ok := <-delivering:
-					if !ok {
-						r.logger.Info("consumer connection dropped")
-						return
-					}
-					r.handleReceived(ctx, delivery)
 				}
+				r.handleReceived(ctx, delivery)
 			}
 		}()
 	}
-
 	return nil
 }
 
@@ -195,17 +185,62 @@ func (r *rabbitMQConsumer) Name() string {
 	return r.rabbitmqConsumerConfig.Name
 }
 
-func (r *rabbitMQConsumer) handleReconnectionEvent(ctx context.Context) {
-	go func() {
-		for range r.connection.ReconnectedEvent() {
-			r.logger.Info("restarting consumer")
-			err := r.Start(ctx)
-			if err != nil {
-				r.logger.Error("restarting consumer failed with error: %v", err)
+func (r *rabbitMQConsumer) handleChannelClosed(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			r.logger.Info("shutting down consumer")
+			if r.channel != nil {
+				if err := r.channel.Close(); err != nil {
+					r.logger.Errorf("error closing channel, error: %v", err)
+				}
 			}
-			r.logger.Info("restarting consumer finished successfully")
+			return
+		case amqErr := <-r.chClosedCh:
+			if amqErr == nil {
+				continue
+			}
+			r.logger.Errorf("AMQP Channel closed due to: %s", amqErr)
+			if err := r.Start(ctx); err != nil {
+				r.logger.Errorf("error restarting consumer, error: %v", err)
+			}
 		}
-	}()
+	}
+}
+
+func (r *rabbitMQConsumer) handleErrorEvent() {
+	// close delivery
+	for errEvent := range r.connection.ErrorEvent() {
+		r.logger.Errorf("rabbitmq connection error: %v", errEvent)
+		if r.connection == nil {
+			continue
+		}
+		if r.connection.IsClosed() {
+			continue
+		}
+		if r.channel == nil {
+			continue
+		}
+		if err := r.channel.Cancel(r.rabbitmqConsumerConfig.ConsumerID, false); err != nil {
+			r.logger.Errorf("error closing channel, error: %v", err)
+		}
+	}
+}
+
+func (r *rabbitMQConsumer) handleReconnectionEvent(ctx context.Context) {
+	for range r.connection.ReconnectedEvent() {
+		// close the channel
+		if r.channel != nil {
+			if err := r.channel.Close(); err != nil {
+				r.logger.Errorf("error closing channel, error: %v", err)
+			}
+		}
+		r.logger.Info("restarting consumer")
+		if err := r.Start(ctx); err != nil {
+			r.logger.Error("restarting consumer failed with error: %v", err)
+		}
+		r.logger.Info("restarting consumer finished successfully")
+	}
 }
 
 func (r *rabbitMQConsumer) handleReceived(ctx context.Context, delivery amqp.Delivery) {
