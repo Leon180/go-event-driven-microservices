@@ -1,0 +1,18 @@
+{
+  "appConfig": {
+    "connWebPort": "8003",
+    "serviceName": "books",
+    "version": "v1",
+    "maxAge": 12,
+    "allowAllOrigins": true,
+    "allowCredentials": true,
+    "allowMethods": "GET, POST, PUT, DELETE, OPTIONS",
+    "allowHeaders": "X-PINGOTHER, Accept, Authorization, Content-Type, X-CSRF-Token, Upgrade, Origin, Connection, Accept-Encoding, Accept-Language, Host, Access-Control-Request-Method, Access-Control-Request-Headers",
+    "exposeHeaders": "Content-Length, Link"
+  },
+  "loggerConfig": {
+    "logLevel": -1,
+    "callerEnabled": true,
+    "enableTracing": true
+  }
+}
