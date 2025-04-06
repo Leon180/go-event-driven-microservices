@@ -712,3 +712,21 @@ func (impl *UpdateRestaurantsTransactionImpl) UpdateAvailable(
 func (impl *UpdateRestaurantsTransactionImpl) DeleteAvailables(ctx context.Context, ids []string) error {
 	return NewUpdateRestaurants(impl.Db, impl.ContextLogger).DeleteAvailables(ctx, ids)
 }
+
+func (impl *UpdateRestaurantsTransactionImpl) CreateOutboxMessages(
+	ctx context.Context,
+	entities entities.OutboxMessages,
+) error {
+	return NewUpdateOutboxMessages(impl.Db, impl.ContextLogger).CreateOutboxMessages(ctx, entities)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) UpdateOutboxMessage(
+	ctx context.Context,
+	update *entities.UpdateOutboxMessage,
+) error {
+	return NewUpdateOutboxMessages(impl.Db, impl.ContextLogger).UpdateOutboxMessage(ctx, update)
+}
+
+func (impl *UpdateRestaurantsTransactionImpl) DeleteOutboxMessages(ctx context.Context, ids []string) error {
+	return NewUpdateOutboxMessages(impl.Db, impl.ContextLogger).DeleteOutboxMessages(ctx, ids)
+}

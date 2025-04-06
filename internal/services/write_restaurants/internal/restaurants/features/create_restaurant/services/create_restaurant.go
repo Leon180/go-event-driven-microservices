@@ -2,13 +2,16 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/serializers"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	createRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/create_restaurant/events"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories"
 	"github.com/samber/lo"
@@ -22,15 +25,15 @@ func NewCreateRestaurant(
 	uuidGenerator uuid.UUIDGenerator,
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	searchRestaurantsFullInfoRepository repositories.SearchRestaurantsFullInfo,
-	rabbitmqProducer producer.Producer,
 	createRestaurantMessageBuilder createRestaurantEvents.CreateRestaurantMessageBuilder,
+	messageSerializer serializers.MessageSerializer,
 ) CreateRestaurant {
 	return &createRestaurantImpl{
 		uuidGenerator: uuidGenerator,
 		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
 		searchRestaurantsFullInfoRepository:        searchRestaurantsFullInfoRepository,
-		rabbitmqProducer:                           rabbitmqProducer,
 		createRestaurantMessageBuilder:             createRestaurantMessageBuilder,
+		messageSerializer:                          messageSerializer,
 	}
 }
 
@@ -38,8 +41,8 @@ type createRestaurantImpl struct {
 	uuidGenerator                              uuid.UUIDGenerator
 	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
 	searchRestaurantsFullInfoRepository        repositories.SearchRestaurantsFullInfo
-	rabbitmqProducer                           producer.Producer
 	createRestaurantMessageBuilder             createRestaurantEvents.CreateRestaurantMessageBuilder
+	messageSerializer                          serializers.MessageSerializer
 }
 
 func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *dtos.Restaurant) error {
@@ -81,6 +84,26 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 	}
 	createEntities := *editEntities[0].CreateEntities
 
+	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
+	outboxMessages := make(entities.OutboxMessages, len(aggregates))
+	for i, restaurant := range aggregates {
+		message := handle.createRestaurantMessageBuilder.Build(&restaurant)
+		serializationResult, err := handle.messageSerializer.Serialize(message)
+		if err != nil {
+			return err
+		}
+		t := time.Now()
+		outboxMessages[i] = entities.OutboxMessage{
+			ID:        handle.uuidGenerator.GenerateUUID(),
+			MessageID: message.ID(),
+			Type:      message.Type(),
+			Payload:   serializationResult.Data,
+			Status:    enums.OutboxStatusPending,
+			CreatedAt: t,
+			UpdatedAt: t,
+		}
+	}
+
 	// create
 	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
 	if err != nil {
@@ -110,17 +133,13 @@ func (handle *createRestaurantImpl) CreateRestaurant(ctx context.Context, req *d
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
+	// store outbox messages
+	if err := tx.CreateOutboxMessages(ctx, outboxMessages); err != nil {
 		return err
 	}
 
-	// publish create restaurant events
-	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
-	for _, restaurant := range aggregates {
-		message := handle.createRestaurantMessageBuilder.Build(&restaurant)
-		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
-			return err
-		}
+	if err := tx.Commit(); err != nil {
+		return err
 	}
 
 	return nil

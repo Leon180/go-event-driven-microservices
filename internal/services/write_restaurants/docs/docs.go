@@ -578,6 +578,9 @@ const docTemplate = `{
         "dtos.Restaurant": {
             "type": "object",
             "properties": {
+                "active_status": {
+                    "type": "boolean"
+                },
                 "branches": {
                     "type": "array",
                     "items": {

@@ -27,5 +27,8 @@ var ProvideModule = fx.Module(
 		repositoriespostgres.NewUpdateBooks,
 		repositoriespostgres.NewUpdateBooksWithTransaction,
 		repositoriespostgres.NewListCategories,
+		repositoriespostgres.NewListOutboxMessages,
+		repositoriespostgres.NewUpdateOutboxMessages,
+		repositoriespostgres.NewUpdateOutboxMessagesWithTransaction,
 	),
 )

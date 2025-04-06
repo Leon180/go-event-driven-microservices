@@ -2,9 +2,13 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
-	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
+	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/serializers"
+	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/restore_restaurant/dtos"
 	restoreRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/features/restore_restaurant/events"
@@ -17,24 +21,27 @@ type RestoreRestaurant interface {
 }
 
 func NewRestoreRestaurant(
-	updateRestaurantsRepository repositories.UpdateRestaurants,
+	uuidGenerator uuid.UUIDGenerator,
+	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction],
 	readRestaurantsRepository repositories.ReadRestaurants,
-	rabbitmqProducer producer.Producer,
 	restoreRestaurantMessageBuilder restoreRestaurantEvents.RestoreRestaurantMessageBuilder,
+	messageSerializer serializers.MessageSerializer,
 ) RestoreRestaurant {
 	return &restoreRestaurantImpl{
-		updateRestaurantsRepository:     updateRestaurantsRepository,
-		readRestaurantsRepository:       readRestaurantsRepository,
-		rabbitmqProducer:                rabbitmqProducer,
-		restoreRestaurantMessageBuilder: restoreRestaurantMessageBuilder,
+		uuidGenerator: uuidGenerator,
+		updateRestaurantsWithTransactionRepository: updateRestaurantsWithTransactionRepository,
+		readRestaurantsRepository:                  readRestaurantsRepository,
+		restoreRestaurantMessageBuilder:            restoreRestaurantMessageBuilder,
+		messageSerializer:                          messageSerializer,
 	}
 }
 
 type restoreRestaurantImpl struct {
-	updateRestaurantsRepository     repositories.UpdateRestaurants
-	readRestaurantsRepository       repositories.ReadRestaurants
-	rabbitmqProducer                producer.Producer
-	restoreRestaurantMessageBuilder restoreRestaurantEvents.RestoreRestaurantMessageBuilder
+	uuidGenerator                              uuid.UUIDGenerator
+	updateRestaurantsWithTransactionRepository customizegorm.Transactor[repositories.UpdateRestaurantsWithTransaction]
+	readRestaurantsRepository                  repositories.ReadRestaurants
+	restoreRestaurantMessageBuilder            restoreRestaurantEvents.RestoreRestaurantMessageBuilder
+	messageSerializer                          serializers.MessageSerializer
 }
 
 func (handle *restoreRestaurantImpl) RestoreRestaurant(
@@ -58,17 +65,43 @@ func (handle *restoreRestaurantImpl) RestoreRestaurant(
 	if existed.IsActive() {
 		return customizeerrors.AlreadyActiveError
 	}
+
+	message := handle.restoreRestaurantMessageBuilder.Build(existed)
+	serializationResult, err := handle.messageSerializer.Serialize(message)
+	if err != nil {
+		return err
+	}
+	t := time.Now()
+	outboxMessage := entities.OutboxMessage{
+		ID:        handle.uuidGenerator.GenerateUUID(),
+		MessageID: message.ID(),
+		Type:      message.Type(),
+		Payload:   serializationResult.Data,
+		Status:    enums.OutboxStatusPending,
+		CreatedAt: t,
+		UpdatedAt: t,
+	}
+
+	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	updateRestaurant := entities.UpdateRestaurant{
 		ID:           existed.ID,
 		ActiveStatus: lo.ToPtr(true),
 	}
-	if err := handle.updateRestaurantsRepository.UpdateRestaurant(ctx, &updateRestaurant); err != nil {
+	if err := tx.UpdateRestaurant(ctx, &updateRestaurant); err != nil {
 		return err
 	}
 
-	// publish restore restaurant event
-	message := handle.restoreRestaurantMessageBuilder.Build(existed)
-	if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
+	// store outbox message
+	if err := tx.CreateOutboxMessages(ctx, entities.OutboxMessages{outboxMessage}); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 

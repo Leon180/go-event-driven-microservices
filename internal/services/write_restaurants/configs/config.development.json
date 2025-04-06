@@ -32,5 +32,9 @@
     "retryAttempts": 3,
     "retryDelay": 300,
     "reconnectDelay": 3000
+  },
+  "outboxConfig": {
+    "interval": 10000,
+    "maxRetries": 3
   }
 }

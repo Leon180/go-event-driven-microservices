@@ -2,11 +2,13 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/producer"
+	"github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/serializers"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/aggregates"
@@ -28,6 +30,7 @@ type updateRestaurantImpl struct {
 	contextlogger                              contextloggers.ContextLogger
 	rabbitmqProducer                           producer.Producer
 	updateRestaurantMessageBuilder             updaterestaurantevents.UpdateRestaurantMessageBuilder
+	messageSerializer                          serializers.MessageSerializer
 }
 
 func NewUpdateRestaurant(
@@ -37,6 +40,7 @@ func NewUpdateRestaurant(
 	contextlogger contextloggers.ContextLogger,
 	rabbitmqProducer producer.Producer,
 	updateRestaurantMessageBuilder updaterestaurantevents.UpdateRestaurantMessageBuilder,
+	messageSerializer serializers.MessageSerializer,
 ) UpdateRestaurant {
 	return &updateRestaurantImpl{
 		uuidGenerator:                              uuidGenerator,
@@ -45,6 +49,7 @@ func NewUpdateRestaurant(
 		contextlogger:                              contextlogger,
 		rabbitmqProducer:                           rabbitmqProducer,
 		updateRestaurantMessageBuilder:             updateRestaurantMessageBuilder,
+		messageSerializer:                          messageSerializer,
 	}
 }
 
@@ -85,6 +90,26 @@ func (handle *updateRestaurantImpl) UpdateRestaurant(ctx context.Context, req *d
 	updateEntities := editEntities[0].UpdateEntities
 	deleteEntities := editEntities[0].DeleteEntities
 
+	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
+	outboxMessages := make(entities.OutboxMessages, len(aggregates))
+	for i, restaurant := range aggregates {
+		message := handle.updateRestaurantMessageBuilder.Build(&restaurant)
+		serializationResult, err := handle.messageSerializer.Serialize(message)
+		if err != nil {
+			return err
+		}
+		t := time.Now()
+		outboxMessages[i] = entities.OutboxMessage{
+			ID:        handle.uuidGenerator.GenerateUUID(),
+			MessageID: message.ID(),
+			Type:      message.Type(),
+			Payload:   serializationResult.Data,
+			Status:    enums.OutboxStatusPending,
+			CreatedAt: t,
+			UpdatedAt: t,
+		}
+	}
+
 	tx, err := handle.updateRestaurantsWithTransactionRepository.BeginTx(ctx)
 	if err != nil {
 		return err
@@ -105,17 +130,13 @@ func (handle *updateRestaurantImpl) UpdateRestaurant(ctx context.Context, req *d
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
+	// store outbox messages
+	if err := tx.CreateOutboxMessages(ctx, outboxMessages); err != nil {
 		return err
 	}
 
-	// publish update restaurant event
-	aggregates := restaurantDTOAggregateBuilder.GetAggregates()
-	for _, restaurant := range aggregates {
-		message := handle.updateRestaurantMessageBuilder.Build(&restaurant)
-		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
-			return err
-		}
+	if err := tx.Commit(); err != nil {
+		return err
 	}
 
 	return nil

@@ -13,6 +13,7 @@ import (
 	postgresdbfx "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/postgresdb/fx"
 	restaurantsrabbitmq "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/rabbitmq"
 	repositoriesfx "github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/internal/restaurants/repositories/fx"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/write_restaurants/outbox"
 	"go.uber.org/fx"
 )
 
@@ -46,6 +47,9 @@ var ProvideModule = fx.Module(
 	rabbitmqfx.ProvideModule,
 	restaurantsrabbitmq.ProvideModule,
 
+	// outbox
+	outbox.ProvideModule,
+
 	// app configs
 	appconfigsfx.ProvideModule,
 
@@ -62,6 +66,9 @@ var ProvideModule = fx.Module(
 var InvokeModule = fx.Module(
 	"restaurantsInvokeFx",
 
+	// messaging types
+	messagingfx.InvokeModule,
+
 	// migrations
 	postgresdbfx.InvokeModule,
 
@@ -70,4 +77,7 @@ var InvokeModule = fx.Module(
 
 	// sync data
 	featuresfx.InvokeModule,
+
+	// outbox
+	outbox.InvokeModule,
 )

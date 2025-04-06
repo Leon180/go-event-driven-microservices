@@ -53,4 +53,5 @@ type UpdateRestaurants interface {
 type UpdateRestaurantsWithTransaction interface {
 	customizegorm.Transaction
 	UpdateRestaurants
+	UpdateOutboxMessages
 }

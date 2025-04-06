@@ -524,6 +524,20 @@ func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateBranches(ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBranches", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateBranches), ctx, branches)
 }
 
+// CreateOutboxMessages mocks base method.
+func (m *MockUpdateRestaurantsWithTransaction) CreateOutboxMessages(ctx context.Context, entities entities.OutboxMessages) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOutboxMessages", ctx, entities)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOutboxMessages indicates an expected call of CreateOutboxMessages.
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) CreateOutboxMessages(ctx, entities any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOutboxMessages", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).CreateOutboxMessages), ctx, entities)
+}
+
 // CreatePriceRanges mocks base method.
 func (m *MockUpdateRestaurantsWithTransaction) CreatePriceRanges(ctx context.Context, priceRanges entities.PriceRanges) error {
 	m.ctrl.T.Helper()
@@ -620,6 +634,20 @@ func (m *MockUpdateRestaurantsWithTransaction) DeleteBranches(ctx context.Contex
 func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteBranches(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBranches", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteBranches), ctx, ids)
+}
+
+// DeleteOutboxMessages mocks base method.
+func (m *MockUpdateRestaurantsWithTransaction) DeleteOutboxMessages(ctx context.Context, ids []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteOutboxMessages", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteOutboxMessages indicates an expected call of DeleteOutboxMessages.
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) DeleteOutboxMessages(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOutboxMessages", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).DeleteOutboxMessages), ctx, ids)
 }
 
 // DeletePriceRanges mocks base method.
@@ -732,6 +760,20 @@ func (m *MockUpdateRestaurantsWithTransaction) UpdateBranchCategoryRelation(ctx 
 func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateBranchCategoryRelation(ctx, updateBranchCategoryRelation any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBranchCategoryRelation", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateBranchCategoryRelation), ctx, updateBranchCategoryRelation)
+}
+
+// UpdateOutboxMessage mocks base method.
+func (m *MockUpdateRestaurantsWithTransaction) UpdateOutboxMessage(ctx context.Context, update *entities.UpdateOutboxMessage) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOutboxMessage", ctx, update)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateOutboxMessage indicates an expected call of UpdateOutboxMessage.
+func (mr *MockUpdateRestaurantsWithTransactionMockRecorder) UpdateOutboxMessage(ctx, update any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOutboxMessage", reflect.TypeOf((*MockUpdateRestaurantsWithTransaction)(nil).UpdateOutboxMessage), ctx, update)
 }
 
 // UpdatePriceRange mocks base method.
