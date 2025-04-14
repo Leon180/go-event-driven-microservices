@@ -16,6 +16,7 @@ import (
 	deleteRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/events"
 	deleteRestaurantServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/services"
 	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
+	getRestaurantGRPCService "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/grpc"
 	getRestaurantQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/queries"
 	listCategoriesGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/gin_endpoints"
 	listCategoriesQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/queries"
@@ -24,6 +25,7 @@ import (
 	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/gin_endpoints"
 	searchBooksQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_books/queries"
 	searchRestaurantsGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/gin_endpoints"
+	searchRestaurantsGRPCService "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/grpc"
 	searchRestaurantsQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/search_restaurants/queries"
 	syncCategoriesEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/events"
 	syncCategoriesServices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/sync_categories/services"
@@ -69,9 +71,19 @@ var ProvideModule = fx.Module(
 		createFailedMessageEvents.NewCreateFailedMessageHandler,
 	),
 
+	// grpc service register
+	fx.Provide(
+		fxTagEndpoints(
+			enums.FxGroupGRPCServiceRegister,
+			getRestaurantGRPCService.NewGRPCServiceRegister,
+			searchRestaurantsGRPCService.NewGRPCServiceRegister,
+		)...,
+	),
+
 	// endpoints
 	fx.Provide(
 		fxTagEndpoints(
+			enums.FxGroupEndpoints,
 			getRestaurantGinEndpoints.NewGetRestaurant,
 			searchRestaurantsGinEndpoints.NewSearchRestaurants,
 			searchBooksGinEndpoints.NewSearchBooks,
@@ -82,18 +94,18 @@ var ProvideModule = fx.Module(
 
 // fxTagEndpoints will tag the endpoints with the group: endpoints for usage of the fx framework
 // the group is used to register the endpoint to the router in the gin server
-func fxTagEndpoints(handlers ...any) []any {
+func fxTagEndpoints(group enums.FxGroup, handlers ...any) []any {
 	return lo.Map(handlers, func(handler any, _ int) any {
-		return fxTagEndpoint(handler)
+		return fxTagEndpoint(group, handler)
 	})
 }
 
 // fxTagEndpoint will tag the endpoint with the group: endpoints for usage of the fx framework
 // the group is used to register the endpoint to the router in the gin server
-func fxTagEndpoint(handler any) any {
+func fxTagEndpoint(group enums.FxGroup, handler any) any {
 	return fx.Annotate(
 		handler,
 		fx.As(new(customizegin.Endpoint)),
-		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupEndpoints.ToString())),
+		fx.ResultTags(fmt.Sprintf(`group:"%s"`, group.ToString())),
 	)
 }

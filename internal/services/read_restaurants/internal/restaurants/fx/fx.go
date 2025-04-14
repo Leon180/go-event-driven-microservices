@@ -2,6 +2,7 @@ package accountsfx
 
 import (
 	customizeginfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin/fx"
+	customizegrpcfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_grpc/fx"
 	environmentsfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/environments/fx"
 	loggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/loggers/fx"
 	messagingfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/messaging/fx"
@@ -57,6 +58,9 @@ var ProvideModule = fx.Module(
 	// features
 	featuresfx.ProvideModule,
 
+	// grpc server
+	customizegrpcfx.ProvideModule,
+
 	// gin server
 	customizeginfx.ProvideModule,
 )
@@ -69,6 +73,9 @@ var InvokeModule = fx.Module(
 
 	// rabbitmq
 	rabbitmqfx.InvokeModule,
+
+	// grpc server
+	customizegrpcfx.InvokeModule,
 
 	// start server
 	customizeginfx.InvokeModule,

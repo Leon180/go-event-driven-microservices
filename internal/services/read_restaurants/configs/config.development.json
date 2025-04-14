@@ -65,5 +65,17 @@
     "deadLetterConsumer": "dead_letter_consumer",
     "deadLetterExchange": "dead_letter_exchange",
     "deadLetterRoutingKey": "dlq"
+  },
+  "grpcConfig": {
+    "host": "localhost",
+    "port": "8001",
+    "serviceName": "restaurants",
+    "version": "v1",
+    "basePath": "/restaurants",
+    "maxConnectionIdle": 300,
+    "maxConnectionAge": 300,
+    "maxConnectionAgeGrace": 300,
+    "time": 10,
+    "timeout": 15
   }
 }

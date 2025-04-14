@@ -5,9 +5,9 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	createBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_book/events"
-	createBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_book/gin_endpoints"
 	createBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_book/services"
+	createBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/events"
+	createBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/gin_endpoints"
 	deleteBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/events"
 	deleteBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/gin_endpoints"
 	deleteBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/services"

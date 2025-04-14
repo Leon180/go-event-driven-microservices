@@ -9,7 +9,7 @@ import (
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/dtos"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_book/events"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/events"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/repositories"
 	"github.com/samber/lo"
 )
