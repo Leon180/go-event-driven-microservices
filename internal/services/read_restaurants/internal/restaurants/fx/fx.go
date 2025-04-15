@@ -11,6 +11,7 @@ import (
 	contextloggersfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers/fx"
 	uuidfx "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid/fx"
 	appconfigsfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/configs/fx"
+	grpcfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/customize_grpc/fx"
 	featuresfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/fx"
 	mongodbfx "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/mongodb/fx"
 	restaurantsrabbitmq "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/rabbitmq"
@@ -60,6 +61,7 @@ var ProvideModule = fx.Module(
 
 	// grpc server
 	customizegrpcfx.ProvideModule,
+	grpcfx.ProvideModule,
 
 	// gin server
 	customizeginfx.ProvideModule,

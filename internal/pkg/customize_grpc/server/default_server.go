@@ -56,7 +56,7 @@ func (s *grpcServerImpl) RegistGRPCService(registers ...customizegrpc.GRPCServic
 }
 
 func (s *grpcServerImpl) Run() error {
-	l, err := net.Listen("tcp", s.config.GetPort())
+	l, err := net.Listen("tcp", net.JoinHostPort(s.config.GetHost(), s.config.GetPort()))
 	if err != nil {
 		return err
 	}

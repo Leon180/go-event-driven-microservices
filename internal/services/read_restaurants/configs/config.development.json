@@ -68,7 +68,7 @@
   },
   "grpcConfig": {
     "host": "localhost",
-    "port": "8001",
+    "port": "9001",
     "serviceName": "restaurants",
     "version": "v1",
     "basePath": "/restaurants",

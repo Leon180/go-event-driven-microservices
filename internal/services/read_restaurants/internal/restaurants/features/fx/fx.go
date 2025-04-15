@@ -73,8 +73,7 @@ var ProvideModule = fx.Module(
 
 	// grpc service register
 	fx.Provide(
-		fxTagEndpoints(
-			enums.FxGroupGRPCServiceRegister,
+		fxTagGRPCServiceRegisters(
 			getRestaurantGRPCService.NewGRPCServiceRegister,
 			searchRestaurantsGRPCService.NewGRPCServiceRegister,
 		)...,
@@ -82,8 +81,7 @@ var ProvideModule = fx.Module(
 
 	// endpoints
 	fx.Provide(
-		fxTagEndpoints(
-			enums.FxGroupEndpoints,
+		fxTagGroupEndpoints(
 			getRestaurantGinEndpoints.NewGetRestaurant,
 			searchRestaurantsGinEndpoints.NewSearchRestaurants,
 			searchBooksGinEndpoints.NewSearchBooks,
@@ -92,20 +90,33 @@ var ProvideModule = fx.Module(
 	),
 )
 
+func fxTagGRPCServiceRegisters(handlers ...any) []any {
+	return lo.Map(handlers, func(handler any, _ int) any {
+		return fxTagGRPCServiceRegister(handler)
+	})
+}
+
+func fxTagGRPCServiceRegister(handler any) any {
+	return fx.Annotate(
+		handler,
+		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupGRPCServiceRegister.ToString())),
+	)
+}
+
 // fxTagEndpoints will tag the endpoints with the group: endpoints for usage of the fx framework
 // the group is used to register the endpoint to the router in the gin server
-func fxTagEndpoints(group enums.FxGroup, handlers ...any) []any {
+func fxTagGroupEndpoints(handlers ...any) []any {
 	return lo.Map(handlers, func(handler any, _ int) any {
-		return fxTagEndpoint(group, handler)
+		return fxTagGroupEndpoint(handler)
 	})
 }
 
 // fxTagEndpoint will tag the endpoint with the group: endpoints for usage of the fx framework
 // the group is used to register the endpoint to the router in the gin server
-func fxTagEndpoint(group enums.FxGroup, handler any) any {
+func fxTagGroupEndpoint(handler any) any {
 	return fx.Annotate(
 		handler,
 		fx.As(new(customizegin.Endpoint)),
-		fx.ResultTags(fmt.Sprintf(`group:"%s"`, group.ToString())),
+		fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupEndpoints.ToString())),
 	)
 }
