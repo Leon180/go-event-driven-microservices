@@ -7,14 +7,10 @@ import (
 	rabbitmq "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq"
 	rabbitmqconsumer "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/consumer"
 	rabbitmqoperators "github.com/Leon180/go-event-driven-microservices/internal/pkg/rabbitmq/operators"
-	createbookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/events"
-	createbookservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_book/services"
 	createfailedmessageevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/events"
 	createfailedmessageservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_failed_message/services"
 	createrestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/events"
 	createrestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/create_restaurant/services"
-	deletebookevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/events"
-	deletebookservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_book/services"
 	deleterestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/events"
 	deleterestaurantservices "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/delete_restaurant/services"
 	restorerestaurantevents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/events"
@@ -35,9 +31,7 @@ var ProvideModule = fx.Module(
 
 func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	logger loggers.Logger,
-	createBookService createbookservices.CreateBookHandler,
 	createRestaurantService createrestaurantservices.CreateRestaurantHandler,
-	deleteBookService deletebookservices.DeleteBookHandler,
 	deleteRestaurantService deleterestaurantservices.DeleteRestaurantHandler,
 	restoreRestaurantService restorerestaurantservices.RestoreRestaurantHandler,
 	updateRestaurantService updaterestaurantservices.UpdateRestaurantHandler,
@@ -49,26 +43,10 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 	return func(builder rabbitmqoperators.RabbitMQOperatorsConfigBuilder) {
 		builder.
 			AddConsumer(
-				createbookevents.CreateBook{},
-				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
-					builder.SetHandlers(
-						createbookevents.NewCreateBookHandler(logger, createBookService),
-					)
-				},
-			).
-			AddConsumer(
 				createrestaurantevents.CreateRestaurant{},
 				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
 					builder.SetHandlers(
 						createrestaurantevents.NewCreateRestaurantHandler(logger, createRestaurantService),
-					)
-				},
-			).
-			AddConsumer(
-				deletebookevents.DeleteBook{},
-				func(builder rabbitmqconsumer.RabbitMQConsumerConfigBuilder) {
-					builder.SetHandlers(
-						deletebookevents.NewDeleteBookHandler(logger, deleteBookService),
 					)
 				},
 			).
@@ -106,9 +84,7 @@ func NewReadRestaurantsRabbitMQOperatorsConfigBuilderFunc(
 			).
 			SetDeadLetterConsumer(
 				[]types.Message{
-					createbookevents.CreateBook{},
 					createrestaurantevents.CreateRestaurant{},
-					deletebookevents.DeleteBook{},
 					deleterestaurantevents.DeleteRestaurant{},
 					restorerestaurantevents.RestoreRestaurant{},
 					updaterestaurantevents.UpdateRestaurant{},

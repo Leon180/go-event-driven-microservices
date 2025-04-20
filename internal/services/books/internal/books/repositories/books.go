@@ -4,7 +4,6 @@ import (
 	"context"
 
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/entities"
 )
@@ -12,11 +11,10 @@ import (
 //go:generate mockgen -source=books.go -destination=./mocks/books_mock.go -package=mocks
 
 type SearchBooksFullInfo interface {
-	SearchBooksFullInfo(ctx context.Context, searchBooks *dtos.SearchBooks) (aggregates.Books, error)
+	SearchBooksFullInfo(ctx context.Context, searchBooks *dtos.SearchBooks) (entities.Books, error)
 }
 
-type ReadBooks interface {
-	ReadBookFullInfo(ctx context.Context, id string) (*aggregates.Book, error)
+type ReadBook interface {
 	ReadBook(ctx context.Context, id string) (*entities.Book, error)
 }
 

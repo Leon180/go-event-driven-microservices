@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+
+// protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative restaurants.proto
+
+
+package protobuf;
+
+option go_package = "./;protobuf";
+
+service GetRestaurantService {
+  rpc GetRestaurant(GetRestaurantReq) returns (Restaurant);
+}
+
+service SearchRestaurantsService {
+  rpc SearchRestaurants(SearchRestaurantsReq) returns (Restaurants);
+}
+
+message GetRestaurantReq {
+  string RestaurantId = 1;
+}
+
+message SearchRestaurantsReq {
+  optional string NameFilter = 1;
+  bool NamePreciseSearch = 2;
+  optional string DescriptionFilter = 3;
+  repeated string CityFilter = 4;
+  repeated string CountryFilter = 5;
+  optional int32 MaxPriceFilter = 6;
+  optional int32 MinPriceFilter = 7;
+  repeated string CategoryFilter = 8;
+  repeated int32 TableAvailableWeek = 9;
+  optional string TableAvailableStartTime = 10;
+  optional string TableAvailableEndTime = 11;
+  repeated OrderBy OrderBy = 12;
+  optional Pagination Pagination = 13;
+}
+
+message OrderBy {
+  string Field = 1;
+  string Direction = 2;
+}
+
+message Pagination {
+  int32 Page = 1;
+  int32 PageSize = 2;
+}
+
+message Restaurants {
+  repeated Restaurant Restaurants = 1;
+}
+
+message Restaurant {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  bool ActiveStatus = 4;
+  repeated Branch Branches = 5;
+}
+
+message Branch {
+  string ID = 1;
+  string Name = 2;
+  string Description = 3;
+  Address Address = 4;
+  PriceRange PriceRange = 5;
+  repeated Category Categories = 6;
+  repeated Available Availables = 7;
+  repeated Table Tables = 8;
+}
+
+message Address {
+  string ID = 1;
+  string Street = 2;
+  string City = 3;
+  string PostalCode = 4;
+  string Country = 5;
+}
+
+message PriceRange {
+  string ID = 1;
+  int32 MinPrice = 2;
+  int32 MaxPrice = 3;
+}
+
+message Category {
+  string ID = 1;
+  string Name = 2;
+}
+
+message Available {
+  string ID = 1;
+  int32 Weekday = 2;
+  string StartTime = 3;
+  string EndTime = 4;
+}
+
+message Table {
+  string ID = 1;
+  int32 Capacity = 2;
+}
+

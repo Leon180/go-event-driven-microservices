@@ -18,7 +18,7 @@ var ProvideModule = fx.Module(
 	"booksRepositoriesProvideFx",
 	fx.Provide(
 		repositoriespostgres.NewSearchBooksFullInfo,
-		repositoriespostgres.NewReadBooks,
+		repositoriespostgres.NewReadBook,
 		repositoriespostgres.NewUpdateBooks,
 		repositoriespostgres.NewUpdateBooksWithTransaction,
 	),

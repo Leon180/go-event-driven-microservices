@@ -42,10 +42,6 @@ func v202503052348Migration(db *gorm.DB) error {
 			log.Println("AutoMigrate Available failed", "error", err)
 			return err
 		}
-		if err := tx.AutoMigrate(&entities.Book{}); err != nil {
-			log.Println("AutoMigrate Book failed", "error", err)
-			return err
-		}
 		return nil
 	})
 }

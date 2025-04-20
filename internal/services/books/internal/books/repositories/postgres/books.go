@@ -2,12 +2,10 @@ package repostgresespostgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	contextloggers "github.com/Leon180/go-event-driven-microservices/internal/pkg/utilities/context_loggers"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/aggregates"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/entities"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/repositories"
@@ -18,34 +16,37 @@ func NewSearchBooksFullInfo(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.SearchBooksFullInfo {
-	return &SearchBooksFullInfoImpl{
+	return &searchBooksFullInfoImpl{
 		db:            db,
 		contextLogger: contextLogger,
 	}
 }
 
-type SearchBooksFullInfoImpl struct {
+type searchBooksFullInfoImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *SearchBooksFullInfoImpl) SearchBooksFullInfo(
+func (impl *searchBooksFullInfoImpl) SearchBooksFullInfo(
 	ctx context.Context,
 	searchBooks *dtos.SearchBooks,
-) (aggregates.Books, error) {
+) (entities.Books, error) {
 	if searchBooks == nil {
 		return nil, nil
 	}
 	sql := impl.buildBaseQuery(ctx).
 		Scopes(
+			impl.applyBranchIDFilter(searchBooks.BranchID),
+			impl.applyDateFilter(searchBooks.StartDate, searchBooks.EndDate),
+			impl.applyTimeFilter(searchBooks.StartTime, searchBooks.EndTime),
+			impl.applyCapacityFilter(searchBooks.Capacity),
+			impl.applyBookedFilter(searchBooks.Booked),
 			impl.applyMobileNumberFilter(searchBooks.MobileNumber),
-			impl.applyTableIDFilter(searchBooks.TableID),
-			impl.applyAvailableIDFilter(searchBooks.AvailableID),
-			impl.applyTableAvailabilityFilter(searchBooks.TableAvailableWeek, searchBooks.TableAvailableStartTime, searchBooks.TableAvailableEndTime),
+			impl.applyNoteFilter(searchBooks.Note),
 			customizegorm.ApplyPagination(searchBooks.Pagination),
 			customizegorm.ApplyOrdering(searchBooks.OrderBy),
 		)
-	var books []aggregates.Book
+	var books entities.Books
 	if err := sql.Find(&books).Error; err != nil {
 		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to search books", err)
 		return nil, err
@@ -53,99 +54,101 @@ func (impl *SearchBooksFullInfoImpl) SearchBooksFullInfo(
 	return books, nil
 }
 
-func (impl *SearchBooksFullInfoImpl) buildBaseQuery(ctx context.Context) *gorm.DB {
-	return impl.db.WithContext(ctx).
-		Preload("Table").
-		Preload("Available")
+func (impl *searchBooksFullInfoImpl) buildBaseQuery(ctx context.Context) *gorm.DB {
+	return impl.db.WithContext(ctx)
 }
 
-func (impl *SearchBooksFullInfoImpl) applyMobileNumberFilter(mobileNumber *string) func(*gorm.DB) *gorm.DB {
+func (impl *searchBooksFullInfoImpl) applyBranchIDFilter(branchID *string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if branchID != nil {
+			return db.Where("branch_id = ?", *branchID)
+		}
+		return db
+	}
+}
+
+func (impl *searchBooksFullInfoImpl) applyDateFilter(startDate *string, endDate *string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if startDate != nil && endDate != nil {
+			return db.Where("date >= ? AND date <= ?", *startDate, *endDate)
+		}
+		if startDate != nil {
+			return db.Where("date >= ?", *startDate)
+		}
+		if endDate != nil {
+			return db.Where("date <= ?", *endDate)
+		}
+		return db
+	}
+}
+
+func (impl *searchBooksFullInfoImpl) applyTimeFilter(startTime *string, endTime *string) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if startTime != nil && endTime != nil {
+			return db.Where("start_time >= ? AND end_time <= ?", *startTime, *endTime)
+		}
+		if startTime != nil {
+			return db.Where("start_time >= ?", *startTime)
+		}
+		if endTime != nil {
+			return db.Where("end_time <= ?", *endTime)
+		}
+		return db
+	}
+}
+
+func (impl *searchBooksFullInfoImpl) applyCapacityFilter(capacity *int) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if capacity != nil {
+			return db.Where("capacity >= ?", *capacity)
+		}
+		return db
+	}
+}
+
+func (impl *searchBooksFullInfoImpl) applyBookedFilter(booked *bool) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if booked != nil {
+			return db.Where("booked = ?", *booked)
+		}
+		return db
+	}
+}
+
+func (impl *searchBooksFullInfoImpl) applyMobileNumberFilter(mobileNumber *string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if mobileNumber != nil {
-			return db.Where("mobile_number = ?", *mobileNumber)
+			return db.Where("mobile_number LIKE ?", "%"+*mobileNumber+"%")
 		}
 		return db
 	}
 }
 
-func (impl *SearchBooksFullInfoImpl) applyTableIDFilter(tableID *string) func(*gorm.DB) *gorm.DB {
+func (impl *searchBooksFullInfoImpl) applyNoteFilter(note *string) func(*gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if tableID != nil {
-			return db.Where("table_id = ?", *tableID)
+		if note != nil {
+			return db.Where("note LIKE ?", "%"+*note+"%")
 		}
 		return db
 	}
 }
 
-func (impl *SearchBooksFullInfoImpl) applyAvailableIDFilter(availableID *string) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		if availableID != nil {
-			return db.Where("available_id = ?", *availableID)
-		}
-		return db
-	}
-}
-
-func (impl *SearchBooksFullInfoImpl) applyTableAvailabilityFilter(
-	availableWeek []time.Weekday,
-	availableStartTime *string,
-	availableEndTime *string,
-) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		if len(availableWeek) == 0 && availableStartTime == nil && availableEndTime == nil {
-			return db
-		}
-
-		query := db.Where(`book.available_id IN (
-			SELECT id FROM available WHERE 1=1`)
-
-		if len(availableWeek) > 0 {
-			query = query.Where("AND available.weekday IN (?)", availableWeek)
-		}
-
-		if availableStartTime != nil {
-			query = query.Where("AND available.start_time >= ?", *availableStartTime)
-		}
-
-		if availableEndTime != nil {
-			query = query.Where("AND available.end_time <= ?", *availableEndTime)
-		}
-
-		return query.Where(")")
-	}
-}
-
-func NewReadBooks(
+func NewReadBook(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
-) repositories.ReadBooks {
-	return &ReadBooksImpl{
+) repositories.ReadBook {
+	return &readBookImpl{
 		db:            db,
 		contextLogger: contextLogger,
 	}
 }
 
-type ReadBooksImpl struct {
+type readBookImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *ReadBooksImpl) ReadBookFullInfo(ctx context.Context, id string) (*aggregates.Book, error) {
-	if id == "" {
-		return nil, nil
-	}
-	var book aggregates.Book
-	if err := impl.db.WithContext(ctx).
-		Preload("Table").
-		Preload("Available").
-		Where("id = ?", id).Limit(1).Find(&book).Error; err != nil {
-		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("failed to read book full info", err)
-		return nil, err
-	}
-	return &book, nil
-}
-
-func (impl *ReadBooksImpl) ReadBook(ctx context.Context, id string) (*entities.Book, error) {
+func (impl *readBookImpl) ReadBook(ctx context.Context, id string) (*entities.Book, error) {
 	if id == "" {
 		return nil, nil
 	}
@@ -161,18 +164,18 @@ func NewUpdateBooks(
 	db *gorm.DB,
 	contextLogger contextloggers.ContextLogger,
 ) repositories.UpdateBooks {
-	return &UpdateBooksImpl{
+	return &updateBooksImpl{
 		db:            db,
 		contextLogger: contextLogger,
 	}
 }
 
-type UpdateBooksImpl struct {
+type updateBooksImpl struct {
 	db            *gorm.DB
 	contextLogger contextloggers.ContextLogger
 }
 
-func (impl *UpdateBooksImpl) CreateBooks(ctx context.Context, books entities.Books) error {
+func (impl *updateBooksImpl) CreateBooks(ctx context.Context, books entities.Books) error {
 	if len(books) == 0 {
 		return nil
 	}
@@ -183,7 +186,7 @@ func (impl *UpdateBooksImpl) CreateBooks(ctx context.Context, books entities.Boo
 	return nil
 }
 
-func (impl *UpdateBooksImpl) UpdateBook(ctx context.Context, updateBook *entities.UpdateBook) error {
+func (impl *updateBooksImpl) UpdateBook(ctx context.Context, updateBook *entities.UpdateBook) error {
 	if updateBook == nil || updateBook.ID == "" {
 		return nil
 	}
@@ -194,7 +197,7 @@ func (impl *UpdateBooksImpl) UpdateBook(ctx context.Context, updateBook *entitie
 	return nil
 }
 
-func (impl *UpdateBooksImpl) DeleteBooks(ctx context.Context, ids []string) error {
+func (impl *updateBooksImpl) DeleteBooks(ctx context.Context, ids []string) error {
 	if len(ids) == 0 {
 		return nil
 	}

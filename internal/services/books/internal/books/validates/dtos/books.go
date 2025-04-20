@@ -10,7 +10,7 @@ func ValidateBook(book *dtos.Book) error {
 	if book == nil {
 		return nil
 	}
-	if book.TableID == "" || book.AvailableID == "" {
+	if book.BranchID == "" {
 		return customizeerrors.InvalidIDError
 	}
 	if book.Amount <= 1 {
@@ -19,5 +19,6 @@ func ValidateBook(book *dtos.Book) error {
 	if !enums.MobileNumberFormat.ValidateFormat(book.MobileNumber) {
 		return customizeerrors.InvalidMobileNumberError
 	}
+
 	return nil
 }

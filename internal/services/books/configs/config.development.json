@@ -14,5 +14,17 @@
     "logLevel": -1,
     "callerEnabled": true,
     "enableTracing": true
+  },
+  "grpcConfig": {
+    "host": "localhost",
+    "port": "9001",
+    "serviceName": "restaurants",
+    "version": "v1",
+    "basePath": "/restaurants",
+    "maxConnectionIdle": 300,
+    "maxConnectionAge": 300,
+    "maxConnectionAgeGrace": 300,
+    "time": 10,
+    "timeout": 15
   }
 }

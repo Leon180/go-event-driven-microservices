@@ -5,20 +5,17 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	createBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_book/services"
-	createBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/events"
-	createBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/gin_endpoints"
-	deleteBookEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/events"
-	deleteBookGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/gin_endpoints"
-	deleteBookServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/delete_book/services"
+	createBooksEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/events"
+	createBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/gin_endpoints"
+	createBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/services"
 	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/search_books/gin_endpoints"
 	searchBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/search_books/services"
 	"github.com/samber/lo"
 	"go.uber.org/fx"
 )
 
-// ProvideModule is the module for the accounts features
-// It provides the services and customizeginendpoints.Endpoint for the restaurants features:
+// ProvideModule is the module for the books features
+// It provides the services and customizeginendpoints.Endpoint for the books features:
 // dependencies:
 // - contextloggers.ContextLogger
 var ProvideModule = fx.Module(
@@ -26,22 +23,19 @@ var ProvideModule = fx.Module(
 
 	// events
 	fx.Provide(
-		createBookEvents.NewCreateBookMessageBuilder,
-		deleteBookEvents.NewDeleteBookMessageBuilder,
+		createBooksEvents.NewCreateBookMessageBuilder,
 	),
 
 	// services
 	fx.Provide(
-		createBookServices.NewCreateBook,
-		deleteBookServices.NewDeleteBook,
+		createBooksServices.NewCreateBook,
 		searchBooksServices.NewSearchBooks,
 	),
 
 	// endpoints
 	fx.Provide(
 		fxTagEndpoints(
-			createBookGinEndpoints.NewCreateBook,
-			deleteBookGinEndpoints.NewDeleteBook,
+			createBooksGinEndpoints.NewCreateBook,
 			searchBooksGinEndpoints.NewSearchBooks,
 		)...,
 	),

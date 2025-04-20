@@ -6,6 +6,7 @@ import (
 	"log"
 
 	customizegrpc "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_grpc"
+	customizegrpcclient "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_grpc/client"
 	customizegrpcinterceptors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_grpc/interceptors"
 	customizegrpcserver "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_grpc/server"
 	"github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
@@ -28,6 +29,7 @@ var ProvideModule = fx.Module(
 			fx.ResultTags(fmt.Sprintf(`group:"%s"`, enums.FxGroupGRPCUnaryInterceptors.ToString())),
 		),
 		customizegrpcserver.NewGRPCServer,
+		customizegrpcclient.NewGRPCClient,
 	),
 )
 

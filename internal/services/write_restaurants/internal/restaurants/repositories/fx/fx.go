@@ -22,10 +22,6 @@ var ProvideModule = fx.Module(
 		repositoriespostgres.NewReadRestaurants,
 		repositoriespostgres.NewUpdateRestaurants,
 		repositoriespostgres.NewUpdateRestaurantsWithTransaction,
-		repositoriespostgres.NewSearchBooksFullInfo,
-		repositoriespostgres.NewReadBooks,
-		repositoriespostgres.NewUpdateBooks,
-		repositoriespostgres.NewUpdateBooksWithTransaction,
 		repositoriespostgres.NewListCategories,
 	),
 )
