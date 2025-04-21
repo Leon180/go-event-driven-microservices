@@ -71,17 +71,18 @@ type SearchRestaurantsReq struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
 	NameFilter              *string                `protobuf:"bytes,1,opt,name=NameFilter,proto3,oneof" json:"NameFilter,omitempty"`
 	NamePreciseSearch       bool                   `protobuf:"varint,2,opt,name=NamePreciseSearch,proto3" json:"NamePreciseSearch,omitempty"`
-	DescriptionFilter       *string                `protobuf:"bytes,3,opt,name=DescriptionFilter,proto3,oneof" json:"DescriptionFilter,omitempty"`
-	CityFilter              []string               `protobuf:"bytes,4,rep,name=CityFilter,proto3" json:"CityFilter,omitempty"`
-	CountryFilter           []string               `protobuf:"bytes,5,rep,name=CountryFilter,proto3" json:"CountryFilter,omitempty"`
-	MaxPriceFilter          *int32                 `protobuf:"varint,6,opt,name=MaxPriceFilter,proto3,oneof" json:"MaxPriceFilter,omitempty"`
-	MinPriceFilter          *int32                 `protobuf:"varint,7,opt,name=MinPriceFilter,proto3,oneof" json:"MinPriceFilter,omitempty"`
-	CategoryFilter          []string               `protobuf:"bytes,8,rep,name=CategoryFilter,proto3" json:"CategoryFilter,omitempty"`
-	TableAvailableWeek      []int32                `protobuf:"varint,9,rep,packed,name=TableAvailableWeek,proto3" json:"TableAvailableWeek,omitempty"`
-	TableAvailableStartTime *string                `protobuf:"bytes,10,opt,name=TableAvailableStartTime,proto3,oneof" json:"TableAvailableStartTime,omitempty"`
-	TableAvailableEndTime   *string                `protobuf:"bytes,11,opt,name=TableAvailableEndTime,proto3,oneof" json:"TableAvailableEndTime,omitempty"`
-	OrderBy                 []*OrderBy             `protobuf:"bytes,12,rep,name=OrderBy,proto3" json:"OrderBy,omitempty"`
-	Pagination              *Pagination            `protobuf:"bytes,13,opt,name=Pagination,proto3,oneof" json:"Pagination,omitempty"`
+	BranchID                *string                `protobuf:"bytes,3,opt,name=BranchID,proto3,oneof" json:"BranchID,omitempty"`
+	DescriptionFilter       *string                `protobuf:"bytes,4,opt,name=DescriptionFilter,proto3,oneof" json:"DescriptionFilter,omitempty"`
+	CityFilter              []string               `protobuf:"bytes,5,rep,name=CityFilter,proto3" json:"CityFilter,omitempty"`
+	CountryFilter           []string               `protobuf:"bytes,6,rep,name=CountryFilter,proto3" json:"CountryFilter,omitempty"`
+	MaxPriceFilter          *int32                 `protobuf:"varint,7,opt,name=MaxPriceFilter,proto3,oneof" json:"MaxPriceFilter,omitempty"`
+	MinPriceFilter          *int32                 `protobuf:"varint,8,opt,name=MinPriceFilter,proto3,oneof" json:"MinPriceFilter,omitempty"`
+	CategoryFilter          []string               `protobuf:"bytes,9,rep,name=CategoryFilter,proto3" json:"CategoryFilter,omitempty"`
+	TableAvailableWeek      []int32                `protobuf:"varint,10,rep,packed,name=TableAvailableWeek,proto3" json:"TableAvailableWeek,omitempty"`
+	TableAvailableStartTime *string                `protobuf:"bytes,11,opt,name=TableAvailableStartTime,proto3,oneof" json:"TableAvailableStartTime,omitempty"`
+	TableAvailableEndTime   *string                `protobuf:"bytes,12,opt,name=TableAvailableEndTime,proto3,oneof" json:"TableAvailableEndTime,omitempty"`
+	OrderBy                 []*OrderBy             `protobuf:"bytes,13,rep,name=OrderBy,proto3" json:"OrderBy,omitempty"`
+	Pagination              *Pagination            `protobuf:"bytes,14,opt,name=Pagination,proto3,oneof" json:"Pagination,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -128,6 +129,13 @@ func (x *SearchRestaurantsReq) GetNamePreciseSearch() bool {
 		return x.NamePreciseSearch
 	}
 	return false
+}
+
+func (x *SearchRestaurantsReq) GetBranchID() string {
+	if x != nil && x.BranchID != nil {
+		return *x.BranchID
+	}
+	return ""
 }
 
 func (x *SearchRestaurantsReq) GetDescriptionFilter() string {
@@ -845,29 +853,31 @@ const file_restaurants_proto_rawDesc = "" +
 	"\n" +
 	"\x11restaurants.proto\x12\bprotobuf\"6\n" +
 	"\x10GetRestaurantReq\x12\"\n" +
-	"\fRestaurantId\x18\x01 \x01(\tR\fRestaurantId\"\x86\x06\n" +
+	"\fRestaurantId\x18\x01 \x01(\tR\fRestaurantId\"\xb4\x06\n" +
 	"\x14SearchRestaurantsReq\x12#\n" +
 	"\n" +
 	"NameFilter\x18\x01 \x01(\tH\x00R\n" +
 	"NameFilter\x88\x01\x01\x12,\n" +
-	"\x11NamePreciseSearch\x18\x02 \x01(\bR\x11NamePreciseSearch\x121\n" +
-	"\x11DescriptionFilter\x18\x03 \x01(\tH\x01R\x11DescriptionFilter\x88\x01\x01\x12\x1e\n" +
+	"\x11NamePreciseSearch\x18\x02 \x01(\bR\x11NamePreciseSearch\x12\x1f\n" +
+	"\bBranchID\x18\x03 \x01(\tH\x01R\bBranchID\x88\x01\x01\x121\n" +
+	"\x11DescriptionFilter\x18\x04 \x01(\tH\x02R\x11DescriptionFilter\x88\x01\x01\x12\x1e\n" +
 	"\n" +
-	"CityFilter\x18\x04 \x03(\tR\n" +
+	"CityFilter\x18\x05 \x03(\tR\n" +
 	"CityFilter\x12$\n" +
-	"\rCountryFilter\x18\x05 \x03(\tR\rCountryFilter\x12+\n" +
-	"\x0eMaxPriceFilter\x18\x06 \x01(\x05H\x02R\x0eMaxPriceFilter\x88\x01\x01\x12+\n" +
-	"\x0eMinPriceFilter\x18\a \x01(\x05H\x03R\x0eMinPriceFilter\x88\x01\x01\x12&\n" +
-	"\x0eCategoryFilter\x18\b \x03(\tR\x0eCategoryFilter\x12.\n" +
-	"\x12TableAvailableWeek\x18\t \x03(\x05R\x12TableAvailableWeek\x12=\n" +
-	"\x17TableAvailableStartTime\x18\n" +
-	" \x01(\tH\x04R\x17TableAvailableStartTime\x88\x01\x01\x129\n" +
-	"\x15TableAvailableEndTime\x18\v \x01(\tH\x05R\x15TableAvailableEndTime\x88\x01\x01\x12+\n" +
-	"\aOrderBy\x18\f \x03(\v2\x11.protobuf.OrderByR\aOrderBy\x129\n" +
+	"\rCountryFilter\x18\x06 \x03(\tR\rCountryFilter\x12+\n" +
+	"\x0eMaxPriceFilter\x18\a \x01(\x05H\x03R\x0eMaxPriceFilter\x88\x01\x01\x12+\n" +
+	"\x0eMinPriceFilter\x18\b \x01(\x05H\x04R\x0eMinPriceFilter\x88\x01\x01\x12&\n" +
+	"\x0eCategoryFilter\x18\t \x03(\tR\x0eCategoryFilter\x12.\n" +
+	"\x12TableAvailableWeek\x18\n" +
+	" \x03(\x05R\x12TableAvailableWeek\x12=\n" +
+	"\x17TableAvailableStartTime\x18\v \x01(\tH\x05R\x17TableAvailableStartTime\x88\x01\x01\x129\n" +
+	"\x15TableAvailableEndTime\x18\f \x01(\tH\x06R\x15TableAvailableEndTime\x88\x01\x01\x12+\n" +
+	"\aOrderBy\x18\r \x03(\v2\x11.protobuf.OrderByR\aOrderBy\x129\n" +
 	"\n" +
-	"Pagination\x18\r \x01(\v2\x14.protobuf.PaginationH\x06R\n" +
+	"Pagination\x18\x0e \x01(\v2\x14.protobuf.PaginationH\aR\n" +
 	"Pagination\x88\x01\x01B\r\n" +
-	"\v_NameFilterB\x14\n" +
+	"\v_NameFilterB\v\n" +
+	"\t_BranchIDB\x14\n" +
 	"\x12_DescriptionFilterB\x11\n" +
 	"\x0f_MaxPriceFilterB\x11\n" +
 	"\x0f_MinPriceFilterB\x1a\n" +

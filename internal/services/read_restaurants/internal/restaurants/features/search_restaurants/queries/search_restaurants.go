@@ -15,6 +15,7 @@ type SearchRestaurants struct {
 	NameFilter        *string
 	NamePreciseSearch bool
 
+	BranchID                *string
 	DescriptionFilter       *string
 	CityFilter              []enums.City
 	CountryFilter           []enums.Country
@@ -55,6 +56,7 @@ func (handle *searchRestaurantsImpl) SearchRestaurants(
 	dtos := dtos.SearchRestaurants{
 		NameFilter:              command.NameFilter,
 		NamePreciseSearch:       command.NamePreciseSearch,
+		BranchID:                command.BranchID,
 		DescriptionFilter:       command.DescriptionFilter,
 		CityFilter:              command.CityFilter,
 		CountryFilter:           command.CountryFilter,

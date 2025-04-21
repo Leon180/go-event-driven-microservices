@@ -39,6 +39,7 @@ func (handle *searchRestaurantsImpl) Handle(c *gin.Context) {
 	restaurants, err := handle.searchRestaurantsQuery.SearchRestaurants(c.Request.Context(), &queries.SearchRestaurants{
 		NameFilter:              req.NameFilter,
 		NamePreciseSearch:       req.NamePreciseSearch,
+		BranchID:                req.BranchID,
 		DescriptionFilter:       req.DescriptionFilter,
 		CityFilter:              req.CityFilter,
 		CountryFilter:           req.CountryFilter,

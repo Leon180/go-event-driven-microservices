@@ -107,6 +107,11 @@ func (impl *SearchRestaurantsMongoImpl) buildMatchStage(search *dtos.SearchResta
 		}})
 	}
 
+	// Branch ID filter
+	if search.BranchID != nil {
+		match = append(match, bson.E{Key: "branches.id", Value: *search.BranchID})
+	}
+
 	// Price range filter
 	if search.MinPriceFilter != nil || search.MaxPriceFilter != nil {
 		priceMatch := bson.D{}

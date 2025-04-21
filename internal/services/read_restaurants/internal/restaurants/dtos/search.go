@@ -11,6 +11,7 @@ type SearchRestaurants struct {
 	NameFilter        *string
 	NamePreciseSearch bool
 
+	BranchID                *string
 	DescriptionFilter       *string
 	CityFilter              []enums.City
 	CountryFilter           []enums.Country

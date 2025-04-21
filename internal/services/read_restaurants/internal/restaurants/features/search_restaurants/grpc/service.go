@@ -46,6 +46,7 @@ func (s *grpcService) SearchRestaurants(
 	restaurants, err := s.searchRestaurantsQuery.SearchRestaurants(ctx, &queries.SearchRestaurants{
 		NameFilter:        req.NameFilter,
 		NamePreciseSearch: req.NamePreciseSearch,
+		BranchID:          req.BranchID,
 		DescriptionFilter: req.DescriptionFilter,
 		CityFilter:        lo.Map(req.CityFilter, func(city string, _ int) enums.City { return enums.City(city) }),
 		CountryFilter: lo.Map(

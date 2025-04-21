@@ -23,17 +23,18 @@ message GetRestaurantReq {
 message SearchRestaurantsReq {
   optional string NameFilter = 1;
   bool NamePreciseSearch = 2;
-  optional string DescriptionFilter = 3;
-  repeated string CityFilter = 4;
-  repeated string CountryFilter = 5;
-  optional int32 MaxPriceFilter = 6;
-  optional int32 MinPriceFilter = 7;
-  repeated string CategoryFilter = 8;
-  repeated int32 TableAvailableWeek = 9;
-  optional string TableAvailableStartTime = 10;
-  optional string TableAvailableEndTime = 11;
-  repeated OrderBy OrderBy = 12;
-  optional Pagination Pagination = 13;
+  optional string BranchID = 3;
+  optional string DescriptionFilter = 4;
+  repeated string CityFilter = 5;
+  repeated string CountryFilter = 6;
+  optional int32 MaxPriceFilter = 7;
+  optional int32 MinPriceFilter = 8;
+  repeated string CategoryFilter = 9;
+  repeated int32 TableAvailableWeek = 10;
+  optional string TableAvailableStartTime = 11;
+  optional string TableAvailableEndTime = 12;
+  repeated OrderBy OrderBy = 13;
+  optional Pagination Pagination = 14;
 }
 
 message OrderBy {

@@ -6,16 +6,17 @@ import (
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
-	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/aggregates"
 	customizegrpc "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc"
+	protobufsconvert "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc/convert/protobufs"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc/protobuf"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/dtos"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/repositories"
-	"github.com/samber/lo"
 )
 
 type CreateBooks interface {
-	CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) error
+	CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (entities.Books, error)
 }
 
 func NewCreateBooks(
@@ -39,63 +40,53 @@ type createBooksImpl struct {
 	grpcBookService                      customizegrpc.GRPCBookService
 }
 
-func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) error {
+func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (entities.Books, error) {
 	if req == nil {
-		return nil
+		return nil, nil
 	}
 	// check if book already exists
 	books, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, &dtos.SearchBooks{
-		RestaurantID: &req.RestaurantID,
+		BranchID:  &req.BranchID,
+		StartDate: &req.StartDate,
+		EndDate:   &req.EndDate,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if lo.ContainsBy(books, func(book aggregates.Book) bool {
-		return book.ActiveStatus
-	}) {
-		return customizeerrors.BookAlreadyExistsError
+	if len(books) != 0 {
+		return books, customizeerrors.BookAlreadyExistsError
 	}
 
-	if lo.ContainsBy(books, func(book aggregates.Book) bool {
-		return !book.ActiveStatus
-	}) {
-		return customizeerrors.BookAlreadyExistsButInactiveError
+	// get restaurant info from grpc
+	restaurants, err := handle.grpcBookService.SearchRestaurants(ctx, &protobuf.SearchRestaurantsReq{
+		BranchID: &req.BranchID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if restaurants == nil || len(restaurants.Restaurants) == 0 {
+		return nil, customizeerrors.RestaurantNotFoundError
 	}
 
-	// build book create entities by aggregate
-	bookDTOAggregateBuilder := aggregates.NewBookDTOAggregateBuilder(handle.uuidGenerator)
-	if err := bookDTOAggregateBuilder.SaveBook(req); err != nil {
-		return err
-	}
-	editEntities := bookDTOAggregateBuilder.GetEditEntities()
-	if len(editEntities) == 0 || editEntities[0].CreateEntities == nil {
-		return nil
-	}
-	createEntities := *editEntities[0].CreateEntities
+	// convert restaurants available and tables to books
+	restaurant := protobufsconvert.RestaurantProtobufToAggregate(restaurants.Restaurants[0])
 
-	// create
+	books = entities.Books{}
+
+	// create books
 	tx, err := handle.updateBooksWithTransactionRepository.BeginTx(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer tx.Rollback()
 
-	if err := tx.CreateBooks(ctx, createEntities.Books); err != nil {
-		return err
+	if err := tx.CreateBooks(ctx, books); err != nil {
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return err
+		return nil, err
 	}
 
-	// publish create book events
-	aggregates := bookDTOAggregateBuilder.GetAggregates()
-	for _, book := range aggregates {
-		message := handle.createBookMessageBuilder.Build(&book)
-		if err := handle.rabbitmqProducer.PublishMessage(ctx, message, nil, nil); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return books, nil
 }
