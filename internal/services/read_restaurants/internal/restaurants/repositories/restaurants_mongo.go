@@ -20,6 +20,10 @@ type ReadRestaurantsMongo interface {
 	ReadRestaurant(ctx context.Context, id string) (*aggregates.Restaurant, error)
 }
 
+type ReadRestaurantBranchMongo interface {
+	ReadRestaurantBranch(ctx context.Context, branchID string) (*aggregates.Restaurant, error)
+}
+
 type UpdateRestaurantsMongo interface {
 	CreateRestaurants(ctx context.Context, restaurants aggregates.Restaurants) error
 	UpdateRestaurant(ctx context.Context, restaurant *aggregates.Restaurant) error

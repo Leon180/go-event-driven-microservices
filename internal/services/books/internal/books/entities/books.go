@@ -1,5 +1,9 @@
 package entities
 
+import (
+	"time"
+)
+
 type Book struct {
 	ID           string `gorm:"primaryKey;type:uuid"       comment:"ID"`
 	BranchID     string `gorm:"not null;type:varchar(255)"   comment:"Branch ID"`
@@ -15,6 +19,20 @@ type Book struct {
 }
 
 type Books []Book
+
+// InTimePeriod checks if the book is in the time period
+// startDate/endDate format: YYYY-MM-DD
+func (b Books) InTimePeriod(startDate string, endDate string) bool {
+	sd, _ := time.Parse(time.DateOnly, startDate)
+	ed, _ := time.Parse(time.DateOnly, endDate)
+	for _, book := range b {
+		bd, _ := time.Parse(time.DateOnly, book.Date)
+		if (bd.After(sd) || bd.Equal(sd)) && (bd.Before(ed) || bd.Equal(ed)) {
+			return true
+		}
+	}
+	return false
+}
 
 type UpdateBook struct {
 	ID string

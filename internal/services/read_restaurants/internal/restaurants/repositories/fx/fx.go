@@ -33,6 +33,7 @@ var ProvideModule = fx.Module(
 
 		repositoriesmongo.NewSearchRestaurantsMongo,
 		repositoriesmongo.NewReadRestaurantsMongo,
+		repositoriesmongo.NewReadRestaurantBranchMongo,
 		repositoriesmongo.NewUpdateRestaurantsMongo,
 		repositoriesmongo.NewListCategoriesMongo,
 		repositoriesmongo.NewSyncCategoriesMongo,

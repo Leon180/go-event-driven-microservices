@@ -96,6 +96,45 @@ func (mr *MockReadRestaurantsMongoMockRecorder) ReadRestaurant(ctx, id any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurant", reflect.TypeOf((*MockReadRestaurantsMongo)(nil).ReadRestaurant), ctx, id)
 }
 
+// MockReadRestaurantBranchMongo is a mock of ReadRestaurantBranchMongo interface.
+type MockReadRestaurantBranchMongo struct {
+	ctrl     *gomock.Controller
+	recorder *MockReadRestaurantBranchMongoMockRecorder
+	isgomock struct{}
+}
+
+// MockReadRestaurantBranchMongoMockRecorder is the mock recorder for MockReadRestaurantBranchMongo.
+type MockReadRestaurantBranchMongoMockRecorder struct {
+	mock *MockReadRestaurantBranchMongo
+}
+
+// NewMockReadRestaurantBranchMongo creates a new mock instance.
+func NewMockReadRestaurantBranchMongo(ctrl *gomock.Controller) *MockReadRestaurantBranchMongo {
+	mock := &MockReadRestaurantBranchMongo{ctrl: ctrl}
+	mock.recorder = &MockReadRestaurantBranchMongoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockReadRestaurantBranchMongo) EXPECT() *MockReadRestaurantBranchMongoMockRecorder {
+	return m.recorder
+}
+
+// ReadRestaurantBranch mocks base method.
+func (m *MockReadRestaurantBranchMongo) ReadRestaurantBranch(ctx context.Context, branchID string) (*aggregates.Restaurant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRestaurantBranch", ctx, branchID)
+	ret0, _ := ret[0].(*aggregates.Restaurant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRestaurantBranch indicates an expected call of ReadRestaurantBranch.
+func (mr *MockReadRestaurantBranchMongoMockRecorder) ReadRestaurantBranch(ctx, branchID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRestaurantBranch", reflect.TypeOf((*MockReadRestaurantBranchMongo)(nil).ReadRestaurantBranch), ctx, branchID)
+}
+
 // MockUpdateRestaurantsMongo is a mock of UpdateRestaurantsMongo interface.
 type MockUpdateRestaurantsMongo struct {
 	ctrl     *gomock.Controller

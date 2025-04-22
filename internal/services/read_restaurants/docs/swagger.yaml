@@ -67,33 +67,6 @@ definitions:
       weekday:
         $ref: '#/definitions/time.Weekday'
     type: object
-  dtos.Book:
-    properties:
-      activeStatus:
-        type: boolean
-      amount:
-        type: integer
-      available:
-        $ref: '#/definitions/dtos.Available'
-      available_id:
-        type: string
-      createdAt:
-        type: string
-      createdBy:
-        type: string
-      id:
-        type: string
-      mobile_number:
-        type: string
-      table:
-        $ref: '#/definitions/dtos.Table'
-      table_id:
-        type: string
-      updatedAt:
-        type: string
-      updatedBy:
-        type: string
-    type: object
   dtos.Branch:
     properties:
       address:
@@ -160,35 +133,10 @@ definitions:
       name:
         type: string
     type: object
-  dtos.SearchBooks:
-    properties:
-      availableID:
-        type: string
-      mobileNumber:
-        type: string
-      nameFilter:
-        type: string
-      namePreciseSearch:
-        type: boolean
-      orderBy:
-        items:
-          $ref: '#/definitions/db.OrderBy'
-        type: array
-      pagination:
-        $ref: '#/definitions/db.Pagination'
-      tableAvailableEndTime:
-        type: string
-      tableAvailableStartTime:
-        type: string
-      tableAvailableWeek:
-        items:
-          $ref: '#/definitions/time.Weekday'
-        type: array
-      tableID:
-        type: string
-    type: object
   dtos.SearchRestaurants:
     properties:
+      branchID:
+        type: string
       categoryFilter:
         items:
           $ref: '#/definitions/enums.Category'
@@ -365,6 +313,13 @@ definitions:
     x-enum-varnames:
     - CountryInvalid
     - CountryTaiwan
+  featuresdtos.GetRestaurantBranchRequest:
+    properties:
+      branch_id:
+        type: string
+    required:
+    - branch_id
+    type: object
   featuresdtos.GetRestaurantRequest:
     properties:
       id:
@@ -374,20 +329,6 @@ definitions:
     type: object
   time.Weekday:
     enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 0
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
     - 0
     - 1
     - 2
@@ -418,20 +359,6 @@ definitions:
     - Thursday
     - Friday
     - Saturday
-    - Sunday
-    - Monday
-    - Tuesday
-    - Wednesday
-    - Thursday
-    - Friday
-    - Saturday
-    - Sunday
-    - Monday
-    - Tuesday
-    - Wednesday
-    - Thursday
-    - Friday
-    - Saturday
 host: localhost:8001
 info:
   contact: {}
@@ -439,33 +366,6 @@ info:
   title: Restaurants Service API
   version: "1.0"
 paths:
-  /books/search:
-    post:
-      description: Search books
-      parameters:
-      - description: Book
-        in: body
-        name: book
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.SearchBooks'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: book retrieved successfully
-          schema:
-            allOf:
-            - $ref: '#/definitions/customizegin.JSONResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dtos.Book'
-                  type: array
-              type: object
-      summary: Search books
-      tags:
-      - books
   /categories:
     get:
       description: Get all categories
@@ -479,6 +379,26 @@ paths:
       summary: Get all categories
       tags:
       - categories
+  /restaurant/branch/get:
+    post:
+      description: Get restaurant branch by id
+      parameters:
+      - description: Restaurant Branch
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/featuresdtos.GetRestaurantBranchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant retrieved successfully
+          schema:
+            $ref: '#/definitions/customizegin.JSONResponse'
+      summary: Get restaurant branch by id
+      tags:
+      - restaurants
   /restaurant/get:
     post:
       description: Get restaurant by id

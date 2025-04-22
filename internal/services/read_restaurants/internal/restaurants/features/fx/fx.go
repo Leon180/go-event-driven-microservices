@@ -14,6 +14,9 @@ import (
 	getRestaurantGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/gin_endpoints"
 	getRestaurantGRPCService "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/grpc"
 	getRestaurantQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant/queries"
+	getRestaurantBranchGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant_branch/gin_endpoints"
+	getRestaurantBranchGRPCService "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant_branch/grpc"
+	getRestaurantBranchQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/get_restaurant_branch/queries"
 	listCategoriesGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/gin_endpoints"
 	listCategoriesQueries "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/list_categories/queries"
 	restoreRestaurantEvents "github.com/Leon180/go-event-driven-microservices/internal/services/read_restaurants/internal/restaurants/features/restore_restaurant/events"
@@ -46,6 +49,7 @@ var ProvideModule = fx.Module(
 	// queries
 	fx.Provide(
 		getRestaurantQueries.NewGetRestaurantHandler,
+		getRestaurantBranchQueries.NewGetRestaurantBranchHandler,
 		listCategoriesQueries.NewListCategoriesHandler,
 		searchRestaurantsQueries.NewSearchRestaurantsHandler,
 	),
@@ -65,6 +69,7 @@ var ProvideModule = fx.Module(
 		fxTagGRPCServiceRegisters(
 			getRestaurantGRPCService.NewGRPCServiceRegister,
 			searchRestaurantsGRPCService.NewGRPCServiceRegister,
+			getRestaurantBranchGRPCService.NewGRPCServiceRegister,
 		)...,
 	),
 
@@ -74,6 +79,7 @@ var ProvideModule = fx.Module(
 			getRestaurantGinEndpoints.NewGetRestaurant,
 			searchRestaurantsGinEndpoints.NewSearchRestaurants,
 			listCategoriesGinEndpoints.NewListCategories,
+			getRestaurantBranchGinEndpoints.NewGetRestaurantBranch,
 		)...,
 	),
 )

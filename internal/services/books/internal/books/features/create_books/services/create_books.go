@@ -2,10 +2,12 @@ package services
 
 import (
 	"context"
+	"time"
 
 	customizeerrors "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_errors"
 	customizegorm "github.com/Leon180/go-event-driven-microservices/internal/pkg/gorm"
 	uuid "github.com/Leon180/go-event-driven-microservices/internal/pkg/uuid"
+	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/aggregates"
 	customizegrpc "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc"
 	protobufsconvert "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc/convert/protobufs"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/customize_grpc/protobuf"
@@ -13,6 +15,7 @@ import (
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/entities"
 	featuresdtos "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/dtos"
 	"github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/repositories"
+	"github.com/samber/lo"
 )
 
 type CreateBooks interface {
@@ -53,25 +56,41 @@ func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdto
 	if err != nil {
 		return nil, err
 	}
-	if len(books) != 0 {
+	if books.InTimePeriod(req.StartDate, req.EndDate) {
 		return books, customizeerrors.BookAlreadyExistsError
 	}
 
 	// get restaurant info from grpc
-	restaurants, err := handle.grpcBookService.SearchRestaurants(ctx, &protobuf.SearchRestaurantsReq{
-		BranchID: &req.BranchID,
+	restaurantProtobuf, err := handle.grpcBookService.GetRestaurantBranch(ctx, &protobuf.GetRestaurantBranchReq{
+		BranchId: req.BranchID,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if restaurants == nil || len(restaurants.Restaurants) == 0 {
+	if restaurantProtobuf == nil {
 		return nil, customizeerrors.RestaurantNotFoundError
 	}
 
 	// convert restaurants available and tables to books
-	restaurant := protobufsconvert.RestaurantProtobufToAggregate(restaurants.Restaurants[0])
+	restaurant := protobufsconvert.RestaurantProtobufToAggregate(restaurantProtobuf)
+	branch, ok := lo.Find(restaurant.Branches, func(branch aggregates.Branch) bool {
+		return branch.ID == req.BranchID
+	})
+	if !ok {
+		return nil, customizeerrors.BranchNotFoundError
+	}
+	startDate, _ := time.Parse(time.DateOnly, req.StartDate)
+	endDate, _ := time.Parse(time.DateOnly, req.EndDate)
+	dateBooks := aggregates.NewBranchBooksBuilder(handle.uuidGenerator).
+		SetBranch(&branch).
+		BuildBoooksByTimePeriod(startDate, endDate).
+		GetDateBooks()
 
-	books = entities.Books{}
+	for _, dateBook := range dateBooks {
+		books = append(books, lo.Map(dateBook.Books, func(book aggregates.Book, _ int) entities.Book {
+			return *book.ToEntity()
+		})...)
+	}
 
 	// create books
 	tx, err := handle.updateBooksWithTransactionRepository.BeginTx(ctx)

@@ -12,12 +12,20 @@ service GetRestaurantService {
   rpc GetRestaurant(GetRestaurantReq) returns (Restaurant);
 }
 
+service GetRestaurantBranchService {
+  rpc GetRestaurantBranch(GetRestaurantBranchReq) returns (Restaurant);
+}
+
 service SearchRestaurantsService {
   rpc SearchRestaurants(SearchRestaurantsReq) returns (Restaurants);
 }
 
 message GetRestaurantReq {
   string RestaurantId = 1;
+}
+
+message GetRestaurantBranchReq {
+  string BranchId = 1;
 }
 
 message SearchRestaurantsReq {

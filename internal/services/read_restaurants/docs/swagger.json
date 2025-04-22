@@ -9,52 +9,6 @@
     "host": "localhost:8001",
     "basePath": "/v1/restaurants",
     "paths": {
-        "/books/search": {
-            "post": {
-                "description": "Search books",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Search books",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.SearchBooks"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "book retrieved successfully",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/customizegin.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dtos.Book"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/categories": {
             "get": {
                 "description": "Get all categories",
@@ -68,6 +22,37 @@
                 "responses": {
                     "200": {
                         "description": "categories retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/customizegin.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/branch/get": {
+            "post": {
+                "description": "Get restaurant branch by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "restaurants"
+                ],
+                "summary": "Get restaurant branch by id",
+                "parameters": [
+                    {
+                        "description": "Restaurant Branch",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/featuresdtos.GetRestaurantBranchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "restaurant retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/customizegin.JSONResponse"
                         }
@@ -255,47 +240,6 @@
                 }
             }
         },
-        "dtos.Book": {
-            "type": "object",
-            "properties": {
-                "activeStatus": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "integer"
-                },
-                "available": {
-                    "$ref": "#/definitions/dtos.Available"
-                },
-                "available_id": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "createdBy": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mobile_number": {
-                    "type": "string"
-                },
-                "table": {
-                    "$ref": "#/definitions/dtos.Table"
-                },
-                "table_id": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "updatedBy": {
-                    "type": "string"
-                }
-            }
-        },
         "dtos.Branch": {
             "type": "object",
             "properties": {
@@ -397,50 +341,12 @@
                 }
             }
         },
-        "dtos.SearchBooks": {
-            "type": "object",
-            "properties": {
-                "availableID": {
-                    "type": "string"
-                },
-                "mobileNumber": {
-                    "type": "string"
-                },
-                "nameFilter": {
-                    "type": "string"
-                },
-                "namePreciseSearch": {
-                    "type": "boolean"
-                },
-                "orderBy": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.OrderBy"
-                    }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/db.Pagination"
-                },
-                "tableAvailableEndTime": {
-                    "type": "string"
-                },
-                "tableAvailableStartTime": {
-                    "type": "string"
-                },
-                "tableAvailableWeek": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/time.Weekday"
-                    }
-                },
-                "tableID": {
-                    "type": "string"
-                }
-            }
-        },
         "dtos.SearchRestaurants": {
             "type": "object",
             "properties": {
+                "branchID": {
+                    "type": "string"
+                },
                 "categoryFilter": {
                     "type": "array",
                     "items": {
@@ -650,6 +556,17 @@
                 "CountryTaiwan"
             ]
         },
+        "featuresdtos.GetRestaurantBranchRequest": {
+            "type": "object",
+            "required": [
+                "branch_id"
+            ],
+            "properties": {
+                "branch_id": {
+                    "type": "string"
+                }
+            }
+        },
         "featuresdtos.GetRestaurantRequest": {
             "type": "object",
             "required": [
@@ -677,37 +594,9 @@
                 3,
                 4,
                 5,
-                6,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
                 6
             ],
             "x-enum-varnames": [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
                 "Sunday",
                 "Monday",
                 "Tuesday",

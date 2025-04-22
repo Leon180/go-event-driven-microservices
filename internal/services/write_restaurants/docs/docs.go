@@ -15,117 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/book/create": {
-            "post": {
-                "description": "Create a new book",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Create a new book",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.Book"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Book created successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/book/delete": {
-            "post": {
-                "description": "Delete a book",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Delete a book",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/featuresdtos.DeleteBookRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "book deleted successfully",
-                        "schema": {
-                            "$ref": "#/definitions/customizegin.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/books/search": {
-            "post": {
-                "description": "Search books",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "books"
-                ],
-                "summary": "Search books",
-                "parameters": [
-                    {
-                        "description": "Book",
-                        "name": "book",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dtos.SearchBooks"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "book retrieved successfully",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/customizegin.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dtos.Book"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/categories": {
             "get": {
                 "description": "Get all categories",
@@ -456,47 +345,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dtos.Book": {
-            "type": "object",
-            "properties": {
-                "activeStatus": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "integer"
-                },
-                "available": {
-                    "$ref": "#/definitions/dtos.Available"
-                },
-                "available_id": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "createdBy": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mobile_number": {
-                    "type": "string"
-                },
-                "table": {
-                    "$ref": "#/definitions/dtos.Table"
-                },
-                "table_id": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "updatedBy": {
-                    "type": "string"
-                }
-            }
-        },
         "dtos.Branch": {
             "type": "object",
             "properties": {
@@ -578,6 +426,9 @@ const docTemplate = `{
         "dtos.Restaurant": {
             "type": "object",
             "properties": {
+                "active_status": {
+                    "type": "boolean"
+                },
                 "branches": {
                     "type": "array",
                     "items": {
@@ -591,47 +442,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dtos.SearchBooks": {
-            "type": "object",
-            "properties": {
-                "availableID": {
-                    "type": "string"
-                },
-                "mobileNumber": {
-                    "type": "string"
-                },
-                "nameFilter": {
-                    "type": "string"
-                },
-                "namePreciseSearch": {
-                    "type": "boolean"
-                },
-                "orderBy": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/db.OrderBy"
-                    }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/db.Pagination"
-                },
-                "tableAvailableEndTime": {
-                    "type": "string"
-                },
-                "tableAvailableStartTime": {
-                    "type": "string"
-                },
-                "tableAvailableWeek": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/time.Weekday"
-                    }
-                },
-                "tableID": {
                     "type": "string"
                 }
             }
@@ -848,17 +658,6 @@ const docTemplate = `{
                 "CountryTaiwan"
             ]
         },
-        "featuresdtos.DeleteBookRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "featuresdtos.DeleteRestaurantRequest": {
             "type": "object",
             "required": [
@@ -901,9 +700,37 @@ const docTemplate = `{
                 3,
                 4,
                 5,
+                6,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
                 6
             ],
             "x-enum-varnames": [
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
                 "Sunday",
                 "Monday",
                 "Tuesday",

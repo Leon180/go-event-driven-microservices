@@ -123,6 +123,109 @@ var GetRestaurantService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	GetRestaurantBranchService_GetRestaurantBranch_FullMethodName = "/protobuf.GetRestaurantBranchService/GetRestaurantBranch"
+)
+
+// GetRestaurantBranchServiceClient is the client API for GetRestaurantBranchService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type GetRestaurantBranchServiceClient interface {
+	GetRestaurantBranch(ctx context.Context, in *GetRestaurantBranchReq, opts ...grpc.CallOption) (*Restaurant, error)
+}
+
+type getRestaurantBranchServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewGetRestaurantBranchServiceClient(cc grpc.ClientConnInterface) GetRestaurantBranchServiceClient {
+	return &getRestaurantBranchServiceClient{cc}
+}
+
+func (c *getRestaurantBranchServiceClient) GetRestaurantBranch(ctx context.Context, in *GetRestaurantBranchReq, opts ...grpc.CallOption) (*Restaurant, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Restaurant)
+	err := c.cc.Invoke(ctx, GetRestaurantBranchService_GetRestaurantBranch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GetRestaurantBranchServiceServer is the server API for GetRestaurantBranchService service.
+// All implementations must embed UnimplementedGetRestaurantBranchServiceServer
+// for forward compatibility.
+type GetRestaurantBranchServiceServer interface {
+	GetRestaurantBranch(context.Context, *GetRestaurantBranchReq) (*Restaurant, error)
+	mustEmbedUnimplementedGetRestaurantBranchServiceServer()
+}
+
+// UnimplementedGetRestaurantBranchServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedGetRestaurantBranchServiceServer struct{}
+
+func (UnimplementedGetRestaurantBranchServiceServer) GetRestaurantBranch(context.Context, *GetRestaurantBranchReq) (*Restaurant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRestaurantBranch not implemented")
+}
+func (UnimplementedGetRestaurantBranchServiceServer) mustEmbedUnimplementedGetRestaurantBranchServiceServer() {
+}
+func (UnimplementedGetRestaurantBranchServiceServer) testEmbeddedByValue() {}
+
+// UnsafeGetRestaurantBranchServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GetRestaurantBranchServiceServer will
+// result in compilation errors.
+type UnsafeGetRestaurantBranchServiceServer interface {
+	mustEmbedUnimplementedGetRestaurantBranchServiceServer()
+}
+
+func RegisterGetRestaurantBranchServiceServer(s grpc.ServiceRegistrar, srv GetRestaurantBranchServiceServer) {
+	// If the following call pancis, it indicates UnimplementedGetRestaurantBranchServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&GetRestaurantBranchService_ServiceDesc, srv)
+}
+
+func _GetRestaurantBranchService_GetRestaurantBranch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRestaurantBranchReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GetRestaurantBranchServiceServer).GetRestaurantBranch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GetRestaurantBranchService_GetRestaurantBranch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GetRestaurantBranchServiceServer).GetRestaurantBranch(ctx, req.(*GetRestaurantBranchReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// GetRestaurantBranchService_ServiceDesc is the grpc.ServiceDesc for GetRestaurantBranchService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var GetRestaurantBranchService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "protobuf.GetRestaurantBranchService",
+	HandlerType: (*GetRestaurantBranchServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetRestaurantBranch",
+			Handler:    _GetRestaurantBranchService_GetRestaurantBranch_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "restaurants.proto",
+}
+
+const (
 	SearchRestaurantsService_SearchRestaurants_FullMethodName = "/protobuf.SearchRestaurantsService/SearchRestaurants"
 )
 

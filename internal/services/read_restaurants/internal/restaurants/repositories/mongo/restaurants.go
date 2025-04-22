@@ -109,7 +109,7 @@ func (impl *SearchRestaurantsMongoImpl) buildMatchStage(search *dtos.SearchResta
 
 	// Branch ID filter
 	if search.BranchID != nil {
-		match = append(match, bson.E{Key: "branches.id", Value: *search.BranchID})
+		match = append(match, bson.E{Key: "branches._id", Value: *search.BranchID})
 	}
 
 	// Price range filter
@@ -246,6 +246,45 @@ func (impl *ReadRestaurantsMongoImpl) ReadRestaurant(
 	collection := impl.collections.Restaurant
 	var restaurant documents.Restaurant
 	if err := collection.FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&restaurant); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		impl.contextLogger.WithContextInfo(ctx, enums.ContextKeyTraceID).
+			Error("failed to read restaurant full info", err)
+		return nil, err
+	}
+	aggregate := aggregates.RestaurantDocument(restaurant)
+	return aggregate.ToAggregate(), nil
+}
+
+func NewReadRestaurantBranchMongo(
+	db *mongo.Client,
+	collections *mongodb.Collections,
+	contextLogger contextloggers.ContextLogger,
+) repositories.ReadRestaurantBranchMongo {
+	return &readRestaurantBranchMongoImpl{
+		db:            db,
+		collections:   collections,
+		contextLogger: contextLogger,
+	}
+}
+
+type readRestaurantBranchMongoImpl struct {
+	db            *mongo.Client
+	collections   *mongodb.Collections
+	contextLogger contextloggers.ContextLogger
+}
+
+func (impl *readRestaurantBranchMongoImpl) ReadRestaurantBranch(
+	ctx context.Context,
+	branchID string,
+) (*aggregates.Restaurant, error) {
+	if branchID == "" {
+		return nil, nil
+	}
+	collection := impl.collections.Restaurant
+	var restaurant documents.Restaurant
+	if err := collection.FindOne(ctx, bson.D{{Key: "branches._id", Value: branchID}}).Decode(&restaurant); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}

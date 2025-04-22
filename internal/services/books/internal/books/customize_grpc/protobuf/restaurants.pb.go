@@ -67,6 +67,50 @@ func (x *GetRestaurantReq) GetRestaurantId() string {
 	return ""
 }
 
+type GetRestaurantBranchReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BranchId      string                 `protobuf:"bytes,1,opt,name=BranchId,proto3" json:"BranchId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRestaurantBranchReq) Reset() {
+	*x = GetRestaurantBranchReq{}
+	mi := &file_restaurants_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRestaurantBranchReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRestaurantBranchReq) ProtoMessage() {}
+
+func (x *GetRestaurantBranchReq) ProtoReflect() protoreflect.Message {
+	mi := &file_restaurants_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRestaurantBranchReq.ProtoReflect.Descriptor instead.
+func (*GetRestaurantBranchReq) Descriptor() ([]byte, []int) {
+	return file_restaurants_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetRestaurantBranchReq) GetBranchId() string {
+	if x != nil {
+		return x.BranchId
+	}
+	return ""
+}
+
 type SearchRestaurantsReq struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
 	NameFilter              *string                `protobuf:"bytes,1,opt,name=NameFilter,proto3,oneof" json:"NameFilter,omitempty"`
@@ -89,7 +133,7 @@ type SearchRestaurantsReq struct {
 
 func (x *SearchRestaurantsReq) Reset() {
 	*x = SearchRestaurantsReq{}
-	mi := &file_restaurants_proto_msgTypes[1]
+	mi := &file_restaurants_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -101,7 +145,7 @@ func (x *SearchRestaurantsReq) String() string {
 func (*SearchRestaurantsReq) ProtoMessage() {}
 
 func (x *SearchRestaurantsReq) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[1]
+	mi := &file_restaurants_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,7 +158,7 @@ func (x *SearchRestaurantsReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchRestaurantsReq.ProtoReflect.Descriptor instead.
 func (*SearchRestaurantsReq) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{1}
+	return file_restaurants_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SearchRestaurantsReq) GetNameFilter() string {
@@ -225,7 +269,7 @@ type OrderBy struct {
 
 func (x *OrderBy) Reset() {
 	*x = OrderBy{}
-	mi := &file_restaurants_proto_msgTypes[2]
+	mi := &file_restaurants_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -237,7 +281,7 @@ func (x *OrderBy) String() string {
 func (*OrderBy) ProtoMessage() {}
 
 func (x *OrderBy) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[2]
+	mi := &file_restaurants_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +294,7 @@ func (x *OrderBy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrderBy.ProtoReflect.Descriptor instead.
 func (*OrderBy) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{2}
+	return file_restaurants_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *OrderBy) GetField() string {
@@ -277,7 +321,7 @@ type Pagination struct {
 
 func (x *Pagination) Reset() {
 	*x = Pagination{}
-	mi := &file_restaurants_proto_msgTypes[3]
+	mi := &file_restaurants_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -289,7 +333,7 @@ func (x *Pagination) String() string {
 func (*Pagination) ProtoMessage() {}
 
 func (x *Pagination) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[3]
+	mi := &file_restaurants_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -302,7 +346,7 @@ func (x *Pagination) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Pagination.ProtoReflect.Descriptor instead.
 func (*Pagination) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{3}
+	return file_restaurants_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Pagination) GetPage() int32 {
@@ -328,7 +372,7 @@ type Restaurants struct {
 
 func (x *Restaurants) Reset() {
 	*x = Restaurants{}
-	mi := &file_restaurants_proto_msgTypes[4]
+	mi := &file_restaurants_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -340,7 +384,7 @@ func (x *Restaurants) String() string {
 func (*Restaurants) ProtoMessage() {}
 
 func (x *Restaurants) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[4]
+	mi := &file_restaurants_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +397,7 @@ func (x *Restaurants) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Restaurants.ProtoReflect.Descriptor instead.
 func (*Restaurants) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{4}
+	return file_restaurants_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Restaurants) GetRestaurants() []*Restaurant {
@@ -376,7 +420,7 @@ type Restaurant struct {
 
 func (x *Restaurant) Reset() {
 	*x = Restaurant{}
-	mi := &file_restaurants_proto_msgTypes[5]
+	mi := &file_restaurants_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +432,7 @@ func (x *Restaurant) String() string {
 func (*Restaurant) ProtoMessage() {}
 
 func (x *Restaurant) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[5]
+	mi := &file_restaurants_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +445,7 @@ func (x *Restaurant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Restaurant.ProtoReflect.Descriptor instead.
 func (*Restaurant) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{5}
+	return file_restaurants_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Restaurant) GetID() string {
@@ -455,7 +499,7 @@ type Branch struct {
 
 func (x *Branch) Reset() {
 	*x = Branch{}
-	mi := &file_restaurants_proto_msgTypes[6]
+	mi := &file_restaurants_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -467,7 +511,7 @@ func (x *Branch) String() string {
 func (*Branch) ProtoMessage() {}
 
 func (x *Branch) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[6]
+	mi := &file_restaurants_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -480,7 +524,7 @@ func (x *Branch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Branch.ProtoReflect.Descriptor instead.
 func (*Branch) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{6}
+	return file_restaurants_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Branch) GetID() string {
@@ -552,7 +596,7 @@ type Address struct {
 
 func (x *Address) Reset() {
 	*x = Address{}
-	mi := &file_restaurants_proto_msgTypes[7]
+	mi := &file_restaurants_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -564,7 +608,7 @@ func (x *Address) String() string {
 func (*Address) ProtoMessage() {}
 
 func (x *Address) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[7]
+	mi := &file_restaurants_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -577,7 +621,7 @@ func (x *Address) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Address.ProtoReflect.Descriptor instead.
 func (*Address) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{7}
+	return file_restaurants_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Address) GetID() string {
@@ -626,7 +670,7 @@ type PriceRange struct {
 
 func (x *PriceRange) Reset() {
 	*x = PriceRange{}
-	mi := &file_restaurants_proto_msgTypes[8]
+	mi := &file_restaurants_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -638,7 +682,7 @@ func (x *PriceRange) String() string {
 func (*PriceRange) ProtoMessage() {}
 
 func (x *PriceRange) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[8]
+	mi := &file_restaurants_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -651,7 +695,7 @@ func (x *PriceRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PriceRange.ProtoReflect.Descriptor instead.
 func (*PriceRange) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{8}
+	return file_restaurants_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *PriceRange) GetID() string {
@@ -685,7 +729,7 @@ type Category struct {
 
 func (x *Category) Reset() {
 	*x = Category{}
-	mi := &file_restaurants_proto_msgTypes[9]
+	mi := &file_restaurants_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -697,7 +741,7 @@ func (x *Category) String() string {
 func (*Category) ProtoMessage() {}
 
 func (x *Category) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[9]
+	mi := &file_restaurants_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -710,7 +754,7 @@ func (x *Category) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Category.ProtoReflect.Descriptor instead.
 func (*Category) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{9}
+	return file_restaurants_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Category) GetID() string {
@@ -739,7 +783,7 @@ type Available struct {
 
 func (x *Available) Reset() {
 	*x = Available{}
-	mi := &file_restaurants_proto_msgTypes[10]
+	mi := &file_restaurants_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -751,7 +795,7 @@ func (x *Available) String() string {
 func (*Available) ProtoMessage() {}
 
 func (x *Available) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[10]
+	mi := &file_restaurants_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -764,7 +808,7 @@ func (x *Available) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Available.ProtoReflect.Descriptor instead.
 func (*Available) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{10}
+	return file_restaurants_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Available) GetID() string {
@@ -805,7 +849,7 @@ type Table struct {
 
 func (x *Table) Reset() {
 	*x = Table{}
-	mi := &file_restaurants_proto_msgTypes[11]
+	mi := &file_restaurants_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -817,7 +861,7 @@ func (x *Table) String() string {
 func (*Table) ProtoMessage() {}
 
 func (x *Table) ProtoReflect() protoreflect.Message {
-	mi := &file_restaurants_proto_msgTypes[11]
+	mi := &file_restaurants_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -830,7 +874,7 @@ func (x *Table) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Table.ProtoReflect.Descriptor instead.
 func (*Table) Descriptor() ([]byte, []int) {
-	return file_restaurants_proto_rawDescGZIP(), []int{11}
+	return file_restaurants_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Table) GetID() string {
@@ -853,7 +897,9 @@ const file_restaurants_proto_rawDesc = "" +
 	"\n" +
 	"\x11restaurants.proto\x12\bprotobuf\"6\n" +
 	"\x10GetRestaurantReq\x12\"\n" +
-	"\fRestaurantId\x18\x01 \x01(\tR\fRestaurantId\"\xb4\x06\n" +
+	"\fRestaurantId\x18\x01 \x01(\tR\fRestaurantId\"4\n" +
+	"\x16GetRestaurantBranchReq\x12\x1a\n" +
+	"\bBranchId\x18\x01 \x01(\tR\bBranchId\"\xb4\x06\n" +
 	"\x14SearchRestaurantsReq\x12#\n" +
 	"\n" +
 	"NameFilter\x18\x01 \x01(\tH\x00R\n" +
@@ -940,7 +986,9 @@ const file_restaurants_proto_rawDesc = "" +
 	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x1a\n" +
 	"\bCapacity\x18\x02 \x01(\x05R\bCapacity2Y\n" +
 	"\x14GetRestaurantService\x12A\n" +
-	"\rGetRestaurant\x12\x1a.protobuf.GetRestaurantReq\x1a\x14.protobuf.Restaurant2f\n" +
+	"\rGetRestaurant\x12\x1a.protobuf.GetRestaurantReq\x1a\x14.protobuf.Restaurant2k\n" +
+	"\x1aGetRestaurantBranchService\x12M\n" +
+	"\x13GetRestaurantBranch\x12 .protobuf.GetRestaurantBranchReq\x1a\x14.protobuf.Restaurant2f\n" +
 	"\x18SearchRestaurantsService\x12J\n" +
 	"\x11SearchRestaurants\x12\x1e.protobuf.SearchRestaurantsReq\x1a\x15.protobuf.RestaurantsB\rZ\v./;protobufb\x06proto3"
 
@@ -956,37 +1004,40 @@ func file_restaurants_proto_rawDescGZIP() []byte {
 	return file_restaurants_proto_rawDescData
 }
 
-var file_restaurants_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_restaurants_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_restaurants_proto_goTypes = []any{
-	(*GetRestaurantReq)(nil),     // 0: protobuf.GetRestaurantReq
-	(*SearchRestaurantsReq)(nil), // 1: protobuf.SearchRestaurantsReq
-	(*OrderBy)(nil),              // 2: protobuf.OrderBy
-	(*Pagination)(nil),           // 3: protobuf.Pagination
-	(*Restaurants)(nil),          // 4: protobuf.Restaurants
-	(*Restaurant)(nil),           // 5: protobuf.Restaurant
-	(*Branch)(nil),               // 6: protobuf.Branch
-	(*Address)(nil),              // 7: protobuf.Address
-	(*PriceRange)(nil),           // 8: protobuf.PriceRange
-	(*Category)(nil),             // 9: protobuf.Category
-	(*Available)(nil),            // 10: protobuf.Available
-	(*Table)(nil),                // 11: protobuf.Table
+	(*GetRestaurantReq)(nil),       // 0: protobuf.GetRestaurantReq
+	(*GetRestaurantBranchReq)(nil), // 1: protobuf.GetRestaurantBranchReq
+	(*SearchRestaurantsReq)(nil),   // 2: protobuf.SearchRestaurantsReq
+	(*OrderBy)(nil),                // 3: protobuf.OrderBy
+	(*Pagination)(nil),             // 4: protobuf.Pagination
+	(*Restaurants)(nil),            // 5: protobuf.Restaurants
+	(*Restaurant)(nil),             // 6: protobuf.Restaurant
+	(*Branch)(nil),                 // 7: protobuf.Branch
+	(*Address)(nil),                // 8: protobuf.Address
+	(*PriceRange)(nil),             // 9: protobuf.PriceRange
+	(*Category)(nil),               // 10: protobuf.Category
+	(*Available)(nil),              // 11: protobuf.Available
+	(*Table)(nil),                  // 12: protobuf.Table
 }
 var file_restaurants_proto_depIdxs = []int32{
-	2,  // 0: protobuf.SearchRestaurantsReq.OrderBy:type_name -> protobuf.OrderBy
-	3,  // 1: protobuf.SearchRestaurantsReq.Pagination:type_name -> protobuf.Pagination
-	5,  // 2: protobuf.Restaurants.Restaurants:type_name -> protobuf.Restaurant
-	6,  // 3: protobuf.Restaurant.Branches:type_name -> protobuf.Branch
-	7,  // 4: protobuf.Branch.Address:type_name -> protobuf.Address
-	8,  // 5: protobuf.Branch.PriceRange:type_name -> protobuf.PriceRange
-	9,  // 6: protobuf.Branch.Categories:type_name -> protobuf.Category
-	10, // 7: protobuf.Branch.Availables:type_name -> protobuf.Available
-	11, // 8: protobuf.Branch.Tables:type_name -> protobuf.Table
+	3,  // 0: protobuf.SearchRestaurantsReq.OrderBy:type_name -> protobuf.OrderBy
+	4,  // 1: protobuf.SearchRestaurantsReq.Pagination:type_name -> protobuf.Pagination
+	6,  // 2: protobuf.Restaurants.Restaurants:type_name -> protobuf.Restaurant
+	7,  // 3: protobuf.Restaurant.Branches:type_name -> protobuf.Branch
+	8,  // 4: protobuf.Branch.Address:type_name -> protobuf.Address
+	9,  // 5: protobuf.Branch.PriceRange:type_name -> protobuf.PriceRange
+	10, // 6: protobuf.Branch.Categories:type_name -> protobuf.Category
+	11, // 7: protobuf.Branch.Availables:type_name -> protobuf.Available
+	12, // 8: protobuf.Branch.Tables:type_name -> protobuf.Table
 	0,  // 9: protobuf.GetRestaurantService.GetRestaurant:input_type -> protobuf.GetRestaurantReq
-	1,  // 10: protobuf.SearchRestaurantsService.SearchRestaurants:input_type -> protobuf.SearchRestaurantsReq
-	5,  // 11: protobuf.GetRestaurantService.GetRestaurant:output_type -> protobuf.Restaurant
-	4,  // 12: protobuf.SearchRestaurantsService.SearchRestaurants:output_type -> protobuf.Restaurants
-	11, // [11:13] is the sub-list for method output_type
-	9,  // [9:11] is the sub-list for method input_type
+	1,  // 10: protobuf.GetRestaurantBranchService.GetRestaurantBranch:input_type -> protobuf.GetRestaurantBranchReq
+	2,  // 11: protobuf.SearchRestaurantsService.SearchRestaurants:input_type -> protobuf.SearchRestaurantsReq
+	6,  // 12: protobuf.GetRestaurantService.GetRestaurant:output_type -> protobuf.Restaurant
+	6,  // 13: protobuf.GetRestaurantBranchService.GetRestaurantBranch:output_type -> protobuf.Restaurant
+	5,  // 14: protobuf.SearchRestaurantsService.SearchRestaurants:output_type -> protobuf.Restaurants
+	12, // [12:15] is the sub-list for method output_type
+	9,  // [9:12] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -997,16 +1048,16 @@ func file_restaurants_proto_init() {
 	if File_restaurants_proto != nil {
 		return
 	}
-	file_restaurants_proto_msgTypes[1].OneofWrappers = []any{}
+	file_restaurants_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_restaurants_proto_rawDesc), len(file_restaurants_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   3,
 		},
 		GoTypes:           file_restaurants_proto_goTypes,
 		DependencyIndexes: file_restaurants_proto_depIdxs,

@@ -12,6 +12,7 @@ import (
 
 type GRPCBookService interface {
 	GetRestaurant(ctx context.Context, req *protobuf.GetRestaurantReq) (*protobuf.Restaurant, error)
+	GetRestaurantBranch(ctx context.Context, req *protobuf.GetRestaurantBranchReq) (*protobuf.Restaurant, error)
 	SearchRestaurants(ctx context.Context, req *protobuf.SearchRestaurantsReq) (*protobuf.Restaurants, error)
 }
 
@@ -26,26 +27,37 @@ func NewGRPCBookService(
 	conn := client.GetConnection()
 	getRestaurantServiceClient := protobuf.NewGetRestaurantServiceClient(conn)
 	searchRestaurantsServiceClient := protobuf.NewSearchRestaurantsServiceClient(conn)
-
+	getRestaurantBranchServiceClient := protobuf.NewGetRestaurantBranchServiceClient(conn)
 	return &bookService{
-		GRPCClient:                     client,
-		getRestaurantServiceClient:     getRestaurantServiceClient,
-		searchRestaurantsServiceClient: searchRestaurantsServiceClient,
-		logger:                         logger,
+		GRPCClient:                       client,
+		getRestaurantServiceClient:       getRestaurantServiceClient,
+		getRestaurantBranchServiceClient: getRestaurantBranchServiceClient,
+		searchRestaurantsServiceClient:   searchRestaurantsServiceClient,
+		logger:                           logger,
 	}, nil
 }
 
 type bookService struct {
 	customizegrpc.GRPCClient
-	getRestaurantServiceClient     protobuf.GetRestaurantServiceClient
-	searchRestaurantsServiceClient protobuf.SearchRestaurantsServiceClient
-	logger                         contextloggers.ContextLogger
+	getRestaurantServiceClient       protobuf.GetRestaurantServiceClient
+	getRestaurantBranchServiceClient protobuf.GetRestaurantBranchServiceClient
+	searchRestaurantsServiceClient   protobuf.SearchRestaurantsServiceClient
+	logger                           contextloggers.ContextLogger
 }
 
 func (b *bookService) GetRestaurant(ctx context.Context, req *protobuf.GetRestaurantReq) (*protobuf.Restaurant, error) {
 	rest, err := b.getRestaurantServiceClient.GetRestaurant(ctx, req)
 	if err != nil {
 		b.logger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("Failed to get restaurant")
+		return nil, err
+	}
+	return rest, nil
+}
+
+func (b *bookService) GetRestaurantBranch(ctx context.Context, req *protobuf.GetRestaurantBranchReq) (*protobuf.Restaurant, error) {
+	rest, err := b.getRestaurantBranchServiceClient.GetRestaurantBranch(ctx, req)
+	if err != nil {
+		b.logger.WithContextInfo(ctx, enums.ContextKeyTraceID).Error("Failed to get restaurant branch")
 		return nil, err
 	}
 	return rest, nil
