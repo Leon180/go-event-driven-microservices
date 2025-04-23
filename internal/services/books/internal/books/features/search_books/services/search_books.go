@@ -32,5 +32,9 @@ func (handle *searchBooksImpl) SearchBooks(
 	if req == nil {
 		return nil, nil
 	}
-	return handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, req)
+	books, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return aggregates.BookEntities(books).ToAggregates(), nil
 }

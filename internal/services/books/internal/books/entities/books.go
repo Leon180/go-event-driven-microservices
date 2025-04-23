@@ -37,9 +37,10 @@ func (b Books) InTimePeriod(startDate string, endDate string) bool {
 type UpdateBook struct {
 	ID string
 
-	Booked *bool
-	Amount *int
-	Note   *string
+	Booked       *bool
+	Amount       *int
+	MobileNumber *string
+	Note         *string
 }
 
 func (u *UpdateBook) RemoveUnchangedFields(book Book) *UpdateBook {
@@ -55,6 +56,9 @@ func (u *UpdateBook) RemoveUnchangedFields(book Book) *UpdateBook {
 	if u.Amount != nil && *u.Amount == book.Amount {
 		u.Amount = nil
 	}
+	if u.MobileNumber != nil && *u.MobileNumber == book.MobileNumber {
+		u.MobileNumber = nil
+	}
 	if u.Note != nil && *u.Note == book.Note {
 		u.Note = nil
 	}
@@ -68,6 +72,9 @@ func (b *UpdateBook) ToUpdateMap() map[string]any {
 	}
 	if b.Amount != nil {
 		m["amount"] = *b.Amount
+	}
+	if b.MobileNumber != nil {
+		m["mobile_number"] = *b.MobileNumber
 	}
 	if b.Note != nil {
 		m["note"] = *b.Note

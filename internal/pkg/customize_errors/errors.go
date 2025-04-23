@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	HTTPBadRequestError     = newErrorFromErrorCode(HTTPBadRequest)
-	HTTPNotFoundError       = newErrorFromErrorCode(HTTPNotFound)
-	HTTPInternalServerError = newErrorFromErrorCode(HTTPInternalServer)
+	HTTPBadRequestError      = newErrorFromErrorCode(HTTPBadRequest)
+	HTTPNotFoundError        = newErrorFromErrorCode(HTTPNotFound)
+	HTTPInternalServerError  = newErrorFromErrorCode(HTTPInternalServer)
+	HTTPNoAuthorizationError = newErrorFromErrorCode(HTTPNoAuthorization)
 
 	// File Management
 	FileNotFoundError      = newErrorFromErrorCode(FileNotFound)
@@ -101,6 +102,7 @@ var (
 	BookTableAndAvailableNotMatchError = newErrorFromErrorCode(BookTableAndAvailableNotMatch)
 	BookAlreadyExistsButInactiveError  = newErrorFromErrorCode(BookAlreadyExistsButInactive)
 	BookEventCastingError              = newErrorFromErrorCode(BookEventCasting)
+	BookCapacityExceededError          = newErrorFromErrorCode(BookCapacityExceeded)
 
 	// Failed Message
 	FailedMessageAlreadyExistsError = newErrorFromErrorCode(FailedMessageAlreadyExists)
@@ -122,9 +124,10 @@ type CustomError interface {
 type ErrorCode int
 
 const (
-	HTTPBadRequest     ErrorCode = 400
-	HTTPNotFound       ErrorCode = 404
-	HTTPInternalServer ErrorCode = 500
+	HTTPBadRequest      ErrorCode = 400
+	HTTPNoAuthorization ErrorCode = 401
+	HTTPNotFound        ErrorCode = 404
+	HTTPInternalServer  ErrorCode = 500
 
 	// File Management
 	FileNotFound      ErrorCode = 10001
@@ -221,6 +224,7 @@ const (
 	BookTableAndAvailableNotMatch ErrorCode = 46004
 	BookAlreadyExistsButInactive  ErrorCode = 46005
 	BookEventCasting              ErrorCode = 46006
+	BookCapacityExceeded          ErrorCode = 46007
 
 	// Failed Message
 	FailedMessageAlreadyExists ErrorCode = 47001
@@ -233,9 +237,10 @@ const (
 )
 
 var errorCodeMessageMap = map[ErrorCode]string{
-	HTTPBadRequest:     "bad request",
-	HTTPNotFound:       "not found",
-	HTTPInternalServer: "internal server error",
+	HTTPBadRequest:      "bad request",
+	HTTPNoAuthorization: "no authorization",
+	HTTPNotFound:        "not found",
+	HTTPInternalServer:  "internal server error",
 
 	// File Management
 	FileNotFound:      "file not found",
@@ -332,6 +337,7 @@ var errorCodeMessageMap = map[ErrorCode]string{
 	BookTableAndAvailableNotMatch: "book table and available not match",
 	BookAlreadyExistsButInactive:  "book already exists but is inactive",
 	BookEventCasting:              "book event casting error",
+	BookCapacityExceeded:          "book capacity exceeded",
 
 	// Failed Message
 	FailedMessageAlreadyExists: "failed message already exists",
@@ -344,9 +350,10 @@ var errorCodeMessageMap = map[ErrorCode]string{
 }
 
 var errorCodeStatusMap = map[ErrorCode]int{
-	HTTPBadRequest:     http.StatusBadRequest,
-	HTTPNotFound:       http.StatusNotFound,
-	HTTPInternalServer: http.StatusInternalServerError,
+	HTTPBadRequest:      http.StatusBadRequest,
+	HTTPNoAuthorization: http.StatusUnauthorized,
+	HTTPNotFound:        http.StatusNotFound,
+	HTTPInternalServer:  http.StatusInternalServerError,
 
 	// File Management
 	FileNotFound:      http.StatusNotFound,
@@ -443,6 +450,7 @@ var errorCodeStatusMap = map[ErrorCode]int{
 	BookTableAndAvailableNotMatch: http.StatusConflict,
 	BookAlreadyExistsButInactive:  http.StatusConflict,
 	BookEventCasting:              http.StatusBadRequest,
+	BookCapacityExceeded:          http.StatusBadRequest,
 
 	// Failed Message
 	FailedMessageAlreadyExists: http.StatusConflict,

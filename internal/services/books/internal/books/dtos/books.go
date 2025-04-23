@@ -14,3 +14,10 @@ type Book struct {
 	MobileNumber string    `json:"mobile_number"`
 	Note         string    `json:"note"`
 }
+
+type TakeBook struct {
+	BookID       string `json:"book_id"`
+	MobileNumber string `json:"mobile_number"`
+	Amount       int    `json:"amount"`
+	Note         string `json:"note"`
+}

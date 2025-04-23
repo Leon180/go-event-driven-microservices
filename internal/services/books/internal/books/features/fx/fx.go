@@ -5,7 +5,6 @@ import (
 
 	customizegin "github.com/Leon180/go-event-driven-microservices/internal/pkg/customize_gin"
 	enums "github.com/Leon180/go-event-driven-microservices/internal/pkg/enums"
-	createBooksEvents "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/events"
 	createBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/gin_endpoints"
 	createBooksServices "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/create_books/services"
 	searchBooksGinEndpoints "github.com/Leon180/go-event-driven-microservices/internal/services/books/internal/books/features/search_books/gin_endpoints"
@@ -21,21 +20,16 @@ import (
 var ProvideModule = fx.Module(
 	"restaurantsFeaturesProvideFx",
 
-	// events
-	fx.Provide(
-		createBooksEvents.NewCreateBookMessageBuilder,
-	),
-
 	// services
 	fx.Provide(
-		createBooksServices.NewCreateBook,
+		createBooksServices.NewCreateBooks,
 		searchBooksServices.NewSearchBooks,
 	),
 
 	// endpoints
 	fx.Provide(
 		fxTagEndpoints(
-			createBooksGinEndpoints.NewCreateBook,
+			createBooksGinEndpoints.NewCreateBooks,
 			searchBooksGinEndpoints.NewSearchBooks,
 		)...,
 	),

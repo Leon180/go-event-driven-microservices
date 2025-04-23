@@ -19,7 +19,7 @@ import (
 )
 
 type CreateBooks interface {
-	CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (entities.Books, error)
+	CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (aggregates.Books, error)
 }
 
 func NewCreateBooks(
@@ -43,12 +43,12 @@ type createBooksImpl struct {
 	grpcBookService                      customizegrpc.GRPCBookService
 }
 
-func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (entities.Books, error) {
+func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdtos.CreateBooksRequest) (aggregates.Books, error) {
 	if req == nil {
 		return nil, nil
 	}
 	// check if book already exists
-	books, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, &dtos.SearchBooks{
+	bookEntities, err := handle.searchBooksFullInfoRepository.SearchBooksFullInfo(ctx, &dtos.SearchBooks{
 		BranchID:  &req.BranchID,
 		StartDate: &req.StartDate,
 		EndDate:   &req.EndDate,
@@ -56,6 +56,7 @@ func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdto
 	if err != nil {
 		return nil, err
 	}
+	books := aggregates.BookEntities(bookEntities).ToAggregates()
 	if books.InTimePeriod(req.StartDate, req.EndDate) {
 		return books, customizeerrors.BookAlreadyExistsError
 	}
@@ -86,10 +87,9 @@ func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdto
 		BuildBoooksByTimePeriod(startDate, endDate).
 		GetDateBooks()
 
+	bookEntities = entities.Books{}
 	for _, dateBook := range dateBooks {
-		books = append(books, lo.Map(dateBook.Books, func(book aggregates.Book, _ int) entities.Book {
-			return *book.ToEntity()
-		})...)
+		bookEntities = append(bookEntities, dateBook.Books.ToEntities()...)
 	}
 
 	// create books
@@ -99,7 +99,7 @@ func (handle *createBooksImpl) CreateBooks(ctx context.Context, req *featuresdto
 	}
 	defer tx.Rollback()
 
-	if err := tx.CreateBooks(ctx, books); err != nil {
+	if err := tx.CreateBooks(ctx, bookEntities); err != nil {
 		return nil, err
 	}
 

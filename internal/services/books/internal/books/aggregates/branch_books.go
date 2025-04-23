@@ -29,7 +29,7 @@ type branchBooksBuilder struct {
 
 type DateBooks struct {
 	Date  string
-	Books []Book
+	Books Books
 }
 
 func (b *branchBooksBuilder) SetBranch(branch *Branch) BranchBooksBuilder {
